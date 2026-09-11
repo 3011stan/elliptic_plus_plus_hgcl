@@ -1,0 +1,10 @@
+{
+  "copied_at": "2026-09-05T14:03:21.388329+00:00",
+  "operation": "copy_and_verify",
+  "from": "/Users/stan/Downloads/Elliptic++ Dataset",
+  "to": "/Users/stan/Projects/masters-degree/datasets/elliptic-plus-plus/raw",
+  "files_verified": 9,
+  "sha256_match": true,
+  "source_retained": true,
+  "move_blocker": "Rename returned Operation not permitted; Computer Use permissions unavailable."
+}

@@ -1,0 +1,11 @@
+{
+  "verified_at": "2026-09-05T14:08:47.891411+00:00",
+  "operation": "verify_user_selected_location",
+  "data_root": "/Users/stan/Projects/masters-degree/hgcl-elliptic/elliptic-plus-plus/raw",
+  "files_verified": 9,
+  "sha256_match": true,
+  "prior_locations_present": [
+    "/Users/stan/Downloads/Elliptic++ Dataset",
+    "/Users/stan/Projects/masters-degree/datasets/elliptic-plus-plus/raw"
+  ]
+}

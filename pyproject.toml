@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=75,<81"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hgcl-elliptic"
+version = "0.1.0"
+description = "S02: H-GCL and late fusion on Elliptic++"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "torch==2.6.0", "torch-geometric==2.6.1", "scikit-learn==1.6.1",
+  "numpy>=1.26,<3", "polars>=1.0,<2", "pyarrow>=18,<22", "PyYAML>=6,<7",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<9"]
+
+[project.scripts]
+hgcl = "hgcl.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = ["original_data: reads the original local dataset"]

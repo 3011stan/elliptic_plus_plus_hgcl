@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "method": "independent raw CSV reread + SQLite DISTINCT joins",
+  "scope": "selected examples and recorded total_txs exceptions; aggregate scan not independently repeated",
+  "address_time_examples_checked": 34,
+  "source_rows_checked": 44,
+  "exceptions_checked": 1,
+  "label_files_read": [],
+  "report_sha256": "0251fd4dd963252541fd868f459b2388d92b25a04eba407df4ee1c68d9fef8ff",
+  "verification_script_sha256": "8851a9f654f0d148e9be43d747172674bc5004c02195c062941a3b17864998c5"
+}

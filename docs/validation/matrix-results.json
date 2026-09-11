@@ -1,0 +1,60 @@
+{
+  "status": "PASS",
+  "scope": "T026–T029 CPU implementation verification; not laboratory or scientific matrix acceptance",
+  "regression": {
+    "passed": 55,
+    "skipped": 2,
+    "failed": 0,
+    "seconds": 4.39
+  },
+  "original_smoke": {
+    "run": "artifacts/runs/smoke-002",
+    "pytest_seconds": 9.24,
+    "timings": {
+      "final_evaluation_seconds": 0.11625049996655434,
+      "fitting_selection_seconds": 2.226030832971446,
+      "graph_supervised": 0.1202205839799717,
+      "hgcl": 0.10340554197318852,
+      "rf": 0.06325479201041162,
+      "selection": 0.10539187502581626,
+      "ssl": 1.8300021670293063
+    },
+    "dependencies": {
+      "config": "a35b95013273c27119984d556d93842391056f157554afe17ecd8deaee18496c",
+      "environment_lock": "eeb8617d742778b440912b4376881a83ec184e1d1fe2293693f4f29ceec91b1f",
+      "mask": "b5b0134af7372a5fe9788aaf57d3046f13ccaa5518542fd40da4b66d935cba1e",
+      "payload": "304f939287d9439c803ebac5e23ad09678798a4cf2e7521a4dbabcf41130d15e",
+      "preparation": "bff9ac6fc52935ae421426b66702be4cb54ac54ff61a5710abc290d41274c43c",
+      "regime": "principal",
+      "seed": 11,
+      "source": "a07bab973ccf591944dc51c7e99eb5f34b18f8741d3d8dff18c29470b381dcf4"
+    },
+    "reload_verified": true,
+    "strata_support": {
+      "label_unexposed": 310,
+      "overall": 314,
+      "seen": 4,
+      "train_label_exposed": 1,
+      "unseen": 310,
+      "validation_label_exposed": 3
+    }
+  },
+  "matrix_plan": {
+    "evaluations": 100,
+    "groups": 25,
+    "ssl_caches": 10,
+    "candidate_configurations": 150,
+    "full_data_integrity_checked": false,
+    "scientific_training_performed": false
+  },
+  "cleanup": {
+    "simulated_runs_removed": 25,
+    "simulated_matrix_removed": "fixture",
+    "smoke_001_preserved": true
+  },
+  "remaining": [
+    "T030 laboratory CUDA/sampler/lock and actual hardware validation",
+    "T031 scientific execution",
+    "T032–T033 final handoff/verification"
+  ]
+}

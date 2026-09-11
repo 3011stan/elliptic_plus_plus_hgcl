@@ -1,0 +1,2191 @@
+{
+  "groups": [
+    {
+      "id": "principal-11-001",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 0.01,
+      "ssl": "ssl-principal-11"
+    },
+    {
+      "id": "principal-11-005",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 0.05,
+      "ssl": "ssl-principal-11"
+    },
+    {
+      "id": "principal-11-010",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 0.1,
+      "ssl": "ssl-principal-11"
+    },
+    {
+      "id": "principal-11-100",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 1.0,
+      "ssl": "ssl-principal-11"
+    },
+    {
+      "id": "principal-23-001",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 0.01,
+      "ssl": "ssl-principal-23"
+    },
+    {
+      "id": "principal-23-005",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 0.05,
+      "ssl": "ssl-principal-23"
+    },
+    {
+      "id": "principal-23-010",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 0.1,
+      "ssl": "ssl-principal-23"
+    },
+    {
+      "id": "principal-23-100",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 1.0,
+      "ssl": "ssl-principal-23"
+    },
+    {
+      "id": "principal-37-001",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 0.01,
+      "ssl": "ssl-principal-37"
+    },
+    {
+      "id": "principal-37-005",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 0.05,
+      "ssl": "ssl-principal-37"
+    },
+    {
+      "id": "principal-37-010",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 0.1,
+      "ssl": "ssl-principal-37"
+    },
+    {
+      "id": "principal-37-100",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 1.0,
+      "ssl": "ssl-principal-37"
+    },
+    {
+      "id": "principal-53-001",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 0.01,
+      "ssl": "ssl-principal-53"
+    },
+    {
+      "id": "principal-53-005",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 0.05,
+      "ssl": "ssl-principal-53"
+    },
+    {
+      "id": "principal-53-010",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 0.1,
+      "ssl": "ssl-principal-53"
+    },
+    {
+      "id": "principal-53-100",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 1.0,
+      "ssl": "ssl-principal-53"
+    },
+    {
+      "id": "principal-71-001",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 0.01,
+      "ssl": "ssl-principal-71"
+    },
+    {
+      "id": "principal-71-005",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 0.05,
+      "ssl": "ssl-principal-71"
+    },
+    {
+      "id": "principal-71-010",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 0.1,
+      "ssl": "ssl-principal-71"
+    },
+    {
+      "id": "principal-71-100",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 1.0,
+      "ssl": "ssl-principal-71"
+    },
+    {
+      "id": "native_wallet-11-100",
+      "regime": "native_wallet",
+      "seed": 11,
+      "fraction": 1.0,
+      "ssl": "ssl-native_wallet-11"
+    },
+    {
+      "id": "native_wallet-23-100",
+      "regime": "native_wallet",
+      "seed": 23,
+      "fraction": 1.0,
+      "ssl": "ssl-native_wallet-23"
+    },
+    {
+      "id": "native_wallet-37-100",
+      "regime": "native_wallet",
+      "seed": 37,
+      "fraction": 1.0,
+      "ssl": "ssl-native_wallet-37"
+    },
+    {
+      "id": "native_wallet-53-100",
+      "regime": "native_wallet",
+      "seed": 53,
+      "fraction": 1.0,
+      "ssl": "ssl-native_wallet-53"
+    },
+    {
+      "id": "native_wallet-71-100",
+      "regime": "native_wallet",
+      "seed": 71,
+      "fraction": 1.0,
+      "ssl": "ssl-native_wallet-71"
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "principal-11-001-rf",
+      "group": "principal-11-001",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 0.01,
+      "method": "rf"
+    },
+    {
+      "id": "principal-11-001-graph_supervised",
+      "group": "principal-11-001",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 0.01,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-11-001-hgcl",
+      "group": "principal-11-001",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 0.01,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-11-001-fusion",
+      "group": "principal-11-001",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 0.01,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-11-005-rf",
+      "group": "principal-11-005",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 0.05,
+      "method": "rf"
+    },
+    {
+      "id": "principal-11-005-graph_supervised",
+      "group": "principal-11-005",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 0.05,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-11-005-hgcl",
+      "group": "principal-11-005",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 0.05,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-11-005-fusion",
+      "group": "principal-11-005",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 0.05,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-11-010-rf",
+      "group": "principal-11-010",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 0.1,
+      "method": "rf"
+    },
+    {
+      "id": "principal-11-010-graph_supervised",
+      "group": "principal-11-010",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 0.1,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-11-010-hgcl",
+      "group": "principal-11-010",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 0.1,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-11-010-fusion",
+      "group": "principal-11-010",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 0.1,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-11-100-rf",
+      "group": "principal-11-100",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 1.0,
+      "method": "rf"
+    },
+    {
+      "id": "principal-11-100-graph_supervised",
+      "group": "principal-11-100",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 1.0,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-11-100-hgcl",
+      "group": "principal-11-100",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 1.0,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-11-100-fusion",
+      "group": "principal-11-100",
+      "regime": "principal",
+      "seed": 11,
+      "fraction": 1.0,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-23-001-rf",
+      "group": "principal-23-001",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 0.01,
+      "method": "rf"
+    },
+    {
+      "id": "principal-23-001-graph_supervised",
+      "group": "principal-23-001",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 0.01,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-23-001-hgcl",
+      "group": "principal-23-001",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 0.01,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-23-001-fusion",
+      "group": "principal-23-001",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 0.01,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-23-005-rf",
+      "group": "principal-23-005",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 0.05,
+      "method": "rf"
+    },
+    {
+      "id": "principal-23-005-graph_supervised",
+      "group": "principal-23-005",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 0.05,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-23-005-hgcl",
+      "group": "principal-23-005",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 0.05,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-23-005-fusion",
+      "group": "principal-23-005",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 0.05,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-23-010-rf",
+      "group": "principal-23-010",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 0.1,
+      "method": "rf"
+    },
+    {
+      "id": "principal-23-010-graph_supervised",
+      "group": "principal-23-010",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 0.1,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-23-010-hgcl",
+      "group": "principal-23-010",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 0.1,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-23-010-fusion",
+      "group": "principal-23-010",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 0.1,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-23-100-rf",
+      "group": "principal-23-100",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 1.0,
+      "method": "rf"
+    },
+    {
+      "id": "principal-23-100-graph_supervised",
+      "group": "principal-23-100",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 1.0,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-23-100-hgcl",
+      "group": "principal-23-100",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 1.0,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-23-100-fusion",
+      "group": "principal-23-100",
+      "regime": "principal",
+      "seed": 23,
+      "fraction": 1.0,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-37-001-rf",
+      "group": "principal-37-001",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 0.01,
+      "method": "rf"
+    },
+    {
+      "id": "principal-37-001-graph_supervised",
+      "group": "principal-37-001",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 0.01,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-37-001-hgcl",
+      "group": "principal-37-001",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 0.01,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-37-001-fusion",
+      "group": "principal-37-001",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 0.01,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-37-005-rf",
+      "group": "principal-37-005",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 0.05,
+      "method": "rf"
+    },
+    {
+      "id": "principal-37-005-graph_supervised",
+      "group": "principal-37-005",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 0.05,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-37-005-hgcl",
+      "group": "principal-37-005",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 0.05,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-37-005-fusion",
+      "group": "principal-37-005",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 0.05,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-37-010-rf",
+      "group": "principal-37-010",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 0.1,
+      "method": "rf"
+    },
+    {
+      "id": "principal-37-010-graph_supervised",
+      "group": "principal-37-010",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 0.1,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-37-010-hgcl",
+      "group": "principal-37-010",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 0.1,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-37-010-fusion",
+      "group": "principal-37-010",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 0.1,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-37-100-rf",
+      "group": "principal-37-100",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 1.0,
+      "method": "rf"
+    },
+    {
+      "id": "principal-37-100-graph_supervised",
+      "group": "principal-37-100",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 1.0,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-37-100-hgcl",
+      "group": "principal-37-100",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 1.0,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-37-100-fusion",
+      "group": "principal-37-100",
+      "regime": "principal",
+      "seed": 37,
+      "fraction": 1.0,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-53-001-rf",
+      "group": "principal-53-001",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 0.01,
+      "method": "rf"
+    },
+    {
+      "id": "principal-53-001-graph_supervised",
+      "group": "principal-53-001",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 0.01,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-53-001-hgcl",
+      "group": "principal-53-001",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 0.01,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-53-001-fusion",
+      "group": "principal-53-001",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 0.01,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-53-005-rf",
+      "group": "principal-53-005",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 0.05,
+      "method": "rf"
+    },
+    {
+      "id": "principal-53-005-graph_supervised",
+      "group": "principal-53-005",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 0.05,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-53-005-hgcl",
+      "group": "principal-53-005",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 0.05,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-53-005-fusion",
+      "group": "principal-53-005",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 0.05,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-53-010-rf",
+      "group": "principal-53-010",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 0.1,
+      "method": "rf"
+    },
+    {
+      "id": "principal-53-010-graph_supervised",
+      "group": "principal-53-010",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 0.1,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-53-010-hgcl",
+      "group": "principal-53-010",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 0.1,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-53-010-fusion",
+      "group": "principal-53-010",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 0.1,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-53-100-rf",
+      "group": "principal-53-100",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 1.0,
+      "method": "rf"
+    },
+    {
+      "id": "principal-53-100-graph_supervised",
+      "group": "principal-53-100",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 1.0,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-53-100-hgcl",
+      "group": "principal-53-100",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 1.0,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-53-100-fusion",
+      "group": "principal-53-100",
+      "regime": "principal",
+      "seed": 53,
+      "fraction": 1.0,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-71-001-rf",
+      "group": "principal-71-001",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 0.01,
+      "method": "rf"
+    },
+    {
+      "id": "principal-71-001-graph_supervised",
+      "group": "principal-71-001",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 0.01,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-71-001-hgcl",
+      "group": "principal-71-001",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 0.01,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-71-001-fusion",
+      "group": "principal-71-001",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 0.01,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-71-005-rf",
+      "group": "principal-71-005",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 0.05,
+      "method": "rf"
+    },
+    {
+      "id": "principal-71-005-graph_supervised",
+      "group": "principal-71-005",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 0.05,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-71-005-hgcl",
+      "group": "principal-71-005",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 0.05,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-71-005-fusion",
+      "group": "principal-71-005",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 0.05,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-71-010-rf",
+      "group": "principal-71-010",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 0.1,
+      "method": "rf"
+    },
+    {
+      "id": "principal-71-010-graph_supervised",
+      "group": "principal-71-010",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 0.1,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-71-010-hgcl",
+      "group": "principal-71-010",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 0.1,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-71-010-fusion",
+      "group": "principal-71-010",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 0.1,
+      "method": "fusion"
+    },
+    {
+      "id": "principal-71-100-rf",
+      "group": "principal-71-100",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 1.0,
+      "method": "rf"
+    },
+    {
+      "id": "principal-71-100-graph_supervised",
+      "group": "principal-71-100",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 1.0,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "principal-71-100-hgcl",
+      "group": "principal-71-100",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 1.0,
+      "method": "hgcl"
+    },
+    {
+      "id": "principal-71-100-fusion",
+      "group": "principal-71-100",
+      "regime": "principal",
+      "seed": 71,
+      "fraction": 1.0,
+      "method": "fusion"
+    },
+    {
+      "id": "native_wallet-11-100-rf",
+      "group": "native_wallet-11-100",
+      "regime": "native_wallet",
+      "seed": 11,
+      "fraction": 1.0,
+      "method": "rf"
+    },
+    {
+      "id": "native_wallet-11-100-graph_supervised",
+      "group": "native_wallet-11-100",
+      "regime": "native_wallet",
+      "seed": 11,
+      "fraction": 1.0,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "native_wallet-11-100-hgcl",
+      "group": "native_wallet-11-100",
+      "regime": "native_wallet",
+      "seed": 11,
+      "fraction": 1.0,
+      "method": "hgcl"
+    },
+    {
+      "id": "native_wallet-11-100-fusion",
+      "group": "native_wallet-11-100",
+      "regime": "native_wallet",
+      "seed": 11,
+      "fraction": 1.0,
+      "method": "fusion"
+    },
+    {
+      "id": "native_wallet-23-100-rf",
+      "group": "native_wallet-23-100",
+      "regime": "native_wallet",
+      "seed": 23,
+      "fraction": 1.0,
+      "method": "rf"
+    },
+    {
+      "id": "native_wallet-23-100-graph_supervised",
+      "group": "native_wallet-23-100",
+      "regime": "native_wallet",
+      "seed": 23,
+      "fraction": 1.0,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "native_wallet-23-100-hgcl",
+      "group": "native_wallet-23-100",
+      "regime": "native_wallet",
+      "seed": 23,
+      "fraction": 1.0,
+      "method": "hgcl"
+    },
+    {
+      "id": "native_wallet-23-100-fusion",
+      "group": "native_wallet-23-100",
+      "regime": "native_wallet",
+      "seed": 23,
+      "fraction": 1.0,
+      "method": "fusion"
+    },
+    {
+      "id": "native_wallet-37-100-rf",
+      "group": "native_wallet-37-100",
+      "regime": "native_wallet",
+      "seed": 37,
+      "fraction": 1.0,
+      "method": "rf"
+    },
+    {
+      "id": "native_wallet-37-100-graph_supervised",
+      "group": "native_wallet-37-100",
+      "regime": "native_wallet",
+      "seed": 37,
+      "fraction": 1.0,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "native_wallet-37-100-hgcl",
+      "group": "native_wallet-37-100",
+      "regime": "native_wallet",
+      "seed": 37,
+      "fraction": 1.0,
+      "method": "hgcl"
+    },
+    {
+      "id": "native_wallet-37-100-fusion",
+      "group": "native_wallet-37-100",
+      "regime": "native_wallet",
+      "seed": 37,
+      "fraction": 1.0,
+      "method": "fusion"
+    },
+    {
+      "id": "native_wallet-53-100-rf",
+      "group": "native_wallet-53-100",
+      "regime": "native_wallet",
+      "seed": 53,
+      "fraction": 1.0,
+      "method": "rf"
+    },
+    {
+      "id": "native_wallet-53-100-graph_supervised",
+      "group": "native_wallet-53-100",
+      "regime": "native_wallet",
+      "seed": 53,
+      "fraction": 1.0,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "native_wallet-53-100-hgcl",
+      "group": "native_wallet-53-100",
+      "regime": "native_wallet",
+      "seed": 53,
+      "fraction": 1.0,
+      "method": "hgcl"
+    },
+    {
+      "id": "native_wallet-53-100-fusion",
+      "group": "native_wallet-53-100",
+      "regime": "native_wallet",
+      "seed": 53,
+      "fraction": 1.0,
+      "method": "fusion"
+    },
+    {
+      "id": "native_wallet-71-100-rf",
+      "group": "native_wallet-71-100",
+      "regime": "native_wallet",
+      "seed": 71,
+      "fraction": 1.0,
+      "method": "rf"
+    },
+    {
+      "id": "native_wallet-71-100-graph_supervised",
+      "group": "native_wallet-71-100",
+      "regime": "native_wallet",
+      "seed": 71,
+      "fraction": 1.0,
+      "method": "graph_supervised"
+    },
+    {
+      "id": "native_wallet-71-100-hgcl",
+      "group": "native_wallet-71-100",
+      "regime": "native_wallet",
+      "seed": 71,
+      "fraction": 1.0,
+      "method": "hgcl"
+    },
+    {
+      "id": "native_wallet-71-100-fusion",
+      "group": "native_wallet-71-100",
+      "regime": "native_wallet",
+      "seed": 71,
+      "fraction": 1.0,
+      "method": "fusion"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "ssl-principal-11",
+      "kind": "ssl",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-11-001-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-11-001-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-11-001-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-11"
+      ]
+    },
+    {
+      "id": "principal-11-001-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-11-001-rf"
+      ]
+    },
+    {
+      "id": "principal-11-001-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-11-001-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-11-001-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-11-001-hgcl"
+      ]
+    },
+    {
+      "id": "principal-11-001-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-11-001-rf",
+        "fit-principal-11-001-hgcl"
+      ]
+    },
+    {
+      "id": "fit-principal-11-005-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-11-005-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-11-005-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-11"
+      ]
+    },
+    {
+      "id": "principal-11-005-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-11-005-rf"
+      ]
+    },
+    {
+      "id": "principal-11-005-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-11-005-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-11-005-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-11-005-hgcl"
+      ]
+    },
+    {
+      "id": "principal-11-005-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-11-005-rf",
+        "fit-principal-11-005-hgcl"
+      ]
+    },
+    {
+      "id": "fit-principal-11-010-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-11-010-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-11-010-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-11"
+      ]
+    },
+    {
+      "id": "principal-11-010-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-11-010-rf"
+      ]
+    },
+    {
+      "id": "principal-11-010-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-11-010-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-11-010-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-11-010-hgcl"
+      ]
+    },
+    {
+      "id": "principal-11-010-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-11-010-rf",
+        "fit-principal-11-010-hgcl"
+      ]
+    },
+    {
+      "id": "fit-principal-11-100-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-11-100-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-11-100-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-11"
+      ]
+    },
+    {
+      "id": "principal-11-100-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-11-100-rf"
+      ]
+    },
+    {
+      "id": "principal-11-100-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-11-100-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-11-100-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-11-100-hgcl"
+      ]
+    },
+    {
+      "id": "principal-11-100-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-11-100-rf",
+        "fit-principal-11-100-hgcl"
+      ]
+    },
+    {
+      "id": "ssl-principal-23",
+      "kind": "ssl",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-23-001-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-23-001-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-23-001-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-23"
+      ]
+    },
+    {
+      "id": "principal-23-001-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-23-001-rf"
+      ]
+    },
+    {
+      "id": "principal-23-001-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-23-001-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-23-001-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-23-001-hgcl"
+      ]
+    },
+    {
+      "id": "principal-23-001-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-23-001-rf",
+        "fit-principal-23-001-hgcl"
+      ]
+    },
+    {
+      "id": "fit-principal-23-005-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-23-005-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-23-005-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-23"
+      ]
+    },
+    {
+      "id": "principal-23-005-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-23-005-rf"
+      ]
+    },
+    {
+      "id": "principal-23-005-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-23-005-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-23-005-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-23-005-hgcl"
+      ]
+    },
+    {
+      "id": "principal-23-005-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-23-005-rf",
+        "fit-principal-23-005-hgcl"
+      ]
+    },
+    {
+      "id": "fit-principal-23-010-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-23-010-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-23-010-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-23"
+      ]
+    },
+    {
+      "id": "principal-23-010-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-23-010-rf"
+      ]
+    },
+    {
+      "id": "principal-23-010-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-23-010-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-23-010-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-23-010-hgcl"
+      ]
+    },
+    {
+      "id": "principal-23-010-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-23-010-rf",
+        "fit-principal-23-010-hgcl"
+      ]
+    },
+    {
+      "id": "fit-principal-23-100-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-23-100-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-23-100-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-23"
+      ]
+    },
+    {
+      "id": "principal-23-100-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-23-100-rf"
+      ]
+    },
+    {
+      "id": "principal-23-100-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-23-100-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-23-100-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-23-100-hgcl"
+      ]
+    },
+    {
+      "id": "principal-23-100-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-23-100-rf",
+        "fit-principal-23-100-hgcl"
+      ]
+    },
+    {
+      "id": "ssl-principal-37",
+      "kind": "ssl",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-37-001-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-37-001-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-37-001-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-37"
+      ]
+    },
+    {
+      "id": "principal-37-001-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-37-001-rf"
+      ]
+    },
+    {
+      "id": "principal-37-001-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-37-001-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-37-001-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-37-001-hgcl"
+      ]
+    },
+    {
+      "id": "principal-37-001-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-37-001-rf",
+        "fit-principal-37-001-hgcl"
+      ]
+    },
+    {
+      "id": "fit-principal-37-005-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-37-005-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-37-005-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-37"
+      ]
+    },
+    {
+      "id": "principal-37-005-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-37-005-rf"
+      ]
+    },
+    {
+      "id": "principal-37-005-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-37-005-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-37-005-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-37-005-hgcl"
+      ]
+    },
+    {
+      "id": "principal-37-005-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-37-005-rf",
+        "fit-principal-37-005-hgcl"
+      ]
+    },
+    {
+      "id": "fit-principal-37-010-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-37-010-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-37-010-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-37"
+      ]
+    },
+    {
+      "id": "principal-37-010-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-37-010-rf"
+      ]
+    },
+    {
+      "id": "principal-37-010-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-37-010-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-37-010-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-37-010-hgcl"
+      ]
+    },
+    {
+      "id": "principal-37-010-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-37-010-rf",
+        "fit-principal-37-010-hgcl"
+      ]
+    },
+    {
+      "id": "fit-principal-37-100-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-37-100-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-37-100-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-37"
+      ]
+    },
+    {
+      "id": "principal-37-100-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-37-100-rf"
+      ]
+    },
+    {
+      "id": "principal-37-100-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-37-100-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-37-100-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-37-100-hgcl"
+      ]
+    },
+    {
+      "id": "principal-37-100-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-37-100-rf",
+        "fit-principal-37-100-hgcl"
+      ]
+    },
+    {
+      "id": "ssl-principal-53",
+      "kind": "ssl",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-53-001-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-53-001-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-53-001-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-53"
+      ]
+    },
+    {
+      "id": "principal-53-001-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-53-001-rf"
+      ]
+    },
+    {
+      "id": "principal-53-001-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-53-001-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-53-001-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-53-001-hgcl"
+      ]
+    },
+    {
+      "id": "principal-53-001-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-53-001-rf",
+        "fit-principal-53-001-hgcl"
+      ]
+    },
+    {
+      "id": "fit-principal-53-005-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-53-005-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-53-005-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-53"
+      ]
+    },
+    {
+      "id": "principal-53-005-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-53-005-rf"
+      ]
+    },
+    {
+      "id": "principal-53-005-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-53-005-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-53-005-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-53-005-hgcl"
+      ]
+    },
+    {
+      "id": "principal-53-005-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-53-005-rf",
+        "fit-principal-53-005-hgcl"
+      ]
+    },
+    {
+      "id": "fit-principal-53-010-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-53-010-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-53-010-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-53"
+      ]
+    },
+    {
+      "id": "principal-53-010-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-53-010-rf"
+      ]
+    },
+    {
+      "id": "principal-53-010-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-53-010-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-53-010-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-53-010-hgcl"
+      ]
+    },
+    {
+      "id": "principal-53-010-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-53-010-rf",
+        "fit-principal-53-010-hgcl"
+      ]
+    },
+    {
+      "id": "fit-principal-53-100-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-53-100-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-53-100-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-53"
+      ]
+    },
+    {
+      "id": "principal-53-100-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-53-100-rf"
+      ]
+    },
+    {
+      "id": "principal-53-100-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-53-100-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-53-100-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-53-100-hgcl"
+      ]
+    },
+    {
+      "id": "principal-53-100-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-53-100-rf",
+        "fit-principal-53-100-hgcl"
+      ]
+    },
+    {
+      "id": "ssl-principal-71",
+      "kind": "ssl",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-71-001-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-71-001-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-71-001-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-71"
+      ]
+    },
+    {
+      "id": "principal-71-001-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-71-001-rf"
+      ]
+    },
+    {
+      "id": "principal-71-001-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-71-001-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-71-001-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-71-001-hgcl"
+      ]
+    },
+    {
+      "id": "principal-71-001-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-71-001-rf",
+        "fit-principal-71-001-hgcl"
+      ]
+    },
+    {
+      "id": "fit-principal-71-005-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-71-005-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-71-005-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-71"
+      ]
+    },
+    {
+      "id": "principal-71-005-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-71-005-rf"
+      ]
+    },
+    {
+      "id": "principal-71-005-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-71-005-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-71-005-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-71-005-hgcl"
+      ]
+    },
+    {
+      "id": "principal-71-005-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-71-005-rf",
+        "fit-principal-71-005-hgcl"
+      ]
+    },
+    {
+      "id": "fit-principal-71-010-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-71-010-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-71-010-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-71"
+      ]
+    },
+    {
+      "id": "principal-71-010-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-71-010-rf"
+      ]
+    },
+    {
+      "id": "principal-71-010-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-71-010-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-71-010-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-71-010-hgcl"
+      ]
+    },
+    {
+      "id": "principal-71-010-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-71-010-rf",
+        "fit-principal-71-010-hgcl"
+      ]
+    },
+    {
+      "id": "fit-principal-71-100-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-71-100-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-principal-71-100-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-principal-71"
+      ]
+    },
+    {
+      "id": "principal-71-100-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-71-100-rf"
+      ]
+    },
+    {
+      "id": "principal-71-100-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-71-100-graph_supervised"
+      ]
+    },
+    {
+      "id": "principal-71-100-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-71-100-hgcl"
+      ]
+    },
+    {
+      "id": "principal-71-100-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-principal-71-100-rf",
+        "fit-principal-71-100-hgcl"
+      ]
+    },
+    {
+      "id": "ssl-native_wallet-11",
+      "kind": "ssl",
+      "depends_on": []
+    },
+    {
+      "id": "fit-native_wallet-11-100-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-native_wallet-11-100-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-native_wallet-11-100-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-native_wallet-11"
+      ]
+    },
+    {
+      "id": "native_wallet-11-100-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-11-100-rf"
+      ]
+    },
+    {
+      "id": "native_wallet-11-100-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-11-100-graph_supervised"
+      ]
+    },
+    {
+      "id": "native_wallet-11-100-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-11-100-hgcl"
+      ]
+    },
+    {
+      "id": "native_wallet-11-100-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-11-100-rf",
+        "fit-native_wallet-11-100-hgcl"
+      ]
+    },
+    {
+      "id": "ssl-native_wallet-23",
+      "kind": "ssl",
+      "depends_on": []
+    },
+    {
+      "id": "fit-native_wallet-23-100-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-native_wallet-23-100-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-native_wallet-23-100-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-native_wallet-23"
+      ]
+    },
+    {
+      "id": "native_wallet-23-100-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-23-100-rf"
+      ]
+    },
+    {
+      "id": "native_wallet-23-100-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-23-100-graph_supervised"
+      ]
+    },
+    {
+      "id": "native_wallet-23-100-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-23-100-hgcl"
+      ]
+    },
+    {
+      "id": "native_wallet-23-100-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-23-100-rf",
+        "fit-native_wallet-23-100-hgcl"
+      ]
+    },
+    {
+      "id": "ssl-native_wallet-37",
+      "kind": "ssl",
+      "depends_on": []
+    },
+    {
+      "id": "fit-native_wallet-37-100-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-native_wallet-37-100-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-native_wallet-37-100-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-native_wallet-37"
+      ]
+    },
+    {
+      "id": "native_wallet-37-100-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-37-100-rf"
+      ]
+    },
+    {
+      "id": "native_wallet-37-100-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-37-100-graph_supervised"
+      ]
+    },
+    {
+      "id": "native_wallet-37-100-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-37-100-hgcl"
+      ]
+    },
+    {
+      "id": "native_wallet-37-100-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-37-100-rf",
+        "fit-native_wallet-37-100-hgcl"
+      ]
+    },
+    {
+      "id": "ssl-native_wallet-53",
+      "kind": "ssl",
+      "depends_on": []
+    },
+    {
+      "id": "fit-native_wallet-53-100-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-native_wallet-53-100-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-native_wallet-53-100-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-native_wallet-53"
+      ]
+    },
+    {
+      "id": "native_wallet-53-100-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-53-100-rf"
+      ]
+    },
+    {
+      "id": "native_wallet-53-100-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-53-100-graph_supervised"
+      ]
+    },
+    {
+      "id": "native_wallet-53-100-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-53-100-hgcl"
+      ]
+    },
+    {
+      "id": "native_wallet-53-100-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-53-100-rf",
+        "fit-native_wallet-53-100-hgcl"
+      ]
+    },
+    {
+      "id": "ssl-native_wallet-71",
+      "kind": "ssl",
+      "depends_on": []
+    },
+    {
+      "id": "fit-native_wallet-71-100-rf",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-native_wallet-71-100-graph_supervised",
+      "kind": "fit",
+      "depends_on": []
+    },
+    {
+      "id": "fit-native_wallet-71-100-hgcl",
+      "kind": "fit",
+      "depends_on": [
+        "ssl-native_wallet-71"
+      ]
+    },
+    {
+      "id": "native_wallet-71-100-rf",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-71-100-rf"
+      ]
+    },
+    {
+      "id": "native_wallet-71-100-graph_supervised",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-71-100-graph_supervised"
+      ]
+    },
+    {
+      "id": "native_wallet-71-100-hgcl",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-71-100-hgcl"
+      ]
+    },
+    {
+      "id": "native_wallet-71-100-fusion",
+      "kind": "evaluation",
+      "depends_on": [
+        "fit-native_wallet-71-100-rf",
+        "fit-native_wallet-71-100-hgcl"
+      ]
+    }
+  ],
+  "expected_evaluations": 100,
+  "expected_ssl_caches": 10,
+  "expected_candidate_configurations": 150,
+  "status": "planned",
+  "data_integrity_checked": false,
+  "preparation": null,
+  "training_performed": false,
+  "test_labels_materialized": false
+}

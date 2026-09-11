@@ -1,0 +1,50 @@
+{
+  "status": "PASS",
+  "scope": "milestone 1, Mac CPU and original-data smoke preparation; not model training",
+  "tests": {
+    "contract_passed": 19,
+    "original_data_integration_passed": 1
+  },
+  "preparations": [
+    {
+      "attempt": "/Users/stan/Projects/masters-degree/hgcl-elliptic/artifacts/preparation-attempts/126d3ba1a18c4d858c6a2dd87997b5a6",
+      "elapsed_seconds": 5.186651916010305,
+      "payload_hash": "17fceeeab97c666834b4ace2994f85e5f44d97390b2040bc8c7daac864e8d1c8",
+      "peak_rss_gib": 1.0329437255859375,
+      "preparation_hash": "0bd73a7e18c09748baa0f0462f0620548a48577d9a059996c019f0ba376e50a2",
+      "prepared": "/Users/stan/Projects/masters-degree/hgcl-elliptic/artifacts/prepared/0bd73a7e18c09748baa0f0462f0620548a48577d9a059996c019f0ba376e50a2"
+    },
+    {
+      "attempt": "/Users/stan/Projects/masters-degree/hgcl-elliptic/artifacts/preparation-attempts/100c841cc80c4f1ba2fba604b2ac55ca",
+      "elapsed_seconds": 3.6693940840195864,
+      "payload_hash": "17fceeeab97c666834b4ace2994f85e5f44d97390b2040bc8c7daac864e8d1c8",
+      "peak_rss_gib": 1.2914886474609375,
+      "preparation_hash": "0bd73a7e18c09748baa0f0462f0620548a48577d9a059996c019f0ba376e50a2",
+      "prepared": "/Users/stan/Projects/masters-degree/hgcl-elliptic/artifacts/prepared/0bd73a7e18c09748baa0f0462f0620548a48577d9a059996c019f0ba376e50a2"
+    }
+  ],
+  "selected_counts": {
+    "edges": 4930,
+    "transactions": 1024,
+    "wallet_pairs": 4399
+  },
+  "tasks_completed": [
+    "T001",
+    "T002",
+    "T003",
+    "T004",
+    "T005",
+    "T006",
+    "T007",
+    "T008",
+    "T009",
+    "T010",
+    "T011",
+    "T012"
+  ],
+  "limitations": [
+    "Full 49-step lab profile and native complement have not been prepared end-to-end; native contract tested with fixtures.",
+    "CUDA environment and laboratory lock deferred to T030 under D035.",
+    "600-second training goal not measured; no models trained."
+  ]
+}

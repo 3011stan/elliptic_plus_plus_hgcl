@@ -1,0 +1,39 @@
+{
+  "status": "PASS",
+  "run": "smoke-001",
+  "scope": "original-data Mac CPU engineering smoke",
+  "timings": {
+    "final_evaluation_seconds": 0.10075312503613532,
+    "fitting_selection_seconds": 2.175978167098947,
+    "graph_supervised": 0.12711324996780604,
+    "hgcl": 0.13237437489442527,
+    "rf": 0.06529666599817574,
+    "selection": 0.0794476669980213,
+    "ssl": 1.770006209029816
+  },
+  "tests": {
+    "regression_passed": 43,
+    "regression_opt_in_skipped": 2,
+    "original_smoke_passed_separately": 1
+  },
+  "data": {
+    "edges": 4930,
+    "transactions": 1024,
+    "wallet_pairs": 4399
+  },
+  "reload_verified": true,
+  "ssl_updates": 128,
+  "artifact_hashes": {
+    "timings.json": "f97b01a2ff5c0495ecaa5f829b2d72120bf98fece06374f8df819997ca0fe819",
+    "provenance.json": "6fc788aeffdf70beb8daf55ab8e47f5c8359affee62d2bdca39834bf8570d8a1",
+    "frozen.json": "ace1cc6b9e3e7e4edeb6f6a3e5e8891504aa7696db385fb56eb26dd789a3a06d",
+    "training-report.json": "c5f84cfe560e169614b7c21aa380a8f4896593c1e2007208435e69d3dbde4c4c",
+    "predictions.parquet": "b2b5750afa48520b859069fd7a147edbbfd025f8a51f37c408cb2af750f8f7c1",
+    "metrics.json": "b349409eb23facb19e7512a75c8b5690248035f1dc6e4f4ce9b3841968a5758f"
+  },
+  "limitations": [
+    "Engineering recut only; not scientific performance evidence.",
+    "Laboratory CUDA/sampler validation remains T030.",
+    "Full matrix, multi-run resume CLI and paired five-seed reports remain T026\u2013T033."
+  ]
+}

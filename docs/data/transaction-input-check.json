@@ -1,0 +1,184 @@
+{
+  "scope": "Numerical diagnostics on steps 1–28 only; no labels read, no training.",
+  "source": "txs_features.csv",
+  "source_sha256": "2db326ec8ddb68f1d810c1834e1ff62e0a8300378f0984a1e3b2ca82a439821b",
+  "script_sha256": "2f07980a0d472f90a4873d7f6fad9474c8e7b2c6fbefd38068e5c72d4f10ec88",
+  "columns": [
+    "total_BTC",
+    "fees",
+    "size",
+    "num_input_addresses",
+    "num_output_addresses",
+    "in_BTC_min",
+    "in_BTC_max",
+    "in_BTC_mean",
+    "in_BTC_median",
+    "in_BTC_total",
+    "out_BTC_min",
+    "out_BTC_max",
+    "out_BTC_mean",
+    "out_BTC_median",
+    "out_BTC_total"
+  ],
+  "counts": {
+    "training_transactions": 116529,
+    "all_15_finite": 116251
+  },
+  "statistics": {
+    "total_BTC": {
+      "finite": 116251,
+      "missing": 278,
+      "negative": 0,
+      "zero": 0,
+      "nonfinite": 0,
+      "nonnumeric": 0,
+      "min": 6e-06,
+      "max": 7382.0981762
+    },
+    "fees": {
+      "finite": 116251,
+      "missing": 278,
+      "negative": 0,
+      "zero": 61,
+      "nonfinite": 0,
+      "nonnumeric": 0,
+      "min": 0.0,
+      "max": 0.1
+    },
+    "size": {
+      "finite": 116251,
+      "missing": 278,
+      "negative": 0,
+      "zero": 0,
+      "nonfinite": 0,
+      "nonnumeric": 0,
+      "min": 188.0,
+      "max": 445268.0
+    },
+    "num_input_addresses": {
+      "finite": 116251,
+      "missing": 278,
+      "negative": 0,
+      "zero": 0,
+      "nonfinite": 0,
+      "nonnumeric": 0,
+      "min": 1.0,
+      "max": 656.0
+    },
+    "num_output_addresses": {
+      "finite": 116251,
+      "missing": 278,
+      "negative": 0,
+      "zero": 0,
+      "nonfinite": 0,
+      "nonnumeric": 0,
+      "min": 1.0,
+      "max": 13107.0
+    },
+    "in_BTC_min": {
+      "finite": 116251,
+      "missing": 278,
+      "negative": 0,
+      "zero": 0,
+      "nonfinite": 0,
+      "nonnumeric": 0,
+      "min": 1e-08,
+      "max": 7382.0984705
+    },
+    "in_BTC_max": {
+      "finite": 116251,
+      "missing": 278,
+      "negative": 0,
+      "zero": 0,
+      "nonfinite": 0,
+      "nonnumeric": 0,
+      "min": 1.3700000000000001e-05,
+      "max": 7382.0984705
+    },
+    "in_BTC_mean": {
+      "finite": 116251,
+      "missing": 278,
+      "negative": 0,
+      "zero": 0,
+      "nonfinite": 0,
+      "nonnumeric": 0,
+      "min": 1.3558571428571429e-05,
+      "max": 7382.0984705
+    },
+    "in_BTC_median": {
+      "finite": 116251,
+      "missing": 278,
+      "negative": 0,
+      "zero": 0,
+      "nonfinite": 0,
+      "nonnumeric": 0,
+      "min": 1e-08,
+      "max": 7382.0984705
+    },
+    "in_BTC_total": {
+      "finite": 116251,
+      "missing": 278,
+      "negative": 0,
+      "zero": 0,
+      "nonfinite": 0,
+      "nonnumeric": 0,
+      "min": 4.127e-05,
+      "max": 7382.0984705
+    },
+    "out_BTC_min": {
+      "finite": 116251,
+      "missing": 278,
+      "negative": 0,
+      "zero": 30,
+      "nonfinite": 0,
+      "nonnumeric": 0,
+      "min": 0.0,
+      "max": 1007.0098
+    },
+    "out_BTC_max": {
+      "finite": 116251,
+      "missing": 278,
+      "negative": 0,
+      "zero": 0,
+      "nonfinite": 0,
+      "nonnumeric": 0,
+      "min": 6e-06,
+      "max": 7311.696876200001
+    },
+    "out_BTC_mean": {
+      "finite": 116251,
+      "missing": 278,
+      "negative": 0,
+      "zero": 0,
+      "nonfinite": 0,
+      "nonnumeric": 0,
+      "min": 6e-06,
+      "max": 2998.40423038
+    },
+    "out_BTC_median": {
+      "finite": 116251,
+      "missing": 278,
+      "negative": 0,
+      "zero": 0,
+      "nonfinite": 0,
+      "nonnumeric": 0,
+      "min": 6e-06,
+      "max": 2998.40423038
+    },
+    "out_BTC_total": {
+      "finite": 116251,
+      "missing": 278,
+      "negative": 0,
+      "zero": 0,
+      "nonfinite": 0,
+      "nonnumeric": 0,
+      "min": 6e-06,
+      "max": 7382.0981762
+    }
+  },
+  "limitations": [
+    "Does not validate extraction code, size unit or historical label availability.",
+    "Financial identities are diagnostics, not automatic row exclusion rules.",
+    "All-zero vectors are ambiguous, not established missing-value sentinels."
+  ]
+}
