@@ -12,6 +12,12 @@ A matriz científica e o ambiente do laboratório ainda não foram executados.
 Veja [estado do projeto](docs/status.md), [evidências](docs/validation/milestone-1.md)
 e [quickstart](specs/001-hgcl-experiment/quickstart.md).
 
+## Primeira verificação no NixOS
+
+A preparação local da T030 está disponível. Siga o [roteiro do laboratório](docs/laboratorio-nixos.md):
+geração dos locks no NixOS, instalação, download verificado e diagnóstico. CUDA/Flake
+ainda dependem da execução remota; não iniciar a matriz antes desse aceite.
+
 ## Documentos de trabalho
 
 - [Constituição em revisão](.specify/memory/constitution.md)

@@ -67,3 +67,13 @@ forward/backward com gradientes finitos. Núcleo: torch 2.6.0, PyG 2.6.1, sklear
 Python 3.11.15. O doctor reutilizável continua pendente; laboratório não verificado.
 
 D035: laboratory lock/CUDA/sampler work moved entirely to T030. T002 completed: reusable CPU doctor passed; report artifacts/environment/mac-cpu-doctor.json includes the Mac lock hash.
+
+## Atualização do laboratório fornecida pelo pesquisador — 2026-09-11
+
+Host palmito: NixOS 26.05.5591.fd1462031fde (Yarara), Nix 2.34.8, x86_64,
+RTX 2060 6144 MiB, driver 595.71.05. nvidia-smi informa suporte CUDA 13.2;
+o runtime proposto do torch 2.6.0 é CUDA 12.4. Memória total 62 GiB, disponível
+60 GiB; sem swap; volume /dev/sdb2 consultado com 123 GB livres. Estes números
+substituem RAM/OS antes informados, mas não constituem aceite do pipeline CUDA.
+O PDF PPComp orienta Flakes de usuário sem sudo. Flake e lock Python serão
+resolvidos no laboratório sob D043. [Roteiro](laboratorio-nixos.md).

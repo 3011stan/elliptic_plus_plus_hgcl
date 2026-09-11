@@ -1,6 +1,6 @@
 # Estado do SDD — S02
 
-Atualizado: 2026-09-11. **Marcos 1 e 2 concluídos; T026–T029 concluídas e verificadas no Mac.**
+Atualizado: 2026-09-11. **Marcos 1 e 2 concluídos; T026–T029 concluídas e verificadas no Mac. T030: implementação local entregue; geração dos locks e aceite NixOS/CUDA pendentes sob D043.**
 
 ## Objetivo científico e protocolo
 
@@ -37,3 +37,7 @@ Comandos matrix/resume/report disponíveis. Próximo passo: T030, preparar e ver
 ambiente, CUDA, amostrador e lock na máquina real do laboratório.
 Evidência: [matrix-readiness.md](validation/matrix-readiness.md).
 Regra permanente: [AGENTS.md](../AGENTS.md). Progresso: [tasks.md](../specs/001-hgcl-experiment/tasks.md).
+
+T030: 61 testes aprovados; smoke CPU original repetido em 2,16 s de treino/seleção.
+[Entrega local e pendências remotas](validation/lab-preflight.md);
+[comandos para o laboratório](laboratorio-nixos.md).

@@ -27,9 +27,9 @@ def atomic_json(path: Path, value) -> None:
 
 
 def source_identity(root: Path) -> dict:
-    files = [p for folder in ('src', 'configs', 'tests', 'requirements') for p in (root / folder).rglob('*')
+    files = [p for folder in ('src', 'configs', 'tests', 'requirements', 'scripts') for p in (root / folder).rglob('*')
              if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc']
-    files += [root / 'pyproject.toml', root / 'AGENTS.md']
+    files += [root / 'pyproject.toml', root / 'AGENTS.md', root / 'flake.nix', root / 'flake.lock']
     hashes = {str(p.relative_to(root)): file_hash(p) for p in sorted(files) if p.is_file()}
     def git(*args):
         result = subprocess.run(['git', '-C', str(root), *args], capture_output=True, text=True)

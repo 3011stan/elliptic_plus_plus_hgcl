@@ -77,3 +77,19 @@ continua em revisão. Estado atual: [status.md](status.md); execução: [tasks.m
 
 - D041 — Pesquisador autorizou corrigir o isolamento da fixture de retomada, remover
   somente seus artefatos simulados identificados e retomar as verificações T026–T029.
+
+- D042 — Pesquisador autorizou a preparação local da T030: flake.nix/flake.lock,
+  dependências Linux/CUDA, diagnóstico real do amostrador, download do Drive com
+  hashes e roteiro em português. O pesquisador enviará as alterações ao GitHub e
+  executará a validação no laboratório quando avisado. Não há autorização para
+  modificar a configuração global do laboratório ou iniciar a matriz nesta etapa.
+  PDF do PPComp informa uso de Flakes por projeto, sem sudo. Máquina palmito:
+  NixOS 26.05.5591.fd1462031fde, Nix 2.34.8, x86_64, RTX 2060 6 GiB, driver
+  595.71.05, aproximadamente 62 GiB de RAM e 123 GB livres no volume consultado.
+
+- D043 — Pesquisador escolheu gerar flake.lock no NixOS, executando comandos
+  preparados aqui; Docker e instalação de Nix no Mac descartados. A entrega local
+  inclui também o comando de resolução Linux para requirements/lab-cuda.lock,
+  que será gerado e verificado no ambiente de destino antes de congelar a execução.
+  Smoke GPU é um teste de engenharia pequeno com a política do smoke CPU, usando
+  CUDA/NeighborLoader; não amplia nem altera a matriz científica.

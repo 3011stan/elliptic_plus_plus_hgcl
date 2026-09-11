@@ -209,7 +209,7 @@ def evaluate(run,*,verify_reload=False):
             scored=test.join(combined.select('address','step',pl.col(name).alias('score')),on=['address','step'],how='left',validate='1:1')
             output[name]=metrics(scored['target'].to_numpy(),scored['score'].to_numpy(),choices[name]['threshold'])
             stratified[name]=strata(scored,choices[name]['threshold'])
-        report={'scope':('engineering smoke, not scientific performance evidence' if values['profile']=='smoke' else 'scientific temporal evaluation'), 'regime':regime,'seed':record['seed'],'fraction':record['fraction'],'methods':output,'strata':stratified,'reload_verified':verify_reload,
+        report={'scope':('engineering smoke, not scientific performance evidence' if values['profile']!='lab' else 'scientific temporal evaluation'), 'regime':regime,'seed':record['seed'],'fraction':record['fraction'],'methods':output,'strata':stratified,'reload_verified':verify_reload,
                 'predictions_sha256':file_hash(run/'predictions.parquet'),'evaluation_seconds':time.monotonic()-started}
         atomic_json(run/'metrics.json',report);status(run/'status.json','evaluated');status(run/'status.json','complete')
         timings=json.loads((run/'timings.json').read_text());timings['final_evaluation_seconds']=report['evaluation_seconds'];atomic_json(run/'timings.json',timings)

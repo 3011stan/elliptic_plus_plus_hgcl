@@ -19,7 +19,9 @@ Registre o ponto de parada para permitir retomada após a resposta do pesquisado
 
 ## Escopo e rastreabilidade
 
-- Marco autorizado nesta etapa: T026–T029 de specs/001-hgcl-experiment/tasks.md.
+- Escopo autorizado nesta etapa: preparação local da T030 para NixOS/Mac,
+  download verificado dos dados e roteiro operacional. Validação CUDA/NixOS real
+  depende dos comandos executados pelo pesquisador no laboratório; não iniciar T031.
 - Preserve as decisões científicas aceitas e os CSVs originais.
 - Estado operacional em docs/status.md; decisões em docs/decisions.md.
 - Verifique tarefas antes de marcar conclusão. O contexto atual do usuário determina

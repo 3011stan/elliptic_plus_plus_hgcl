@@ -12,7 +12,7 @@ def main(argv: list[str] | None = None) -> int:
     parser=argparse.ArgumentParser(prog='hgcl',description='S02 — H-GCL on Elliptic++')
     parser.add_argument('--version',action='version',version=__version__)
     subs=parser.add_subparsers(dest='command',required=True)
-    for name in ('doctor','prepare','validate','fit','smoke','matrix'):
+    for name in ('doctor','prepare','validate','fit','smoke','matrix','download'):
         sub=subs.add_parser(name)
         sub.add_argument('--config',type=Path,required=True)
         sub.add_argument('--data-root');sub.add_argument('--artifacts-root')
@@ -37,15 +37,17 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(result,indent=2,allow_nan=False));return 0 if result['status']=='complete' else 4
         config=load_config(args.config,data_root=args.data_root,artifacts_root=args.artifacts_root,device=args.device)
         if args.command=='doctor':
-            if config.values['resources']['device']!='cpu':raise ValueError('CUDA doctor belongs to T030; currently CPU only')
-            from hgcl.environment import doctor
-            result=doctor(config.root)
+            from hgcl.environment import doctor,lab_doctor
+            result=lab_doctor(config) if config.values['resources']['device']=='cuda' else doctor(config.root)
         elif args.command=='matrix':
             from hgcl.matrix import dry_run,execute
             if args.dry_run:result=dry_run(config,args.prepared)
             else:
                 if args.prepared is None or args.matrix_id is None:raise ValueError('Matrix execution requires --prepared and --matrix-id')
                 result=execute(config,args.prepared,args.matrix_id)
+        elif args.command=='download':
+            from hgcl.data.download import acquire
+            result=acquire(config)
         elif args.command=='prepare':
             from hgcl.pipeline import prepare
             result=prepare(config)

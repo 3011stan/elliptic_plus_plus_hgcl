@@ -1,0 +1,5 @@
+# Fixed official CPython 3.11 Linux wheels. Transitive hash lock generated on NixOS.
+torch @ https://download.pytorch.org/whl/cu124/torch-2.6.0%2Bcu124-cp311-cp311-linux_x86_64.whl
+pyg-lib @ https://data.pyg.org/whl/torch-2.6.0%2Bcu124/pyg_lib-0.4.0%2Bpt26cu124-cp311-cp311-linux_x86_64.whl
+gdown==5.2.0
+setuptools==80.9.0

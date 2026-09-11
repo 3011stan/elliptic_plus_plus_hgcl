@@ -1,0 +1,43 @@
+{
+  "status": "LOCAL_CHECKS_PASS_REMOTE_PENDING",
+  "scope": "T030 local implementation only",
+  "regression": {
+    "passed": 61,
+    "skipped": 2,
+    "seconds": 5.2
+  },
+  "original_cpu_smoke": {
+    "run": "smoke-003",
+    "passed": true,
+    "pytest_seconds": 9.75,
+    "timings": {
+      "final_evaluation_seconds": 0.10070608300156891,
+      "fitting_selection_seconds": 2.1619167090393603,
+      "graph_supervised": 0.11876633297652006,
+      "hgcl": 0.10303624998778105,
+      "rf": 0.06338687497191131,
+      "selection": 0.08041937497910112,
+      "ssl": 1.794263374991715
+    },
+    "dependencies": {
+      "config": "a35b95013273c27119984d556d93842391056f157554afe17ecd8deaee18496c",
+      "environment_lock": "eeb8617d742778b440912b4376881a83ec184e1d1fe2293693f4f29ceec91b1f",
+      "mask": "b5b0134af7372a5fe9788aaf57d3046f13ccaa5518542fd40da4b66d935cba1e",
+      "payload": "8343ab149583e0ff78a1f0b6e54fc92867b7e6eca2f549d0ed66fc562cf2eb1d",
+      "preparation": "c72ddc05e69994b5082ce2e60f99746b2c8b6352c2e62a8d3d44cbafdb5bc263",
+      "regime": "principal",
+      "seed": 11,
+      "source": "a743c0acc9d04f7e250b81be407f202a583dadfbbba9438180edd6a2f981705c"
+    }
+  },
+  "remote_pending": [
+    "Generate flake.lock",
+    "Evaluate Flake on NixOS",
+    "Resolve/install lab-cuda.lock",
+    "Public Drive download",
+    "CUDA NeighborLoader/encoder probe",
+    "Original-data GPU smoke"
+  ],
+  "no_docker_or_nix_installed_on_mac": true,
+  "scientific_matrix_started": false
+}

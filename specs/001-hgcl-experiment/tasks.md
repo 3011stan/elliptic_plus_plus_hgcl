@@ -240,3 +240,13 @@ Original smoke-002 passed separately, fitting/selection 2.226 s. Matrix dry-run:
 keys, 25 groups, 10 SSL caches, 150 supervised/RF candidate configurations. No scientific
 matrix training performed. Evidence: ../../docs/validation/matrix-readiness.md and
 matrix-results.json. No extension hooks configured. T030–T033 remain unchecked.
+
+
+## T030 — entrega local sob D042/D043
+
+Flake multiplataforma, scripts de geração/instalação do lock Linux, download dos
+nove originais com publicação somente após hash, diagnóstico CUDA/amostrador e
+perfil smoke-gpu implementados. O pesquisador gera flake.lock e lab-cuda.lock
+no NixOS e devolve os diagnósticos. Nenhum desses locks é declarado gerado ou
+validado no Mac. T030 permanece aberta até aceite real; T031 não foi iniciada.
+Roteiro: ../../docs/laboratorio-nixos.md.

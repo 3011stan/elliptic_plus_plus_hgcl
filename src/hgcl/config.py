@@ -13,9 +13,10 @@ def digest(value) -> str:
 
 
 def defaults(profile: str) -> dict:
-    if profile not in ("smoke", "lab"):
-        raise ValueError("profile must be smoke or lab")
-    smoke = profile == "smoke"
+    if profile not in ("smoke", "smoke-gpu", "lab"):
+        raise ValueError("profile must be smoke, smoke-gpu or lab")
+    smoke = profile != "lab"
+    gpu = profile != "smoke"
     return {
         "schema": 1, "profile": profile,
         "paths": {"project_root": "..", "data_root": "elliptic-plus-plus/raw", "artifacts_root": "artifacts"},
@@ -28,7 +29,7 @@ def defaults(profile: str) -> dict:
         "rf": {"trees": 50 if smoke else 300, "min_leaf": [1] if smoke else [1, 5], "max_features": "sqrt", "class_weight": "balanced", "jobs": 4},
         "fusion": {"alphas": [i / 20 for i in range(21)]},
         "evaluation": {"primary": "f1_illicit", "methods": ["rf", "graph_supervised", "hgcl", "fusion"]},
-        "resources": {"device": "cpu" if smoke else "cuda", "recut_transactions": 256 if smoke else None, "anchor_batch": 32 if smoke else 128, "workers": 0, "loading": "full" if smoke else "neighbor", "fanouts": [10, 5], "timeout_seconds": 600 if smoke else None, "rss_gib": 8 if smoke else 24, "gpu_gib": None if smoke else 4.5, "max_nodes": 50000, "max_edges": 200000, "inference_nodes": 4096, "inference_edges": 100000},
+        "resources": {"device": "cuda" if gpu else "cpu", "recut_transactions": 256 if smoke else None, "anchor_batch": 32 if smoke else 128, "workers": 0, "loading": "neighbor" if gpu else "full", "fanouts": [10, 5], "timeout_seconds": 600 if smoke else None, "rss_gib": 24 if gpu else 8, "gpu_gib": 4.5 if gpu else None, "max_nodes": 50000, "max_edges": 200000, "inference_nodes": 4096, "inference_edges": 100000},
         "provenance": {"schema": 1, "source_manifest": "docs/data/source-manifest.json"},
     }
 

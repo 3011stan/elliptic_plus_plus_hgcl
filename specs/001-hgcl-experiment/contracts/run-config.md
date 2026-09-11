@@ -59,3 +59,10 @@ No extra calibrator. A validation-selected alpha endpoint is a valid result.
 Resource/NaN failures preserve diagnostics/checkpoint. New batch/recut limits create a new
 resolved run; no silent topology/feature/class removal. Data/schema/source/config/mask
 hashes protect resume and SSL cache reuse. Final test is excluded from every selection.
+
+## Smoke GPU operacional — T030/D043
+
+configs/smoke-gpu.yaml usa o mesmo recorte, splits, arquitetura pequena, épocas,
+seed e fração do smoke CPU. Diferenças: CUDA, NeighborLoader com fanouts 10/5,
+limite GPU 4.5 GiB/RSS 24 GiB e lock lab-cuda.lock. Continua limitado a 600 s,
+classificado como engenharia e excluído da matriz de 100 avaliações científicas.
