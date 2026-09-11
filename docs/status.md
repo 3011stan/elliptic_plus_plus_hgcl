@@ -1,6 +1,6 @@
 # Estado do SDD — S02
 
-Atualizado: 2026-09-11. **Marcos 1 e 2 concluídos; T026–T029 concluídas e verificadas no Mac. T030: implementação local entregue; geração dos locks e aceite NixOS/CUDA pendentes sob D043.**
+Atualizado: 2026-09-11. **Marcos 1 e 2 concluídos; T026–T029 concluídas. T030: ambiente e doctor CUDA aprovados; repetição do smoke GPU pendente após D045.**
 
 ## Objetivo científico e protocolo
 
@@ -41,3 +41,10 @@ Regra permanente: [AGENTS.md](../AGENTS.md). Progresso: [tasks.md](../specs/001-
 T030: 61 testes aprovados; smoke CPU original repetido em 2,16 s de treino/seleção.
 [Entrega local e pendências remotas](validation/lab-preflight.md);
 [comandos para o laboratório](laboratorio-nixos.md).
+
+Atualização remota: Flake/lock instalados, nove originais verificados e doctor CUDA
+aprovado. `gpu-smoke-001` treinou os ramos, mas a repetição da inferência CUDA falhou
+na tolerância antiga sem registrar magnitude. D045 autorizou auditoria numérica com
+zero divergências de decisão. Regressão atual: 63 aprovados, 2 opcionais ignorados;
+smoke CPU `smoke-004` aprovado. Próximo teste: `gpu-smoke-002` após atualizar o clone
+e repetir o doctor para a nova identidade do código.

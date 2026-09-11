@@ -60,6 +60,29 @@ def aligned(scores):
     return merged
 
 
+def compare_reloaded_predictions(original,reloaded,choices,methods,*,rtol=1e-5,atol=2e-6):
+    """Audit repeated float32 inference without hiding decision instability."""
+    report={};failed=[]
+    for name in methods:
+        first=original[name].to_numpy();second=reloaded[name].to_numpy()
+        if first.shape!=second.shape or not np.isfinite(first).all() or not np.isfinite(second).all():
+            raise RuntimeError(f'Invalid reload comparison population for {name}')
+        difference=np.abs(first-second)
+        threshold=choices[name]['threshold']
+        decision_mismatches=int(np.count_nonzero((first>=threshold)!=(second>=threshold)))
+        within_tolerance=bool(np.allclose(first,second,rtol=rtol,atol=atol))
+        report[name]={'count':len(first),'rtol':rtol,'atol':atol,
+                      'max_abs_difference':float(difference.max()) if len(difference) else 0.,
+                      'mean_abs_difference':float(difference.mean()) if len(difference) else 0.,
+                      'decision_mismatches':decision_mismatches,'within_tolerance':within_tolerance}
+        if not within_tolerance or decision_mismatches:failed.append(name)
+    if failed:
+        details=', '.join(f"{name}: max_abs={report[name]['max_abs_difference']:.9g}, "
+                          f"decision_mismatches={report[name]['decision_mismatches']}" for name in failed)
+        raise RuntimeError(f'Reloaded predictions outside float32/decision acceptance: {details}')
+    return report
+
+
 def fit(config,prepared,run_id,*,record=None,regime="principal",ssl_directory=None,resuming=False):
     if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,100}',run_id):raise ValueError('Invalid run ID')
     values=config.values
@@ -192,10 +215,27 @@ def evaluate(run,*,verify_reload=False):
             frame=frame.with_columns((pl.col('score')>=choices[name]['threshold']).alias('prediction'))
             predictions.append(frame)
         predictions=pl.concat(predictions);predictions.write_parquet(run/'predictions.parquet')
+        reload_diagnostics=None
         if verify_reload:
             reloaded=predict(load_models(run,prepared,values,record))
-            for name in values['evaluation']['methods']:
-                if not np.allclose(combined[name].to_numpy(),reloaded[name].to_numpy(),rtol=1e-7,atol=1e-8):raise RuntimeError('Reloaded predictions differ')
+            try:
+                reload_diagnostics=compare_reloaded_predictions(
+                    combined,reloaded,choices,values['evaluation']['methods'])
+            except RuntimeError as exc:
+                # Recompute the diagnostics without accepting them, so a failed GPU
+                # smoke retains actionable evidence instead of a generic message.
+                diagnostic={}
+                for name in values['evaluation']['methods']:
+                    first=combined[name].to_numpy();second=reloaded[name].to_numpy()
+                    difference=np.abs(first-second);threshold=choices[name]['threshold']
+                    diagnostic[name]={'count':len(first),'rtol':1e-5,'atol':2e-6,
+                                      'max_abs_difference':float(difference.max()) if len(difference) else 0.,
+                                      'mean_abs_difference':float(difference.mean()) if len(difference) else 0.,
+                                      'decision_mismatches':int(np.count_nonzero((first>=threshold)!=(second>=threshold))),
+                                      'within_tolerance':bool(np.allclose(first,second,rtol=1e-5,atol=2e-6))}
+                atomic_json(run/'reload-verification.json',{'status':'FAIL','methods':diagnostic,'error':str(exc)})
+                raise
+            atomic_json(run/'reload-verification.json',{'status':'PASS','methods':reload_diagnostics})
         status(run/'status.json','scored')
         # First materialization of test target rows happens after predictions are saved.
         test=(pl.scan_parquet(prepared/'targets'/(record['hash']+'.parquet'))
@@ -210,6 +250,7 @@ def evaluate(run,*,verify_reload=False):
             output[name]=metrics(scored['target'].to_numpy(),scored['score'].to_numpy(),choices[name]['threshold'])
             stratified[name]=strata(scored,choices[name]['threshold'])
         report={'scope':('engineering smoke, not scientific performance evidence' if values['profile']!='lab' else 'scientific temporal evaluation'), 'regime':regime,'seed':record['seed'],'fraction':record['fraction'],'methods':output,'strata':stratified,'reload_verified':verify_reload,
+                'reload_diagnostics':reload_diagnostics,
                 'predictions_sha256':file_hash(run/'predictions.parquet'),'evaluation_seconds':time.monotonic()-started}
         atomic_json(run/'metrics.json',report);status(run/'status.json','evaluated');status(run/'status.json','complete')
         timings=json.loads((run/'timings.json').read_text());timings['final_evaluation_seconds']=report['evaluation_seconds'];atomic_json(run/'timings.json',timings)

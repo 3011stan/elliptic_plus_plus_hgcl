@@ -99,3 +99,10 @@ continua em revisão. Estado atual: [status.md](status.md); execução: [tasks.m
   após HTTP 403 (limite da API GitHub no IP do laboratório) na geração do lock.
   Série 26.05 preservada; revisão exata ainda depende do lock gerado no NixOS.
   Roteiro atualizado. Nenhum token, commit ou push automático foi utilizado.
+
+- D045 — Após `gpu-smoke-001` falhar em “Reloaded predictions differ”, o
+  pesquisador autorizou tornar a auditoria de repetição CUDA diagnóstica e aceitar
+  apenas variação float32 limitada. Fixado rtol 1e-5/atol 2e-6, coerente com o
+  contrato de inferência existente; zero mudanças de decisão no limiar permanece
+  obrigatório. Diferenças máxima/média e contagens por método são persistidas.
+  A tentativa falha é preservada; próxima execução usa `gpu-smoke-002`.

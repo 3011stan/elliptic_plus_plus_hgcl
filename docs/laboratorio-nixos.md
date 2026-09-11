@@ -115,7 +115,7 @@ Não compartilhe credenciais. Não é necessário copiar a `.venv-lab` ou os dad
 ## 5. Após revisão: smoke com dados originais na GPU
 
 ```bash
-.venv-lab/bin/python scripts/lab/run.py smoke --id gpu-smoke-001
+.venv-lab/bin/python scripts/lab/run.py smoke --id gpu-smoke-002
 ```
 
 Usa configs/smoke-gpu.yaml: mesmos passos 1,2/29/35 e 256 transações por passo do
@@ -123,6 +123,14 @@ smoke CPU, quatro métodos, seed 11, 100% dos rótulos do recorte, até 600 segu
 para treino/seleção. Usa CUDA e o amostrador do laboratório. É teste de engenharia,
 não resultado científico. Preparação e avaliação final têm medição separada.
 Use um ID novo se houver uma execução anterior. Traga lab-smoke.json para revisão.
+
+O primeiro teste `gpu-smoke-001` concluiu o treinamento, mas falhou na comparação
+de duas inferências CUDA do mesmo checkpoint. A implementação anterior exigia
+`rtol=1e-7`/`atol=1e-8`, abaixo da tolerância de inferência float32 já adotada no
+projeto. A nova verificação usa `rtol=1e-5`/`atol=2e-6`, registra diferenças máxima
+e média por método e continua exigindo zero mudanças nas decisões produzidas pelo
+limiar congelado. O arquivo `reload-verification.json` retém o diagnóstico completo.
+Preserve `gpu-smoke-001` como evidência da tentativa anterior; não reutilize o ID.
 
 ## 6. Somente após aceite da T030: preparação integral e matriz
 

@@ -54,10 +54,10 @@ implemented but has not yet been exercised end-to-end; native transforms are fix
 ## Complete real-data smoke (US2) — verified
 
 ```sh
-.venv/bin/python -m hgcl.cli smoke --config configs/smoke.yaml --prepared artifacts/prepared/PREPARED_HASH --run-id smoke-004
+.venv/bin/python -m hgcl.cli smoke --config configs/smoke.yaml --prepared artifacts/prepared/PREPARED_HASH --run-id smoke-005
 ```
 
-Runs smoke-001, smoke-002 and smoke-003 already completed. Use a new run ID; existing runs are never overwritten.
+Runs smoke-001 through smoke-004 already completed. Use a new run ID; existing runs are never overwritten.
 Verified: SSL, two graph fits, RF, fusion/threshold selection, freeze, evaluate and reload.
 Finite losses, updated encoder/head, aligned evaluation keys and fitting+selection <=600 s.
 Preparation/final evaluation measured separately. Output says engineering smoke; no claim

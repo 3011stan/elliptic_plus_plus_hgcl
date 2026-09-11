@@ -18,6 +18,8 @@ def test_original_data_smoke(project_root):
     prepared=prepare(config)
     result=smoke(config,Path(prepared['prepared']),os.environ.get('HGCL_SMOKE_RUN_ID','smoke-001'))
     assert result['status']=='complete' and result['reload_verified']
+    assert all(item['within_tolerance'] and item['decision_mismatches']==0
+               for item in result['reload_diagnostics'].values())
     assert result['fitting_selection_seconds']<=600
     run=Path(result['run']);report=json.loads((run/'training-report.json').read_text())
     assert report['ssl']['encoder_changed'] and report['ssl']['updates']>0

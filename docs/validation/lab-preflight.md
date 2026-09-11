@@ -43,3 +43,25 @@ Sob autorização D044, flake.nix passou a usar o tarball oficial do canal NixOS
 26.05. Alteração local conferida por diff; nova tentativa remota pendente.
 As evidências CPU acima antecedem esta troca de origem e não validam o novo
 conteúdo Nixpkgs ainda não resolvido. Não houve mudança no código Python.
+
+## Diagnóstico remoto aprovado e primeiro smoke GPU
+
+O doctor remoto passou no NixOS: Python 3.11.16, torch 2.6.0+cu124, PyG 2.6.1,
+pyg-lib 0.4.0+pt26cu124 e RTX 2060. Conferiu nove originais, executou NeighborLoader
+e forward/backward CUDA para âncoras address/transaction. Pico alocado no probe:
+22.899.200 bytes; memória GPU livre informada: 5.746.065.408 bytes.
+
+`gpu-smoke-001` chegou ao fim do treinamento dos quatro métodos e falhou antes da
+junção com rótulos de teste, na repetição da inferência do checkpoint. O código
+comparava duas cargas do mesmo checkpoint com rtol 1e-7/atol 1e-8. A inferência
+CUDA usa `index_add_`, cuja ordem de acumulação pode produzir variações float32.
+A mensagem antiga não registrou magnitude nem método, portanto a causa numérica
+é a explicação técnica sustentada pelo caminho do código, ainda a ser confirmada
+pelos novos diagnósticos no NixOS.
+
+Correção autorizada: tolerância alinhada ao contrato de inferência existente
+(rtol 1e-5, atol 2e-6), zero divergências de decisão no limiar como condição
+adicional e relatório por método com diferenças máxima/média. Uma diferença fora
+da tolerância ou qualquer decisão divergente continua falhando. Verificação local:
+63 testes aprovados, 2 opcionais ignorados; smoke original `smoke-004` aprovado.
+Nova execução remota: `gpu-smoke-002`. T030 permanece aberta até esse resultado.
