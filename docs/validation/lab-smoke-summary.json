@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "run": "gpu-smoke-002",
+  "scope": "engineering smoke, not scientific performance evidence",
+  "fitting_selection_seconds": 5.820331846945919,
+  "evaluation_seconds": 0.18782916094642133,
+  "methods": ["rf", "graph_supervised", "hgcl", "fusion"],
+  "test_observations_per_method": 314,
+  "reload_scores_per_method": 1300,
+  "reload_max_abs_difference": 5.960464477539063e-08,
+  "reload_decision_mismatches": 0,
+  "flake_lock_sha256": "0c3d6450f6083ef28ac229bdaa3a2385f1fa886444534e7918933c76486233a0",
+  "lab_cuda_lock_sha256": "13b9004ff793f65ccad445b4378712118c3b84c2409070cd1388275d0b406fe0",
+  "evidence_source": "researcher-provided lab-smoke.json and reload-verification.json"
+}

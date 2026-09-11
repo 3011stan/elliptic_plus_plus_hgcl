@@ -1,6 +1,6 @@
 # Estado do SDD — S02
 
-Atualizado: 2026-09-11. **Marcos 1 e 2 concluídos; T026–T029 concluídas. T030: ambiente e doctor CUDA aprovados; repetição do smoke GPU pendente após D045.**
+Atualizado: 2026-09-11. **T001–T030 concluídas. Ambiente NixOS/CUDA e smoke GPU aprovados; preparação integral T031 é o próximo passo.**
 
 ## Objetivo científico e protocolo
 
@@ -17,7 +17,7 @@ Nenhuma dessas escolhas mudou durante a implementação do marco 1.
 | --- | --- | --- |
 | 1. Ambiente e dados | T001–T012 | Concluído; 20 testes passaram, duas preparações originais idênticas |
 | 2. Smoke no Mac | T013–T025 | Concluído; smoke original passou, treino + seleção em 2,18 s |
-| 3. Matriz no laboratório | T026–T031 | T026–T029 concluídas; T030 ambiente/lock CUDA e T031 execução pendentes |
+| 3. Matriz no laboratório | T026–T031 | T026–T030 concluídas; T031 preparação integral e matriz pendentes |
 | 4. Fechamento | T032–T033 | Pendente; verificação completa e comandos finais |
 
 ## Evidências e limites
@@ -48,3 +48,8 @@ na tolerância antiga sem registrar magnitude. D045 autorizou auditoria numéric
 zero divergências de decisão. Regressão atual: 63 aprovados, 2 opcionais ignorados;
 smoke CPU `smoke-004` aprovado. Próximo teste: `gpu-smoke-002` após atualizar o clone
 e repetir o doctor para a nova identidade do código.
+
+`gpu-smoke-002` aprovado: quatro métodos, 314 observações alinhadas por método,
+treino + seleção em 5,820 s e avaliação em 0,188 s. As 1.300 pontuações por método
+foram repetidas; diferença máxima 5,96e-8 e zero mudanças de decisão. Locks Nix/Python
+versionados e conferidos pelos hashes do doctor. T030 concluída; T031 ainda não executada.

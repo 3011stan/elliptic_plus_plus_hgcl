@@ -106,3 +106,8 @@ continua em revisão. Estado atual: [status.md](status.md); execução: [tasks.m
   contrato de inferência existente; zero mudanças de decisão no limiar permanece
   obrigatório. Diferenças máxima/média e contagens por método são persistidas.
   A tentativa falha é preservada; próxima execução usa `gpu-smoke-002`.
+
+- D046 — T030 aceita após `gpu-smoke-002`: ambiente NixOS/CUDA, nove hashes,
+  NeighborLoader/backward, locks versionados e quatro métodos aprovados. Treino +
+  seleção levou 5,820 s; avaliação 0,188 s; diferença máxima entre inferências
+  5,96e-8 e zero decisões divergentes. T031 permanece como próximo estágio.

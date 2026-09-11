@@ -2,7 +2,7 @@
 
 Input: [plan.md](plan.md), [spec.md](spec.md), [research.md](research.md),
 [data-model.md](data-model.md), [contracts](contracts/cli.md), [quickstart](quickstart.md).
-T001–T029 are complete. T030–T033 remain pending. T026–T029 validation:
+T001–T030 are complete. T031–T033 remain pending. T026–T029 validation:
 55 regression tests passed, two optional tests skipped; original-data smoke passed separately. The original-data CPU smoke
 passed; detailed evidence is in ../../docs/validation/smoke.md and smoke-results.json.
 Evidence and measured
@@ -66,7 +66,7 @@ freeze enforcement, complete or explicitly incomplete five-seed/recurrence repor
 - [X] T027 [US3] Implement the 80+20 evaluation DAG and serial cache-aware runner in `src/hgcl/matrix.py`; reuse 10 SSL caches and branch scores, separate candidate-fit counts, reject post-test retuning and preserve incomplete statuses. Depends T026. (FR-011, FR-012, FR-013, FR-016, FR-019, FR-024)
 - [X] T028 [US3] Expose compatible `resume` and matrix restart in `src/hgcl/cli.py` using `src/hgcl/training/checkpoint.py`; reject scientific/source/data changes and already evaluated refits; retain attempt history. Depends T027. (FR-012, FR-019, SC-007)
 - [X] T029 [US3] Implement overall/seen/unseen support, prior-label exposure, paired RQ1/RQ2 differences and five-seed mean/sample SD reports in `src/hgcl/evaluation/reporting.py`; label native temporal limitations and incomplete groups; allow non-improvement. Depends T028. (FR-004, FR-013, FR-016, FR-020, FR-024, SC-004, SC-005)
-- [ ] T030 [US3] Implement `doctor` in `src/hgcl/environment.py`, then run it on the lab machine when accessible; verify CUDA/sampler/backward, memory/free space and data hashes, generate, install and validate the complete transitive/hash lock `requirements/lab-cuda.lock` and record `docs/validation/lab-preflight.md`. CPU doctor's basic checks are implemented in T002; CUDA acceptance depends on real hardware. Depends T029. (FR-018, SC-001)
+- [X] T030 [US3] Implement `doctor` in `src/hgcl/environment.py`, then run it on the lab machine when accessible; verify CUDA/sampler/backward, memory/free space and data hashes, generate, install and validate the complete transitive/hash lock `requirements/lab-cuda.lock` and record `docs/validation/lab-preflight.md`. CPU doctor's basic checks are implemented in T002; CUDA acceptance depends on real hardware. Depends T029. (FR-018, SC-001)
 - [ ] T031 [US3] Run matrix dry-run and then the laboratory experiment via `configs/lab.yaml`, retaining `artifacts/matrices/s02-001/` and a portable summary in `docs/validation/experiment.md`; do not mark complete for dry-run alone or without all required results. Depends T030. (FR-012, FR-013, FR-016, FR-019, FR-020, SC-004, SC-005)
 
 ## Phase 6 — Handoff and cross-cutting verification

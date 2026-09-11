@@ -64,4 +64,18 @@ Correção autorizada: tolerância alinhada ao contrato de inferência existente
 adicional e relatório por método com diferenças máxima/média. Uma diferença fora
 da tolerância ou qualquer decisão divergente continua falhando. Verificação local:
 63 testes aprovados, 2 opcionais ignorados; smoke original `smoke-004` aprovado.
-Nova execução remota: `gpu-smoke-002`. T030 permanece aberta até esse resultado.
+Nova execução remota: `gpu-smoke-002`.
+
+## Aceite final da T030
+
+`gpu-smoke-002` terminou com status `complete`, escopo de engenharia, quatro métodos
+e 314 observações de teste por método. Treino + seleção: 5,820331847 s; avaliação:
+0,187829161 s; recarga aprovada. Foram comparadas 1.300 pontuações por método, com
+zero mudanças de decisão. Maior diferença absoluta: 5,960464478e-8 (H-GCL), abaixo
+de atol 2e-6/rtol 1e-5. RF foi idêntica.
+
+Os locks gerados no NixOS foram versionados no commit `96455c1` e sincronizados:
+`flake.lock` SHA-256 `0c3d6450f6083ef28ac229bdaa3a2385f1fa886444534e7918933c76486233a0`;
+`requirements/lab-cuda.lock` SHA-256 `13b9004ff793f65ccad445b4378712118c3b84c2409070cd1388275d0b406fe0`.
+Esses hashes coincidem com o doctor remoto. T030 concluída; a matriz científica
+continua não executada. Próximo estágio: preparação integral T031.
