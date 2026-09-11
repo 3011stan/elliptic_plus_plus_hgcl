@@ -93,3 +93,9 @@ continua em revisão. Estado atual: [status.md](status.md); execução: [tasks.m
   que será gerado e verificado no ambiente de destino antes de congelar a execução.
   Smoke GPU é um teste de engenharia pequeno com a política do smoke CPU, usando
   CUDA/NeighborLoader; não amplia nem altera a matriz científica.
+
+- D044 — Pesquisador autorizou substituir a origem github:NixOS/nixpkgs/nixos-26.05
+  pelo arquivo oficial https://channels.nixos.org/nixos-26.05/nixexprs.tar.xz,
+  após HTTP 403 (limite da API GitHub no IP do laboratório) na geração do lock.
+  Série 26.05 preservada; revisão exata ainda depende do lock gerado no NixOS.
+  Roteiro atualizado. Nenhum token, commit ou push automático foi utilizado.

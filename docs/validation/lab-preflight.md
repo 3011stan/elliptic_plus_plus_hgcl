@@ -32,3 +32,14 @@ remotas explícitas. Não há instalação global, alteração de driver ou fall
 Roteiro operacional: [laboratorio-nixos.md](../laboratorio-nixos.md).
 T030 permanece incompleta; T031 não foi iniciada. O pesquisador fará o push e
 executará a primeira verificação remota, conforme combinado.
+
+
+## Primeira tentativa remota e correção D044
+
+O pesquisador executou nix flake lock no laboratório. A API GitHub retornou
+HTTP 403 / API rate limit exceeded ao resolver nixos-26.05. Essa tentativa
+não fornece evidência de avaliação do ambiente ou de funcionamento CUDA.
+Sob autorização D044, flake.nix passou a usar o tarball oficial do canal NixOS
+26.05. Alteração local conferida por diff; nova tentativa remota pendente.
+As evidências CPU acima antecedem esta troca de origem e não validam o novo
+conteúdo Nixpkgs ainda não resolvido. Não houve mudança no código Python.

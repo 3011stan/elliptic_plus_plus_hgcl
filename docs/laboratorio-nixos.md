@@ -44,6 +44,16 @@ do pull. O flake.lock será criado no laboratório, como combinado. Adicioná-lo
 índice permite que Nix use o arquivo no checkout Git; isso não faz commit nem push.
 Não execute `nix flake update` durante o experimento.
 
+A origem do Nixpkgs é o arquivo oficial do canal NixOS 26.05, hospedado em
+channels.nixos.org. Isso evita a consulta à API do GitHub que retornou HTTP 403
+por limite de requisições no IP do laboratório. Após receber esta correção com
+`git pull --ff-only`, repita `nix flake lock`. Não é necessário configurar token
+GitHub para essa origem. O lock registrará o conteúdo resolvido e seu hash;
+a série 26.05 permanece, sem presumir uma revisão que ainda não foi fixada.
+Se o comando falhar novamente, pare e traga a nova saída. Não apague um lock
+existente sem inspecioná-lo.
+
+
 ## 2. Gerar o lock Python/CUDA e instalar
 
 Dentro do ambiente aberto pelo último comando:

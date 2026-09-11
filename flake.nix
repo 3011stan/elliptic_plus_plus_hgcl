@@ -1,6 +1,6 @@
 {
   description = "H-GCL Elliptic++: Mac CPU and NixOS CUDA environments";
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+  inputs.nixpkgs.url = "https://channels.nixos.org/nixos-26.05/nixexprs.tar.xz";
   outputs = { nixpkgs, ... }:
     let
       systems = [ "aarch64-darwin" "x86_64-linux" ];
