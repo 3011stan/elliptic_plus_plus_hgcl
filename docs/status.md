@@ -1,5 +1,33 @@
 # Estado do SDD — S02
 
+## Diagnóstico D049 — correção local concluída sob D050
+
+D050: exclusão de diretórios `*.egg-info` implementada em `source_identity`.
+Regressão: 66 testes aprovados, 2 opcionais ignorados; metadados de instalação
+não alteram o hash e mudanças de código continuam detectadas. Próximo passo:
+pesquisador fazer commit/push/pull e repetir doctor, preservando o recibo anterior.
+Smoke com ID novo somente após conferência do novo diagnóstico. T031 permanece
+aberta. O histórico abaixo registra o impedimento anterior à autorização D050;
+nenhum recibo foi reescrito.
+
+Saída enviada pelo pesquisador: doctor PASS, nove originais, CUDA/amostragem e
+forward/backward aprovados; hashes dos locks coincidem com os locais. Entretanto,
+source_sha256 remoto `8b3ba58b5b553ecb4261cf91342753c864628c7ed3533259c462fa5476f4b519`
+difere do local `78b6b4c475b31b1167270baff80af062411cec955174b4fc167386295b538bc7`
+(commit local `5bcf15ed9dc7333e84ca66734cc7a03070fe3a68`, árvore limpa na conferência).
+Não avançar ao novo smoke até esclarecer a identidade remota. Solicitar commit e
+estado Git do laboratório; causa ainda não determinada. Este ponto não revoga
+o PASS ambiental nem o aceite histórico T030; impede atribuir o probe ao código local atual.
+
+Diagnóstico posterior: pesquisador confirmou o mesmo commit e árvore remota limpa.
+O cálculo local inclui seis arquivos ignorados em `src/hgcl_elliptic.egg-info/`.
+Recalculando apenas em memória sem esses metadados, os 67 arquivos restantes geram
+exatamente o hash remoto `8b3ba58b5b553ecb4261cf91342753c864628c7ed3533259c462fa5476f4b519`.
+A divergência é explicada pelos metadados de instalação locais, sem evidência de
+diferença do código versionado. Proposta pendente: excluir diretórios `*.egg-info`
+da identidade de fonte e adicionar regressão específica. Nenhuma correção aplicada;
+consulta antes de alterar a proveniência e repetir o doctor na nova versão.
+
 Atualizado: 2026-09-14. **T001–T030 concluídas. Matriz de 100 avaliações mantida; protocolo operacional T031 preparado.**
 
 D048: XGBoost e DGI foram [adiados para após a primeira rodada](../specs/001-hgcl-experiment/deferred-extensions.md),

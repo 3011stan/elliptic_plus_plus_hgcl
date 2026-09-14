@@ -138,3 +138,11 @@ continua em revisão. Estado atual: [status.md](status.md); execução: [tasks.m
   antes do treinamento. AGENTS.md atualizado para refletir esse escopo; identidade
   nova requer doctor e smoke no laboratório. Entrega e limitações em
   [t031-local-readiness.md](validation/t031-local-readiness.md).
+
+- D050 — Pesquisador autorizou excluir diretórios `*.egg-info` da identidade de
+  fonte após diagnóstico da divergência Mac/laboratório no mesmo commit limpo.
+  Sem os seis metadados locais, o hash coincidiu exatamente com o doctor remoto.
+  Correção implementada sem remover arquivos ou alterar modelos, dados, locks ou
+  protocolo. Regressão: 66 aprovados, 2 opcionais ignorados. A mudança no código
+  gera nova identidade; pesquisador versiona/sincroniza e repete doctor antes do
+  smoke. Recibos e checkpoints históricos preservados, sem migração de hashes.

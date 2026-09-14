@@ -1,5 +1,27 @@
 # T031 — apoio operacional local entregue
 
+## Atualização D050 — identidade de fonte
+
+Excluídos diretórios `*.egg-info` gerados por instalação do cálculo de identidade.
+Os seis arquivos locais de metadados explicavam a diferença em relação ao laboratório,
+apesar de mesmo commit e árvores limpas. Nada foi removido do filesystem.
+Teste específico cobre criação/regeneração de metadados (hash estável) e edição de
+código (hash diferente). Suíte atual: 66 aprovados, 2 opcionais ignorados.
+
+Depois do commit/push/pull desta correção, preservar o doctor recebido sob D049 e
+repetir somente o diagnóstico antes de decidir o smoke:
+
+```bash
+cp -n artifacts/environment/lab-doctor.json artifacts/environment/lab-doctor-before-d050.json
+.venv-lab/bin/python scripts/lab/run.py doctor
+```
+
+Executar no ambiente Nix com árvore limpa. Se o arquivo de preservação já existir,
+conferi-lo antes de continuar, sem sobrescrever evidência. Enviar o novo resultado.
+Não esperar o mesmo hash D049: a própria correção participa da identidade de fonte.
+Não reutilizar hashes antigos em recibos/checkpoints; executar smoke com ID novo
+após conferência. Nenhuma execução remota foi realizada pelo agente.
+
 Data: 2026-09-14. D049. Matriz preservada: 100 avaliações, 25 grupos, 10 caches SSL.
 
 ## Alterações e verificação

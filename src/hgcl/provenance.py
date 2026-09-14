@@ -28,7 +28,9 @@ def atomic_json(path: Path, value) -> None:
 
 def source_identity(root: Path) -> dict:
     files = [p for folder in ('src', 'configs', 'tests', 'requirements', 'scripts') for p in (root / folder).rglob('*')
-             if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc']
+             if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc'
+             # Installation metadata varies across machines; it is not source code.
+             and not any(part.endswith('.egg-info') for part in p.relative_to(root).parts[:-1])]
     files += [root / 'pyproject.toml', root / 'AGENTS.md', root / 'flake.nix', root / 'flake.lock']
     hashes = {str(p.relative_to(root)): file_hash(p) for p in sorted(files) if p.is_file()}
     def git(*args):

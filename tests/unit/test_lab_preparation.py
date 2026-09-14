@@ -74,3 +74,19 @@ def test_nix_and_launchers_participate_in_source_identity(tmp_path):
     second=source_identity(tmp_path)['sha256'];assert second!=first
     (tmp_path/'scripts').mkdir();(tmp_path/'scripts/run.py').write_text('x=1')
     assert source_identity(tmp_path)['sha256']!=second
+
+
+def test_installation_metadata_does_not_change_source_identity(tmp_path):
+    src=tmp_path/'src';src.mkdir()
+    code=src/'model.py';code.write_text('value = 1\n')
+    baseline=source_identity(tmp_path)
+    metadata=src/'package.egg-info';(metadata/'nested').mkdir(parents=True)
+    (metadata/'PKG-INFO').write_text('machine-specific metadata')
+    (metadata/'nested/SOURCES.txt').write_text('local paths')
+    assert source_identity(tmp_path)['files']==baseline['files']
+    assert source_identity(tmp_path)['sha256']==baseline['sha256']
+    (metadata/'PKG-INFO').write_text('regenerated metadata')
+    (metadata/'nested/SOURCES.txt').unlink()
+    assert source_identity(tmp_path)['sha256']==baseline['sha256']
+    code.write_text('value = 2\n')
+    assert source_identity(tmp_path)['sha256']!=baseline['sha256']
