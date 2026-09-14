@@ -1,12 +1,22 @@
 # Estado do SDD — S02
 
+Smoke remoto D050 conferido: `gpu-smoke-003` complete, identidade esperada, quatro
+métodos, treino/seleção 5,782 s e recarga aprovada sem divergência de decisões.
+Evidência: [lab-smoke.json](validation/lab-smoke.json). Próximo passo autorizado
+pelo fluxo vigente: preparação integral e audit no laboratório; trazer os dois
+recibos para revisão antes do dry-run. Sem repetição de doctor/smoke necessária.
+T031 permanece aberta até a matriz científica completa.
+
 ## Diagnóstico D049 — correção local concluída sob D050
 
 D050: exclusão de diretórios `*.egg-info` implementada em `source_identity`.
 Regressão: 66 testes aprovados, 2 opcionais ignorados; metadados de instalação
-não alteram o hash e mudanças de código continuam detectadas. Próximo passo:
-pesquisador fazer commit/push/pull e repetir doctor, preservando o recibo anterior.
-Smoke com ID novo somente após conferência do novo diagnóstico. T031 permanece
+não alteram o hash e mudanças de código continuam detectadas. Doctor remoto D050
+recebido e conferido: PASS, source_sha256
+`3b29d072fd51f2519df364b2ad0b4280b4edb88bb21841130f0ae807b0b96860`
+igual ao esperado; ambos os locks coincidem, nove originais e probes CUDA aprovados.
+Divergência resolvida. Próximo passo: smoke GPU com ID ainda inexistente e revisão
+do novo lab-smoke.json, antes da preparação integral. T031 permanece
 aberta. O histórico abaixo registra o impedimento anterior à autorização D050;
 nenhum recibo foi reescrito.
 
