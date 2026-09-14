@@ -11,6 +11,11 @@ Próxima ação operacional: pesquisador versionar/sincronizar a entrega e confe
 pré-requisitos no laboratório antes da preparação integral. Nenhuma execução integral
 foi realizada nesta entrega; T031 permanece aberta. [Revisão científica](literature-comparability-2026-09-13.md).
 
+D049: implementadas localmente etapas `audit` e `dry-run` no wrapper de laboratório,
+com resumos e identidades vinculados ao recibo da preparação. Regressão local: 65
+testes aprovados e 2 opcionais ignorados. Código novo exige doctor/smoke remotos
+atualizados; não invalida o aceite histórico T030. [Comandos e evidências locais](validation/t031-local-readiness.md).
+
 ## Objetivo científico e protocolo
 
 Comparar fusão RF + H-GCL aos métodos isolados e medir o benefício do pré-treinamento

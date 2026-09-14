@@ -9,7 +9,7 @@ import sys
 
 def main():
     parser=argparse.ArgumentParser()
-    parser.add_argument('stage',choices=['download','doctor','smoke','prepare','matrix','report'])
+    parser.add_argument('stage',choices=['download','doctor','smoke','prepare','audit','dry-run','matrix','report'])
     parser.add_argument('--id',help='New smoke run ID, or matrix ID for execution/restart/report')
     args=parser.parse_args()
     root=Path(__file__).resolve().parents[2]
@@ -45,6 +45,21 @@ def main():
             from hgcl.pipeline import prepare
             result=prepare(config)
             result['status']='PASS'
+        elif args.stage=='audit':
+            require('doctor');require('smoke');prepared=require('prepare')
+            from hgcl.lab_audit import audit
+            result=audit(config,Path(prepared['prepared']))
+            if any(result[key]!=prepared[key] for key in ('preparation_hash','payload_hash')):
+                raise ValueError('Audit differs from preparation receipt')
+        elif args.stage=='dry-run':
+            require('doctor');require('smoke');prepared=require('prepare');audited=require('audit')
+            if any(audited[key]!=prepared[key] for key in ('preparation_hash','payload_hash')):
+                raise ValueError('Audit differs from preparation receipt')
+            from hgcl.matrix import dry_run
+            result=dry_run(config,Path(prepared['prepared']))
+            if any(result['preparation'][key]!=prepared[key] for key in ('preparation_hash','payload_hash')):
+                raise ValueError('Dry-run differs from preparation receipt')
+            result['researcher_acceptance']='pending'
         elif args.stage=='matrix':
             require('doctor');require('smoke');prepared=require('prepare')
             if not args.id:raise ValueError('Matrix requires --id')
@@ -57,7 +72,7 @@ def main():
         result['source_sha256']=source_identity(root)['sha256']
         atomic_json(output,result)
         print(json.dumps(result,indent=2,allow_nan=False))
-        return 0 if result.get('status') in ('PASS','complete') else 4
+        return 0 if result.get('status') in ('PASS','complete') or (args.stage=='dry-run' and result.get('status')=='planned') else 4
     except Exception as exc:
         atomic_json(output,{'status':'FAIL','stage':args.stage,'error':str(exc)})
         print(f'Parada: {exc}\nDiagnóstico: {output}\nTraga este resultado antes de continuar.',file=sys.stderr)

@@ -4,6 +4,10 @@ Data: 2026-09-14. Formalização sob D048. Estado: roteiro preparado; nenhuma et
 integral executada nesta entrega. Operador: pesquisador no laboratório NixOS/CUDA.
 Este documento rege a execução da T031 sem modificar as escolhas científicas.
 
+Entrega local D049: wrapper com etapas separadas `audit` e `dry-run`, verificadas
+por testes CPU. A alteração da identidade de código exige repetir doctor/smoke no
+laboratório antes da preparação. [Entrega e comandos](../../docs/validation/t031-local-readiness.md).
+
 ## Escopo e pontos de revisão
 
 Matriz: 80 avaliações principais + 20 nativas; quatro métodos, seeds 11/23/37/53/71,
@@ -19,7 +23,7 @@ Treino 1–28; validação 29–34; teste 35–49. Não retreinar em treino + va
    do pesquisador antes de iniciar treinamento.
 4. Executar/repor a matriz compatível e gerar relatório portátil; verificar completude.
 
-Estes são pontos de revisão operacionais, não etapas automatizadas pelo wrapper.
+O wrapper automatiza a coleta da auditoria e do dry-run, mas não o aceite humano.
 O comando `scripts/lab/run.py matrix` começa treinamento após seu dry-run interno:
 **não usá-lo para apenas inspecionar o plano**. Nenhum prazo transcorrido vale como aceite.
 
@@ -66,7 +70,18 @@ Somente após os pré-requisitos, executar no laboratório:
 Exigir código de saída zero e `artifacts/environment/lab-prepare.json` com PASS.
 O recibo fornece `prepared`, `preparation_hash`, `payload_hash`, `attempt`,
 `elapsed_seconds`, `peak_rss_gib` e `source_sha256`. Preservar tentativa e logs.
-Copiar o valor exato de `prepared` para a variável abaixo (substituir o exemplo):
+Executar a auditoria compacta, que resolve `prepared` pelo recibo, faz a validação
+completa e salva `artifacts/environment/lab-audit.json`:
+
+```bash
+.venv-lab/bin/python scripts/lab/run.py audit
+```
+
+Esperado: PASS e `validation.budgets_verified=20`. O recibo inclui snapshots,
+máximos, ausências, contagens de orçamentos, recorrência sem IDs, espaço e hashes.
+PASS não significa aceite do pesquisador. A validação direta abaixo permanece
+disponível como alternativa diagnóstica; não precisa ser repetida após audit PASS.
+Copiar o valor exato de `prepared` para a variável (substituir o exemplo):
 
 ```bash
 HGCL_PREPARED='/caminho/exato/retornado/no/recibo'
@@ -92,15 +107,24 @@ Apresentar auditoria compacta, sem listas integrais de endereços:
 | Recibo e sistema | Tempo de preparação, pico RSS, tamanho dos derivados e espaço restante; não confundir com custo de treinamento |
 
 `validate` reconstrói e compara máscaras/orçamentos/recorrência e confere dimensões,
-IDs, índices e reversas. Ele não produz sozinho todas as tabelas desta auditoria;
-o agente consolida os artefatos retornados pelo operador, sem nova decisão científica.
+IDs, índices e reversas. `audit` reúne os resumos para revisão; o agente consolida
+o recibo de preparação e o de auditoria, incluindo os limites dos preprocessadores,
+sem nova decisão científica. Recorrência inclui desconhecidos e não é suporte de avaliação.
 Não enviar CSVs originais ou grandes listas de IDs ao chat: apresentar resumos/JSONs.
 Ponto de revisão 1: apresentar recibo, validação e auditoria; resolver qualquer
 divergência antes de avançar. Não inflar orçamentos com classes insuficientes.
 
 ## 3. Dry-run explícito e aceite para treinar
 
-Com a mesma variável `HGCL_PREPARED` e a auditoria aceita:
+Com a auditoria aceita, usar a etapa dedicada (recibo `lab-dry-run.json`):
+
+```bash
+.venv-lab/bin/python scripts/lab/run.py dry-run
+```
+
+Ela exige recibos doctor/smoke/prepare/audit compatíveis e não inicia a matriz.
+O aceite permanece `pending` até a revisão humana. Alternativamente, a CLI direta
+com a mesma variável `HGCL_PREPARED` permite o diagnóstico abaixo:
 
 ```bash
 .venv-lab/bin/python -m hgcl.cli matrix --config configs/lab.yaml --prepared "$HGCL_PREPARED" --matrix-id s02-001 --dry-run --json > artifacts/environment/t031-dry-run.json

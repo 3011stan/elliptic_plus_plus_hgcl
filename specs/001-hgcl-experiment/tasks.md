@@ -256,3 +256,8 @@ Roteiro: ../../docs/laboratorio-nixos.md.
 XGBoost e DGI estão em [deferred-extensions.md](deferred-extensions.md).
 Não são tasks ativas nem dependências de T031–T033. As 100 avaliações permanecem
 como critério de completude. Protocolo T031 entregue; execução integral pendente.
+
+D049: apoio local `scripts/lab/run.py audit`/`dry-run` implementado; validação
+completa precede o resumo e os recibos conferem identidade dos preparados.
+65 testes CPU aprovados, 2 opcionais ignorados. T031 segue aberta até execução
+remota e completude científica; ver ../../docs/validation/t031-local-readiness.md.

@@ -130,3 +130,11 @@ continua em revisão. Estado atual: [status.md](status.md); execução: [tasks.m
   treinamento exige revisão e aceite do dry-run concreto. Nenhuma validação remota
   ou execução integral é declarada nesta entrega. Não ajustar métodos pelo teste
   já observado; distinguir investigações posteriores exploratórias.
+
+- D049 — Pesquisador autorizou executar o próximo passo local e reafirmou o fluxo:
+  agente edita/verifica na máquina local; pesquisador faz commit/push e pull/execução
+  no laboratório. Implementadas etapas de auditoria e dry-run separadas no wrapper,
+  sem alterar matriz, modelos ou dependências. Aceite humano continua obrigatório
+  antes do treinamento. AGENTS.md atualizado para refletir esse escopo; identidade
+  nova requer doctor e smoke no laboratório. Entrega e limitações em
+  [t031-local-readiness.md](validation/t031-local-readiness.md).

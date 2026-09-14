@@ -19,9 +19,11 @@ Registre o ponto de parada para permitir retomada após a resposta do pesquisado
 
 ## Escopo e rastreabilidade
 
-- Escopo autorizado nesta etapa: preparação local da T030 para NixOS/Mac,
-  download verificado dos dados e roteiro operacional. Validação CUDA/NixOS real
-  depende dos comandos executados pelo pesquisador no laboratório; não iniciar T031.
+- Escopo autorizado nesta etapa (D049): implementar e verificar localmente o apoio
+  operacional à T031, preservando a matriz de 100 avaliações. O pesquisador faz
+  commit/push, atualiza o clone e executa os comandos no laboratório. Validação
+  CUDA/NixOS e preparação integral dependem das evidências do operador; treinamento
+  da matriz somente após revisão e aceite explícito do dry-run com dados preparados.
 - Preserve as decisões científicas aceitas e os CSVs originais.
 - Estado operacional em docs/status.md; decisões em docs/decisions.md.
 - Verifique tarefas antes de marcar conclusão. O contexto atual do usuário determina

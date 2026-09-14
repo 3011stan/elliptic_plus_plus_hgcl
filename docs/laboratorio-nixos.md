@@ -146,8 +146,22 @@ não devem ser executados em sequência sem os pontos de revisão do protocolo.
 Isso prepara os 49 passos e o complemento nativo. Se os dados não atenderem aos
 contratos, pare e traga o diagnóstico. Preparação integral ainda não foi executada.
 Após preparar, executar a validação completa e apresentar a auditoria ao pesquisador.
-Depois executar o **dry-run explícito com --prepared**, conforme protocolo, e obter
-aceite antes de treinar. O wrapper `matrix` inicia treinamento e não serve como
+O wrapper agora oferece a coleta compacta, sem treinamento:
+
+```bash
+.venv-lab/bin/python scripts/lab/run.py audit
+```
+
+Trazer `artifacts/environment/lab-prepare.json` e `lab-audit.json` para revisão.
+Após aceite da auditoria:
+
+```bash
+.venv-lab/bin/python scripts/lab/run.py dry-run
+```
+
+Trazer `artifacts/environment/lab-dry-run.json` para o aceite do treinamento.
+O protocolo também documenta a alternativa pela CLI com `--prepared`.
+O wrapper `matrix` inicia treinamento e não serve como
 comando isolado de dry-run. Somente após esse aceite, dentro de sessão persistente:
 
 ```bash

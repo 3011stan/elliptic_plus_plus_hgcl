@@ -26,3 +26,17 @@ No default overwrites, uploads, lab access or post-test refitting.
 For matrix --dry-run, --prepared and --matrix-id are optional. Omitting --prepared
 enumerates the design only; the output explicitly says data_integrity_checked=false.
 Actual matrix execution requires both arguments and a validated laboratory lock.
+
+## Laboratory operator wrapper — D049
+
+`scripts/lab/run.py audit` resolves the prepared path from `lab-prepare.json`,
+requires current doctor/smoke/prepare receipts, performs full semantic validation
+and writes compact `lab-audit.json`. It omits address selections and computes no
+test metrics. `PASS` is validation status, not researcher acceptance.
+
+`scripts/lab/run.py dry-run` additionally requires a compatible audit receipt,
+checks preparation/payload identities and writes `lab-dry-run.json`. It returns
+zero for `planned` without executing any matrix group. Both stages leave human
+acceptance pending. Matrix invocation remains a separate, explicitly authorized
+operator action under `../t031-execution-protocol.md`. Existing direct CLI remains
+available; no models, label budgets, dependencies or scientific settings changed.
