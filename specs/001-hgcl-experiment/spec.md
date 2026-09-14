@@ -477,3 +477,11 @@ IDs are opaque mapping keys, not learned identity vectors. The existing unseen-t
 stratum evaluates this capability within Elliptic++; generalization to external data
 remains unmeasured. Unknown labels do not prevent inference. Global labels do not locate
 the prediction relative to crime onset. This clarifies D015/D028 without changing scope.
+
+### Session 2026-09-14 — primeira rodada e trabalho futuro
+
+D048: manter 80 avaliações principais + 20 nativas. Documentar XGBoost e DGI como
+[extensões adiadas](deferred-extensions.md), a retomar após as rodadas atuais e
+avaliação com os orientadores. Nenhuma extensão passa a ser requisito ou condição
+de conclusão desta rodada. Formalizar [protocolo operacional T031](t031-execution-protocol.md),
+preservando decisões científicas e aceite do dry-run antes do treinamento.

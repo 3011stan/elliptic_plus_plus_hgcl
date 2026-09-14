@@ -1,6 +1,15 @@
 # Estado do SDD — S02
 
-Atualizado: 2026-09-11. **T001–T030 concluídas. Ambiente NixOS/CUDA e smoke GPU aprovados; preparação integral T031 é o próximo passo.**
+Atualizado: 2026-09-14. **T001–T030 concluídas. Matriz de 100 avaliações mantida; protocolo operacional T031 preparado.**
+
+D048: XGBoost e DGI foram [adiados para após a primeira rodada](../specs/001-hgcl-experiment/deferred-extensions.md),
+sem dependência ou critério de aceite adicional para T031–T033.
+[Protocolo T031](../specs/001-hgcl-experiment/t031-execution-protocol.md) formalizado:
+congelamento, preparação/validação no laboratório, auditoria, dry-run explícito,
+aceite antes do treinamento, retomada e relatório portátil.
+Próxima ação operacional: pesquisador versionar/sincronizar a entrega e conferir
+pré-requisitos no laboratório antes da preparação integral. Nenhuma execução integral
+foi realizada nesta entrega; T031 permanece aberta. [Revisão científica](literature-comparability-2026-09-13.md).
 
 ## Objetivo científico e protocolo
 

@@ -132,7 +132,12 @@ e média por método e continua exigindo zero mudanças nas decisões produzidas
 limiar congelado. O arquivo `reload-verification.json` retém o diagnóstico completo.
 Preserve `gpu-smoke-001` como evidência da tentativa anterior; não reutilize o ID.
 
-## 6. Somente após aceite da T030: preparação integral e matriz
+## 6. T031: preparação, revisão e matriz
+
+Seguir o [protocolo T031](../specs/001-hgcl-experiment/t031-execution-protocol.md)
+para congelamento, auditoria, dry-run e completude. XGBoost/DGI foram adiados;
+a rodada permanece com 100 avaliações. Os comandos abaixo são referências e
+não devem ser executados em sequência sem os pontos de revisão do protocolo.
 
 ```bash
 .venv-lab/bin/python scripts/lab/run.py prepare
@@ -140,7 +145,10 @@ Preserve `gpu-smoke-001` como evidência da tentativa anterior; não reutilize o
 
 Isso prepara os 49 passos e o complemento nativo. Se os dados não atenderem aos
 contratos, pare e traga o diagnóstico. Preparação integral ainda não foi executada.
-Depois, para T031, dentro de uma sessão persistente:
+Após preparar, executar a validação completa e apresentar a auditoria ao pesquisador.
+Depois executar o **dry-run explícito com --prepared**, conforme protocolo, e obter
+aceite antes de treinar. O wrapper `matrix` inicia treinamento e não serve como
+comando isolado de dry-run. Somente após esse aceite, dentro de sessão persistente:
 
 ```bash
 tmux new -s hgcl
@@ -161,7 +169,9 @@ janela antes de executar Python.
 .venv-lab/bin/python scripts/lab/run.py report --id s02-001
 ```
 
-Relatórios ficam em artifacts/matrices/s02-001/report.json e report.md. Artefatos de
+Relatórios ficam em artifacts/matrices/s02-001/report.json e report.md. O agente deve
+consolidar os resultados reais em `docs/validation/experiment.md`, conforme o protocolo;
+esse resumo não é criado pelo wrapper. Artefatos de
 execução são ignorados pelo Git: mantenha cópia dos checkpoints/resultados. Nenhum
 script faz push ou upload. Cada etapa grava recibo em artifacts/environment/lab-*.json;
 um erro deixa status FAIL e não aciona automaticamente a etapa seguinte.

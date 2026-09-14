@@ -16,6 +16,15 @@ Normative inputs: [input-contract.md](input-contract.md); scientific policy:
 [training-design.md](training-design.md); interfaces: [CLI](contracts/cli.md),
 [configuration](contracts/run-config.md), [data model](data-model.md).
 
+## Primeira rodada e extensões adiadas — D048
+
+Em 2026-09-14, mantida a matriz de 100 avaliações para produzir resultados aos
+orientadores. [XGBoost e DGI](deferred-extensions.md) ficam para discussão após
+esta rodada; não ampliam o aceite nem as dependências das tarefas atuais.
+Execução: [protocolo T031](t031-execution-protocol.md), com revisão da auditoria
+e aceite explícito do dry-run antes do treinamento. Protocolo documentado não
+significa preparação ou treinamento integral executados.
+
 ## Technical Context
 
 - Language: Python 3.11 in `.venv`, leaving installed Python 3.14.6 unchanged.

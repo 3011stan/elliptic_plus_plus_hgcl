@@ -111,3 +111,22 @@ continua em revisão. Estado atual: [status.md](status.md); execução: [tasks.m
   NeighborLoader/backward, locks versionados e quatro métodos aprovados. Treino +
   seleção levou 5,820 s; avaliação 0,188 s; diferença máxima entre inferências
   5,96e-8 e zero decisões divergentes. T031 permanece como próximo estágio.
+
+- D047 — Em 2026-09-13, pesquisador autorizou a revisão focada de comparabilidade
+  e seu registro documental após avaliação crítica do retorno do NotebookLM.
+  Entrega: [revisão](literature-comparability-2026-09-13.md). A contribuição permanece
+  hipótese empírica; não incorporar garantias de ineditismo, superioridade ou evasão.
+  As extensões XGBoost/DGI são recomendações pendentes de decisão, não escolhas
+  científicas aceitas. Matriz de 100 avaliações, dependências e código preservados;
+  preparação integral e execução T031 não autorizadas por esta revisão.
+
+- D048 — Em 2026-09-14, pesquisador priorizou resultados para os orientadores e
+  autorizou persistir o adiamento de XGBoost/DGI e formalizar o próximo passo
+  operacional. Matriz vigente preservada em 100 avaliações; extensões voltam à
+  discussão após as rodadas, sem bloquear T031–T033. Planejamento:
+  [extensões adiadas](../specs/001-hgcl-experiment/deferred-extensions.md).
+  Entrega: [protocolo T031](../specs/001-hgcl-experiment/t031-execution-protocol.md).
+  Preparação integral depende do operador no laboratório e dos pré-requisitos;
+  treinamento exige revisão e aceite do dry-run concreto. Nenhuma validação remota
+  ou execução integral é declarada nesta entrega. Não ajustar métodos pelo teste
+  já observado; distinguir investigações posteriores exploratórias.

@@ -67,7 +67,7 @@ freeze enforcement, complete or explicitly incomplete five-seed/recurrence repor
 - [X] T028 [US3] Expose compatible `resume` and matrix restart in `src/hgcl/cli.py` using `src/hgcl/training/checkpoint.py`; reject scientific/source/data changes and already evaluated refits; retain attempt history. Depends T027. (FR-012, FR-019, SC-007)
 - [X] T029 [US3] Implement overall/seen/unseen support, prior-label exposure, paired RQ1/RQ2 differences and five-seed mean/sample SD reports in `src/hgcl/evaluation/reporting.py`; label native temporal limitations and incomplete groups; allow non-improvement. Depends T028. (FR-004, FR-013, FR-016, FR-020, FR-024, SC-004, SC-005)
 - [X] T030 [US3] Implement `doctor` in `src/hgcl/environment.py`, then run it on the lab machine when accessible; verify CUDA/sampler/backward, memory/free space and data hashes, generate, install and validate the complete transitive/hash lock `requirements/lab-cuda.lock` and record `docs/validation/lab-preflight.md`. CPU doctor's basic checks are implemented in T002; CUDA acceptance depends on real hardware. Depends T029. (FR-018, SC-001)
-- [ ] T031 [US3] Run matrix dry-run and then the laboratory experiment via `configs/lab.yaml`, retaining `artifacts/matrices/s02-001/` and a portable summary in `docs/validation/experiment.md`; do not mark complete for dry-run alone or without all required results. Depends T030. (FR-012, FR-013, FR-016, FR-019, FR-020, SC-004, SC-005)
+- [ ] T031 [US3] Follow [t031-execution-protocol.md](t031-execution-protocol.md): freeze provenance, prepare/validate all 49 steps, review the audit, run explicit prepared-data dry-run, obtain researcher acceptance before training, then run the laboratory experiment via `configs/lab.yaml`, retaining `artifacts/matrices/s02-001/` and a portable summary in `docs/validation/experiment.md`; do not mark complete for dry-run alone or without all required results. Depends T030. (FR-012, FR-013, FR-016, FR-019, FR-020, SC-004, SC-005)
 
 ## Phase 6 — Handoff and cross-cutting verification
 
@@ -250,3 +250,9 @@ perfil smoke-gpu implementados. O pesquisador gera flake.lock e lab-cuda.lock
 no NixOS e devolve os diagnósticos. Nenhum desses locks é declarado gerado ou
 validado no Mac. T030 permanece aberta até aceite real; T031 não foi iniciada.
 Roteiro: ../../docs/laboratorio-nixos.md.
+
+## D048 — primeira rodada preservada (2026-09-14)
+
+XGBoost e DGI estão em [deferred-extensions.md](deferred-extensions.md).
+Não são tasks ativas nem dependências de T031–T033. As 100 avaliações permanecem
+como critério de completude. Protocolo T031 entregue; execução integral pendente.

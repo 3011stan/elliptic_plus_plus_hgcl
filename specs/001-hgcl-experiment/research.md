@@ -130,6 +130,11 @@ remains an engineering acceptance criterion with preparation measured separately
 
 ## Sources
 
+Revisão focada posterior (2026-09-13):
+[comparabilidade, limites de novidade e candidatos a baseline](../../docs/literature-comparability-2026-09-13.md).
+Inclui HeteroGCL, LaundroGraph e trabalhos de 2026 com distinção de alvo e protocolo.
+As propostas dessa nota não alteram o desenho aceito nem a matriz de 100 avaliações.
+
 - **S4 — empirical analysis**: [s02-2026-inv001-temporal-audit](</Users/stan/Projects/stan-os/10-projects/Masters Degree/01-evidence/sources/s02-2026-inv001-temporal-audit.md>),
   BibTeX `s02inv001temporalaudit2026`; [evidence](../../docs/data/inv-001/README.md).
 
