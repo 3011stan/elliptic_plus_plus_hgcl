@@ -1,5 +1,28 @@
 # Estado do SDD — S02
 
+## Aceite do dry-run registrado
+
+Em 2026-09-14, o pesquisador aceitou iniciar a matriz `s02-001` com base no
+dry-run remoto: `status=planned`, `data_integrity_checked=true`,
+`training_performed=false`, 100 avaliações, 10 caches SSL e 150 configurações
+candidatas. Identidades aceitas: source
+`3b29d072fd51f2519df364b2ad0b4280b4edb88bb21841130f0ae807b0b96860`, preparation
+`aa547c131b4c2a2ff376b9e2ca4bd19d8badccccea186f8196d276a9f027cc5b` e payload
+`9c771e2d0cb27099508df4540a7ae886d99cfa4bca76bf1a42342259da149225`.
+Próximo passo autorizado: executar a matriz serial no laboratório. T031 permanece
+aberta até a completude das 100 avaliações e a geração do relatório.
+
+## Preparação integral e auditoria remotas conferidas
+
+Recibos/resumo enviados pelo pesquisador: prepare PASS em 47,800 s, pico RSS
+6,075 GiB; audit/validation PASS, 1.279 arquivos e 20 orçamentos verificados,
+49 passos por regime, 112.879.108.096 bytes livres em disco.
+Source: `3b29d072fd51f2519df364b2ad0b4280b4edb88bb21841130f0ae807b0b96860`.
+Preparation: `aa547c131b4c2a2ff376b9e2ca4bd19d8badccccea186f8196d276a9f027cc5b`.
+Payload: `9c771e2d0cb27099508df4540a7ae886d99cfa4bca76bf1a42342259da149225`.
+Identidades concordantes. O dry-run foi posteriormente executado e aceito; a
+matriz ainda não foi iniciada. T031 permanece aberta.
+
 Smoke remoto D050 conferido: `gpu-smoke-003` complete, identidade esperada, quatro
 métodos, treino/seleção 5,782 s e recarga aprovada sem divergência de decisões.
 Evidência: [lab-smoke.json](validation/lab-smoke.json). Próximo passo autorizado

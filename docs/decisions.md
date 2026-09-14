@@ -146,3 +146,13 @@ continua em revisão. Estado atual: [status.md](status.md); execução: [tasks.m
   protocolo. Regressão: 66 aprovados, 2 opcionais ignorados. A mudança no código
   gera nova identidade; pesquisador versiona/sincroniza e repete doctor antes do
   smoke. Recibos e checkpoints históricos preservados, sem migração de hashes.
+
+- D051 — Em 2026-09-14, pesquisador aceitou o dry-run remoto e autorizou iniciar a
+  matriz `s02-001`. O recibo confirmou `status=planned`, integridade dos dados,
+  nenhum treinamento realizado, 100 avaliações, 10 caches SSL e 150 configurações
+  candidatas. Source, preparation e payload aceitos são, respectivamente,
+  `3b29d072fd51f2519df364b2ad0b4280b4edb88bb21841130f0ae807b0b96860`,
+  `aa547c131b4c2a2ff376b9e2ca4bd19d8badccccea186f8196d276a9f027cc5b` e
+  `9c771e2d0cb27099508df4540a7ae886d99cfa4bca76bf1a42342259da149225`.
+  O aceite autoriza somente a execução compatível da matriz; T031 continua aberta
+  até as 100 avaliações e o relatório final.
