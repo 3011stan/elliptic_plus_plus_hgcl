@@ -1,0 +1,127 @@
+{
+  "native_wallet-11-100": {
+    "metrics_hash": "3bf627d3cd72dee05233689d35bfe1dc11563b42bd263b2db7ee438e21aec5f0",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-native_wallet-11-100",
+    "state": "complete"
+  },
+  "native_wallet-23-100": {
+    "metrics_hash": "6631755a2d1cbb3b72fba57cd27387bba6d315d3a4bb1c4c7f2e5593f18dc877",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-native_wallet-23-100",
+    "state": "complete"
+  },
+  "native_wallet-37-100": {
+    "metrics_hash": "10e9d27823be4a4506d40b92d9fff354a0412577bd6f9147835d236e6f4e8b12",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-native_wallet-37-100",
+    "state": "complete"
+  },
+  "native_wallet-53-100": {
+    "metrics_hash": "fbf35a09965a32fc81f6d06431012dc6ce18acfe923dab0b6fd6270029f5001e",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-native_wallet-53-100",
+    "state": "complete"
+  },
+  "native_wallet-71-100": {
+    "metrics_hash": "5d0da02ccb0b785649a08bb9a99ef5bf35c863138b5b1e8a72b38eb326d1f879",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-native_wallet-71-100",
+    "state": "complete"
+  },
+  "principal-11-001": {
+    "metrics_hash": "a7cd553b588313c47e328bf6e08fb0b429e3311d68ceedb09ed6deabfd771d90",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-11-001",
+    "state": "complete"
+  },
+  "principal-11-005": {
+    "metrics_hash": "e8cf7eb73f15ff8de450bdcaa164c7b5e2569bc5d67a72bb661a869e1739ccee",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-11-005",
+    "state": "complete"
+  },
+  "principal-11-010": {
+    "metrics_hash": "2bf25a35023805aaa5cc632b8c3e9217d2399e274fe7153b2a94db4cd72863b9",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-11-010",
+    "state": "complete"
+  },
+  "principal-11-100": {
+    "metrics_hash": "683985ee433c9dd79e47218c959ac2984f33269138eb1084027072c615e44627",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-11-100",
+    "state": "complete"
+  },
+  "principal-23-001": {
+    "metrics_hash": "742fd9a42fd87e520e5114265272068b22fc2ce26d06158ba06993f2f8cfefa1",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-23-001",
+    "state": "complete"
+  },
+  "principal-23-005": {
+    "metrics_hash": "93282da894d61fbbe7574172b999236465c2f502b9e8da2b09743767463b973c",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-23-005",
+    "state": "complete"
+  },
+  "principal-23-010": {
+    "metrics_hash": "3b5c3d94322f7fb47f9186fc45c0f3df07440f415bf521d41867ffd8768052ca",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-23-010",
+    "state": "complete"
+  },
+  "principal-23-100": {
+    "metrics_hash": "b8758ef6049c2872bb10180cb3665d0c9a7dd030f6982a4722cdf407a738fc44",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-23-100",
+    "state": "complete"
+  },
+  "principal-37-001": {
+    "metrics_hash": "6f7063e099b21024ba26fd5493a0c32842c87169bcca9edf9052e52c10b8b91b",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-37-001",
+    "state": "complete"
+  },
+  "principal-37-005": {
+    "metrics_hash": "16f1717a139c45dd9b824245670df2888bb46c24d2390636022b15c552bb4d1d",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-37-005",
+    "state": "complete"
+  },
+  "principal-37-010": {
+    "metrics_hash": "3bce60ffac7e4adf8f3e210f6bb131aae5563241ba56f2164fb1b06380128834",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-37-010",
+    "state": "complete"
+  },
+  "principal-37-100": {
+    "metrics_hash": "b33f49a03bde562f6bc2139a7bcf86c35d55e00936ccf09377bbd11fe8aaa2cf",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-37-100",
+    "state": "complete"
+  },
+  "principal-53-001": {
+    "metrics_hash": "7121a6aae723c4220b2c0ef2a6571fc0739a84fd5efddfa98b2b678eddb31786",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-53-001",
+    "state": "complete"
+  },
+  "principal-53-005": {
+    "metrics_hash": "66df4517bc37ca7129aea5f937e3362da5432fd87015f121e80c0125f96ea2c7",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-53-005",
+    "state": "complete"
+  },
+  "principal-53-010": {
+    "metrics_hash": "59447c7fa1791af2f1ed3c309f4a9017edf241ec581db5c4f733a3d35fbed627",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-53-010",
+    "state": "complete"
+  },
+  "principal-53-100": {
+    "metrics_hash": "827b7c939c56915fb8849e5a134c314acda8678dea23ab8bbb7ceaaa675ffca4",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-53-100",
+    "state": "complete"
+  },
+  "principal-71-001": {
+    "metrics_hash": "f2734b8e5bb0063c7236c72d3470a5f3566c963d3cb84aca075a2681c4045e61",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-71-001",
+    "state": "complete"
+  },
+  "principal-71-005": {
+    "metrics_hash": "f031977a144c344c1287da4701aa40b67e827730aa8095fa22147516f3abf305",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-71-005",
+    "state": "complete"
+  },
+  "principal-71-010": {
+    "metrics_hash": "9c58e5050898b23268d919d4f3ff13f21843267615c56276123158d9296d6cbb",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-71-010",
+    "state": "complete"
+  },
+  "principal-71-100": {
+    "metrics_hash": "d47509f6689d0b62d930fbc4cbee0a71736ccf3655cf506aebfc2eb36337085b",
+    "run": "/home/stanrley_barbosa/elliptic_plus_plus_hgcl/artifacts/runs/s02-001-principal-71-100",
+    "state": "complete"
+  }
+}
