@@ -1,13 +1,13 @@
 <!--
 Sync Impact Report
-Version: empty scaffold -> 0.1.0 (initial working draft)
-Principles added: collaborative specification; temporal integrity; original-data provenance;
-bounded validation and reproducibility; fair experimental comparison.
-Sections added: environments and data; specification workflow; governance.
+Version: 0.1.0 -> 0.2.0
+Modified principles: V. Comparação experimental justa (removed S02-only branch/fusion wording).
+Principles added: VI. Isolamento entre estudos.
+Sections added: none.
 Sections removed: none. Managed templates were not modified.
 Deferred: TODO(RATIFICATION_DATE) — researcher has not ratified this working draft.
 -->
-# H-GCL Elliptic++ Constitution
+# Elliptic++ Experimental Studies Constitution
 
 ## Core Principles
 
@@ -46,10 +46,19 @@ DEVEM ser registrados; eventual não determinismo DEVE ser descrito.
 
 ### V. Comparação experimental justa
 
-Os ramos isolados e a fusão DEVEM ser avaliados nas mesmas unidades e partições, sob o
-mesmo orçamento de rótulos aplicável. Métricas, seleção de limiar e critérios de comparação
-DEVEM ser definidos antes de avaliar o teste final. O estudo DEVE admitir um resultado sem
-melhoria: completar o software não implica confirmar a hipótese científica.
+Modelos, baselines e ablações comparáveis DEVEM usar as mesmas unidades, partições,
+sementes e orçamentos de rótulos. Métricas, seleção de limiar e critérios de comparação
+DEVEM ser definidos antes de avaliar o teste final. Cada estudo DEVE admitir um resultado
+sem melhoria: completar o software não implica confirmar a hipótese científica.
+
+### VI. Isolamento entre estudos
+
+Cada estudo DEVE possuir identificador, contexto canônico, configuração, namespace de
+código, testes e diretório de artefatos próprios. Artefatos de um estudo encerrado DEVEM
+permanecer imutáveis em sua tag de fechamento. Reutilização de código histórico DEVE ser
+explícita, testada e registrada; nomes científicos, protocolos e configurações NÃO DEVEM
+ser herdados implicitamente entre estudos. Agentes DEVEM carregar por padrão somente o
+contexto do estudo ativo e os arquivos diretamente necessários à tarefa corrente.
 
 ## Environments and Data
 
@@ -77,11 +86,11 @@ deste rascunho. Não contornar impedimentos nem alterar o protocolo silenciosame
 
 ## Governance
 
-Esta versão 0.1.0 é um rascunho de trabalho derivado do pedido e da proposta inicial, com
+Esta versão 0.2.0 é um rascunho de trabalho derivado das decisões dos estudos, com
 ratificação ainda pendente. Alterações DEVEM registrar motivo e impacto nas especificações.
 Mudanças incompatíveis de princípios incrementam a versão principal; novos princípios
 incrementam a secundária; esclarecimentos incrementam a correção. Planos e análises DEVEM
 consultar a versão vigente. Instruções explícitas do pesquisador têm precedência sobre
 este rascunho; decisões científicas ainda abertas não se tornam aprovadas por silêncio.
 
-**Version**: 0.1.0 | **Ratified**: TODO(RATIFICATION_DATE): pending researcher review | **Last Amended**: 2026-09-05
+**Version**: 0.2.0 | **Ratified**: TODO(RATIFICATION_DATE): pending researcher review | **Last Amended**: 2026-09-26

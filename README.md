@@ -1,9 +1,25 @@
-# H-GCL Elliptic++ — S02
+# Estudos de Aprendizado em Grafos no Elliptic++
 
-Projeto técnico do estudo S02 do mestrado: especificação colaborativa de um experimento
-com representações de grafo, ramo tabular e fusão tardia no Elliptic++.
+Repositório dos estudos experimentais do mestrado sobre detecção de transações e atores
+ilícitos no Elliptic++. O estudo ativo é o **S003-TxGCL**, dedicado à classificação de
+transações em um grafo homogêneo `Tx→Tx`.
 
-## Estado
+## Estudo ativo — S003
+
+- [Contexto mínimo](docs/studies/s003/context.md)
+- [Decisões](docs/studies/s003/decisions.md)
+- [Status](docs/studies/s003/status.md)
+- [Proposta científica](docs/reference/s003/proposta-003.md)
+
+O SDD será criado em `specs/003-transaction-gcl/`. Novos configs, código, testes e
+artefatos pertencem respectivamente a `configs/s003/`, `src/hgcl/studies/s003/`,
+`tests/s003/` e `artifacts/s003/`.
+
+O CLI `hgcl`, os configs na raiz de `configs/` e a feature
+`specs/001-hgcl-experiment/` ainda representam a implementação histórica do S02 e não
+devem ser reutilizados implicitamente pelo S003.
+
+## Estudo histórico — S02
 
 T001–T029 concluídas e verificadas no Mac. Smoke original adicional aprovado em
 2,23 segundos de treinamento + seleção; regressão com 55 testes aprovados.
@@ -56,9 +72,9 @@ Essa ferramenta lê todos os CSVs, calcula hashes e confere chaves e referência
 um treino nem uma validação completa de valores numéricos. A inspeção inicial versionada
 está em `docs/data/`; novas execuções podem ser gravadas em `artifacts/`.
 
-## Fluxo de especificação
+## Fluxo histórico de especificação do S02
 
-A feature ativa é `specs/001-hgcl-experiment`. Os skills do Spec Kit estão em
+A feature histórica é `specs/001-hgcl-experiment`. Os skills do Spec Kit estão em
 `.agents/skills/`. RQ1 e RQ2 foram aceitas; a unidade endereço–tempo, o alvo global, os
 grafos independentes com encoder compartilhado e as restrições de ajuste foram acordados.
 A investigação temporal INV-001 foi concluída; [evidências e exemplos](docs/data/inv-001/README.md)
