@@ -161,23 +161,115 @@ Após aceite da auditoria:
 
 Trazer `artifacts/environment/lab-dry-run.json` para o aceite do treinamento.
 O protocolo também documenta a alternativa pela CLI com `--prepared`.
-O wrapper `matrix` inicia treinamento e não serve como
-comando isolado de dry-run. Somente após esse aceite, dentro de sessão persistente:
+O wrapper `matrix` inicia treinamento e não serve como comando isolado de dry-run.
+
+### 6.1 Pré-checagem e sessão persistente
+
+Antes de iniciar a matriz, execute os comandos abaixo dentro do clone do laboratório.
+O `tmux` não configura CUDA nem Python; ele somente mantém o processo vivo após a
+desconexão SSH. O ambiente correto é garantido por `nix develop` e pelo interpretador
+explícito `.venv-lab/bin/python`.
 
 ```bash
+nix develop --no-update-lock-file
+test "$HGCL_NIX_SYSTEM" = x86_64-linux
+test -x .venv-lab/bin/python
+.venv-lab/bin/python -c 'import sys; print(sys.executable); print(sys.prefix)'
+nvidia-smi
+```
+
+O primeiro valor deve apontar para `.venv-lab/bin/python` e o segundo para `.venv-lab`.
+Se qualquer teste falhar, não iniciar a matriz. O `python` sem caminho explícito pode
+ser o Python do Nix (`/usr/bin/python`) e não é evidência de que `.venv-lab` está ativo.
+
+Confirme que não há outra execução e crie a sessão persistente antes do treinamento:
+
+```bash
+tmux ls
+ps -fu "$USER" | grep '[r]un.py matrix' || true
 tmux new -s hgcl
+```
+
+Dentro da janela recém-criada, repita a verificação do interpretador se necessário e
+execute o comando abaixo. Esta linha inicia o treinamento científico real da matriz;
+não é um dry-run:
+
+```bash
 .venv-lab/bin/python scripts/lab/run.py matrix --id s02-001
 ```
 
-Use Ctrl+B, depois D para desconectar da sessão sem interromper o processo. Ao
-voltar, entre novamente no ambiente Nix e use `tmux attach -t hgcl`. Não inicie uma
-segunda matriz enquanto a primeira estiver rodando. Se o processo tiver parado,
-primeiro inspecione a falha; o mesmo comando/ID faz a retomada compatível e preserva
-grupos concluídos. Não atualize código ou locks com treinamento em andamento.
+Use Ctrl+B, depois D para desconectar da sessão sem interromper o processo. Não feche
+a janela com `exit` enquanto o treinamento estiver rodando. Ao voltar, entre novamente
+no clone, abra o mesmo ambiente com `nix develop --no-update-lock-file` e use:
+
+```bash
+tmux ls
+tmux attach -t hgcl
+```
+
+### 6.2 Acompanhar o treinamento em execução
+
+Para assistir ao terminal sem enviar comandos acidentalmente ao treinamento:
+
+```bash
+tmux attach -r -t hgcl
+```
+
+Para sair sem interromper: Ctrl+B, depois D. Para consultar o histórico: Ctrl+B,
+depois `[`; navegue com as setas/PageUp e saia com `q`.
+Para ver apenas as últimas 50 linhas, sem anexar:
+
+```bash
+tmux capture-pane -p -t hgcl -S -50
+```
+
+Em outro terminal, na raiz do clone, acompanhar grupos concluídos a cada 10 segundos:
+
+```bash
+watch -n 10 'if test -f artifacts/matrices/s02-001/groups.json; then jq "[.[] | select(.state == \"complete\")] | length" artifacts/matrices/s02-001/groups.json; else echo "0/25 — primeiro grupo ainda sem resultado"; fi'
+```
+
+O número mostrado deve chegar a **25 grupos** (100 avaliações). `groups.json` é
+atualizado ao terminar um grupo ou registrar falha; pode não existir enquanto o
+primeiro grupo treina. Para identificar runs criados e seu estado:
+
+```bash
+find artifacts/runs -maxdepth 2 -path '*/s02-001-*/status.json' -print -exec jq -c '{state,stage,error}' {} \;
+```
+
+Para acompanhar utilização e memória da GPU:
+
+```bash
+nvidia-smi -l 5
+```
+
+Ctrl+C encerra `watch`/`nvidia-smi` no terminal de monitoramento. O console do treino
+mostra etapas como `SSL pretraining`, `Fitting graph_supervised`, `Fitting hgcl` e
+`Fitting Random Forest`; não há barra por época nem previsão de término. Períodos
+sem novas mensagens são esperados. Baixa utilização de GPU durante RF/etapas CPU
+não indica, sozinha, travamento. Não iniciar uma segunda matriz para obter progresso.
+
+### 6.3 Interrupção e relatório
+
+Se a conexão caiu sem `tmux`, primeiro diagnostique, sem relançar:
+
+```bash
+ps -fu "$USER" | grep '[r]un.py matrix' || true
+test -f artifacts/matrices/s02-001/groups.json && \
+  cat artifacts/matrices/s02-001/groups.json
+find artifacts/runs -maxdepth 2 -path '*/s02-001-*' -name status.json -print
+```
+
+Se houver processo, não iniciar outro. Se houver grupos `fitting`, `failed` ou
+`incomplete`, preservar a saída e consultar antes de retomar. O mesmo ID só pode ser
+retomado após inspeção da interrupção; a retomada verifica identidade de código,
+configuração, dados, máscaras e lock, e não deve ser usada para contornar uma falha.
+
+Somente depois de confirmar que todos os grupos estão completos, gerar o relatório.
 
 O tmux precisa ser iniciado dentro do ambiente Nix; se já houver um servidor tmux
-antigo com outro ambiente, abra `nix develop --no-update-lock-file` dentro da nova
-janela antes de executar Python.
+antigo com outro ambiente, não reutilize a janela sem conferir o interpretador nela.
+Abra `nix develop --no-update-lock-file` dentro da nova janela antes de executar Python.
 
 ```bash
 .venv-lab/bin/python scripts/lab/run.py report --id s02-001

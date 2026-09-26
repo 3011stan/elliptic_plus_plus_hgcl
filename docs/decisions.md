@@ -156,3 +156,20 @@ continua em revisão. Estado atual: [status.md](status.md); execução: [tasks.m
   `9c771e2d0cb27099508df4540a7ae886d99cfa4bca76bf1a42342259da149225`.
   O aceite autoriza somente a execução compatível da matriz; T031 continua aberta
   até as 100 avaliações e o relatório final.
+
+- D052 — Em 2026-09-14, pesquisador priorizou pragmatismo: executar a matriz com o
+  roteiro existente, sem esperar pelas correções operacionais listadas em
+  [t031-operational-risks.md](../validation/t031-operational-risks.md). Se houver
+  problemas durante o treinamento, voltar e aprimorar os pontos de atenção (validação
+  CUDA, logs persistidos, pré-checagem com `set -e`, retomada segura, monitoramento).
+  Roteiro simplificado: [t031-quick-start.md](../validation/t031-quick-start.md).
+  T031 permanece aberta até conclusão e relatório final.
+
+- D053 — Em 2026-09-26, pesquisador encerrou e congelou o ciclo por carteira. A
+  conclusão aceita é que o pré-treinamento SSL não trouxe benefício consistente e
+  não confirmou a expectativa de maior ganho com 1% dos rótulos. Variação entre
+  seeds e limites do experimento devem acompanhar a interpretação; F1 da literatura
+  não deve ser apresentado como comparação direta. A especificação histórica fica
+  preservada sem alterações retroativas. T031–T033 deixam de ser trabalho ativo,
+  mas não são marcadas como concluídas contra seus critérios originais. Evidência e
+  ressalva sobre o manifesto de dry-run: [conclusão do s02-001](validation/s02-001-conclusion.md).

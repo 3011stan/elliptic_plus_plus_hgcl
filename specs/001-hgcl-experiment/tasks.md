@@ -2,7 +2,9 @@
 
 Input: [plan.md](plan.md), [spec.md](spec.md), [research.md](research.md),
 [data-model.md](data-model.md), [contracts](contracts/cli.md), [quickstart](quickstart.md).
-T001–T030 are complete. T031–T033 remain pending. T026–T029 validation:
+T001–T030 are complete. By D053, the wallet cycle is frozen and T031–T033 are
+closed without being declared complete against their original acceptance criteria;
+they are not active work and require explicit authorization to reopen. T026–T029 validation:
 55 regression tests passed, two optional tests skipped; original-data smoke passed separately. The original-data CPU smoke
 passed; detailed evidence is in ../../docs/validation/smoke.md and smoke-results.json.
 Evidence and measured
@@ -67,12 +69,12 @@ freeze enforcement, complete or explicitly incomplete five-seed/recurrence repor
 - [X] T028 [US3] Expose compatible `resume` and matrix restart in `src/hgcl/cli.py` using `src/hgcl/training/checkpoint.py`; reject scientific/source/data changes and already evaluated refits; retain attempt history. Depends T027. (FR-012, FR-019, SC-007)
 - [X] T029 [US3] Implement overall/seen/unseen support, prior-label exposure, paired RQ1/RQ2 differences and five-seed mean/sample SD reports in `src/hgcl/evaluation/reporting.py`; label native temporal limitations and incomplete groups; allow non-improvement. Depends T028. (FR-004, FR-013, FR-016, FR-020, FR-024, SC-004, SC-005)
 - [X] T030 [US3] Implement `doctor` in `src/hgcl/environment.py`, then run it on the lab machine when accessible; verify CUDA/sampler/backward, memory/free space and data hashes, generate, install and validate the complete transitive/hash lock `requirements/lab-cuda.lock` and record `docs/validation/lab-preflight.md`. CPU doctor's basic checks are implemented in T002; CUDA acceptance depends on real hardware. Depends T029. (FR-018, SC-001)
-- [ ] T031 [US3] Follow [t031-execution-protocol.md](t031-execution-protocol.md): freeze provenance, prepare/validate all 49 steps, review the audit, run explicit prepared-data dry-run, obtain researcher acceptance before training, then run the laboratory experiment via `configs/lab.yaml`, retaining `artifacts/matrices/s02-001/` and a portable summary in `docs/validation/experiment.md`; do not mark complete for dry-run alone or without all required results. Depends T030. (FR-012, FR-013, FR-016, FR-019, FR-020, SC-004, SC-005)
+- [ ] T031 [CLOSED WITHOUT COMPLETION — D053] [US3] Follow [t031-execution-protocol.md](t031-execution-protocol.md): freeze provenance, prepare/validate all 49 steps, review the audit, run explicit prepared-data dry-run, obtain researcher acceptance before training, then run the laboratory experiment via `configs/lab.yaml`, retaining `artifacts/matrices/s02-001/` and a portable summary in `docs/validation/experiment.md`; do not mark complete for dry-run alone or without all required results. Depends T030. (FR-012, FR-013, FR-016, FR-019, FR-020, SC-004, SC-005)
 
 ## Phase 6 — Handoff and cross-cutting verification
 
-- [ ] T032 Update `README.md`, `docs/environments.md` and `specs/001-hgcl-experiment/quickstart.md` with verified commands, actual locks and operational limitations; preserve evidence and distinguish planned/observed timings. Depends T025,T030. (FR-018, FR-020)
-- [ ] T033 Re-run only affected required checks and verify saved artifacts against all FR/SC in `docs/validation/acceptance.md`; include source snapshot, data identity, 600-second smoke, full matrix completeness and pending external conditions honestly. Depends T031,T032. (FR-012, FR-020, SC-001, SC-002, SC-003, SC-004, SC-005, SC-006, SC-007, SC-008, SC-009)
+- [ ] T032 [CLOSED WITHOUT COMPLETION — D053] Update `README.md`, `docs/environments.md` and `specs/001-hgcl-experiment/quickstart.md` with verified commands, actual locks and operational limitations; preserve evidence and distinguish planned/observed timings. Depends T025,T030. (FR-018, FR-020)
+- [ ] T033 [CLOSED WITHOUT COMPLETION — D053] Re-run only affected required checks and verify saved artifacts against all FR/SC in `docs/validation/acceptance.md`; include source snapshot, data identity, 600-second smoke, full matrix completeness and pending external conditions honestly. Depends T031,T032. (FR-012, FR-020, SC-001, SC-002, SC-003, SC-004, SC-005, SC-006, SC-007, SC-008, SC-009)
 
 ## Dependencies and parallel opportunities
 

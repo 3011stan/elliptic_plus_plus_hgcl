@@ -1,5 +1,23 @@
 # Estado do SDD — S02
 
+## Ciclo por carteira congelado
+
+Em 2026-09-26, o pesquisador encerrou o ciclo por carteira e determinou que a
+especificação histórica não fosse modificada retroativamente. O relatório do
+`s02-001` registra 100/100 avaliações disponíveis, nenhuma ausente e estado
+`complete`; os 25 grupos estão completos. A interpretação aceita e os limites da
+evidência estão em [s02-001-conclusion.md](validation/s02-001-conclusion.md).
+
+Conclusão: o pré-treinamento SSL não trouxe benefício consistente e não confirmou
+a expectativa de maior ganho com 1% dos rótulos. Comparações numéricas com F1 da
+literatura são apenas contextuais, não rankings diretos.
+
+O manifesto portátil de dry-run permanece imutável com `status=planned` e
+`training_performed=false`; essa divergência temporal em relação aos resultados
+posteriores está explicitada na conclusão. O ciclo está congelado, sem tarefas
+ativas. T031–T033 não são declaradas concluídas segundo seus critérios originais e
+não devem ser retomadas sem autorização explícita.
+
 ## Aceite do dry-run registrado
 
 Em 2026-09-14, o pesquisador aceitou iniciar a matriz `s02-001` com base no

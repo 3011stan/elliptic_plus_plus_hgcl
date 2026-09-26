@@ -144,16 +144,43 @@ plano concreto sobre esses dados. Não executar o próximo comando automaticamen
 
 ## 4. Matriz serial e retomada
 
-Após o aceite, usar sessão persistente no ambiente Nix:
+Após o aceite, usar sessão persistente no ambiente Nix. `tmux` é obrigatório para uma
+execução que possa sobreviver à desconexão SSH; ele não substitui `nix develop` nem
+seleciona o Python. Antes de criar a sessão, conferir:
+
+```bash
+nix develop --no-update-lock-file
+test "$HGCL_NIX_SYSTEM" = x86_64-linux
+test -x .venv-lab/bin/python
+.venv-lab/bin/python -c 'import sys; print(sys.executable); print(sys.prefix)'
+nvidia-smi
+tmux ls
+ps -fu "$USER" | grep '[r]un.py matrix' || true
+```
+
+O interpretador usado na matriz deve ser explicitamente `.venv-lab/bin/python`; não
+usar `python` sem caminho. Se houver processo ou sessão existente, anexar e inspecionar
+em vez de iniciar outra execução. Com as pré-condições confirmadas:
 
 ```bash
 tmux new -s hgcl
 .venv-lab/bin/python scripts/lab/run.py matrix --id s02-001
 ```
 
-Conferir que a nova sessão mantém o ambiente; quando necessário entrar nela com
-`nix develop --no-update-lock-file`. Para desconectar: Ctrl+B, D; para retornar:
-`tmux attach -t hgcl`. Não iniciar segunda execução concorrente.
+O comando `matrix` inicia treinamento real e pode permanecer no terminal até concluir.
+Para desconectar sem enviar SIGHUP ao processo: Ctrl+B, D. Para retornar, entrar no
+ambiente Nix e usar `tmux attach -t hgcl`. O código não produz ETA global; acompanhar
+`artifacts/matrices/s02-001/groups.json`, cujo número de grupos `complete` varia de
+0 a 25. `nvidia-smi` mostra atividade e memória da GPU, mas não substitui os estados
+dos artefatos.
+
+Se a conexão SSH for encerrada sem uma sessão persistente, o processo pode terminar.
+Não presumir que continua e não relançar imediatamente. Verificar primeiro processo,
+sessão, `groups.json` e `artifacts/runs/*/status.json`. Um grupo interrompido pode
+ficar com estado `fitting`, `failed` ou `incomplete`; preservar seus arquivos e
+consultar antes da retomada.
+
+Não iniciar segunda execução concorrente.
 Em primeira execução, confirmar que o ID não contém tentativa anterior não revisada.
 Os recibos, `artifacts/matrices/s02-001/manifest.json`, `groups.json`, caches `ssl/`
 e runs referenciados devem ser preservados. Grupos completos não são retreinados.
