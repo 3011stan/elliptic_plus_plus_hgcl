@@ -11,10 +11,11 @@ Atualizado em: 2026-09-27
 - Namespaces do Estudo 003 preparados.
 - SDD iniciado: `specs/003-transaction-gcl/spec.md` criado e validado.
 - Clarificação concluída com cinco decisões incorporadas à especificação.
+- Planejamento técnico concluído em `specs/003-transaction-gcl/plan.md`, com pesquisa,
+  modelo de dados, contratos e quickstart de validação.
 
 ## Próximo passo autorizado
 
-Executar o planejamento do S003 sem importar o spec do S02. O plano deve fixar,
-entre outros detalhes técnicos, a correção das quatro comparações estatísticas
-primárias, a medida de tamanho de efeito e a construção determinística dos grupos
-aleatórios usados como controle de mascaramento.
+Gerar e revisar o checklist pós-plano do S003 antes de decompor a implementação em
+`tasks.md`. Não iniciar a matriz científica; ela permanece condicionada à implementação,
+ao dry-run e ao aceite explícito de suas evidências.
