@@ -18,12 +18,12 @@
 
 **Purpose**: Criar a superfície isolada do estudo sem alterar comportamento ou configuração do S02.
 
-- [ ] T001 Add the `hgcl-s003` console entry point plus direct `scipy==1.17.1` and `xgboost==3.2.0` dependencies in `pyproject.toml` — FR-021, FR-033, FR-046
-- [ ] T002 Refresh and verify the exact Python 3.11 dependency versions declared in the plan for macOS CPU and laboratory CUDA in `requirements/mac-cpu.lock`, `requirements/lab-cuda.in`, and `requirements/lab-cuda.lock` — FR-042, FR-046
-- [ ] T003 [P] Create the planned S003 module skeleton and `hetero` subpackage in `src/hgcl/studies/s003/` without importing S02 configuration or model modules — FR-033–FR-034
-- [ ] T004 [P] Create strict profile skeletons `configs/s003/smoke.yaml`, `configs/s003/dry-run.yaml`, and `configs/s003/lab.template.yaml` with the exact engineering sample/batch/epoch limits, `study_id=s003`, and no S02 keys — FR-001, FR-028, FR-033
-- [ ] T005 [P] Create `contract`, `unit`, and `integration` test package structure under `tests/s003/` and shared S003-only fixture declarations in `tests/s003/conftest.py` — FR-033
-- [ ] T006 [P] Ensure `artifacts/s003/`, prepared tensors, predictions, and checkpoints are ignored while small exported evidence remains allow-listed in `.gitignore` — FR-004, FR-026, FR-033
+- [X] T001 Add the `hgcl-s003` console entry point plus direct `scipy==1.17.1` and `xgboost==3.2.0` dependencies in `pyproject.toml` — FR-021, FR-033, FR-046
+- [X] T002 Refresh and verify the exact Python 3.11 dependency versions declared in the plan for macOS CPU and laboratory CUDA in `requirements/mac-cpu.lock`, `requirements/lab-cuda.in`, and `requirements/lab-cuda.lock` — FR-042, FR-046
+- [X] T003 [P] Create the planned S003 module skeleton and `hetero` subpackage in `src/hgcl/studies/s003/` without importing S02 configuration or model modules — FR-033–FR-034
+- [X] T004 [P] Create strict profile skeletons `configs/s003/smoke.yaml`, `configs/s003/dry-run.yaml`, and `configs/s003/lab.template.yaml` with the exact engineering sample/batch/epoch limits, `study_id=s003`, and no S02 keys — FR-001, FR-028, FR-033
+- [X] T005 [P] Create `contract`, `unit`, and `integration` test package structure under `tests/s003/` and shared S003-only fixture declarations in `tests/s003/conftest.py` — FR-033
+- [X] T006 [P] Ensure `artifacts/s003/`, prepared tensors, predictions, and checkpoints are ignored while small exported evidence remains allow-listed in `.gitignore` — FR-004, FR-026, FR-033
 
 **Checkpoint**: O entry point e os namespaces do S003 existem, mas nenhum pipeline científico está implementado.
 
@@ -35,18 +35,18 @@
 
 **⚠️ CRITICAL**: Nenhuma implementação de user story começa antes deste checkpoint.
 
-- [ ] T007 [P] Write strict config contract tests for required keys, exact smoke/dry-run limits, S02-key rejection, 182 model features, `source_to_target` flow, successor positives, fixed SSL epochs, 205 P1 cells, and compatible lab approval in `tests/s003/contract/test_config_contract.py` — FR-001, FR-003, FR-017, FR-028, FR-033, FR-037, FR-046
-- [ ] T008 Implement canonical S003 config parsing, exact profile-limit validation, approval/cohort invariants, overrides, and SHA-256 serialization in `src/hgcl/studies/s003/config.py` to satisfy T007 — FR-001, FR-026, FR-028–FR-029, FR-033, FR-038, FR-046
-- [ ] T009 [P] Write entity and state-transition tests for `SourceDataset`, `TemporalSnapshot`, `LabelBudget`, `ExperimentRun`, and `StatisticalComparison` in `tests/s003/unit/test_domain.py` — FR-017–FR-018, FR-027, FR-044
-- [ ] T010 Implement typed domain entities, invariants, and terminal-state rules in `src/hgcl/studies/s003/domain.py` to satisfy T009 — FR-017–FR-018, FR-027, FR-044
-- [ ] T011 [P] Write artifact-envelope, atomic-write, immutability, relative-path, `DryRunApproval`, and sealed `EvaluationCohort` contract tests in `tests/s003/contract/test_artifact_contract.py` — FR-004, FR-026–FR-027, FR-029, FR-038, SC-006
-- [ ] T012 Implement the common envelope, hashing, atomic JSON/Parquet registration, immutable artifact index, `DryRunApproval`, and `EvaluationCohort` persistence in `src/hgcl/studies/s003/artifacts.py` to satisfy T011 — FR-004, FR-026–FR-027, FR-029, FR-038
-- [ ] T013 [P] Write CLI parser, JSON-output, exit-code, identifier-prefix, `approve-dry-run`, incompatible-approval rejection, and no-S02-fallback contract tests in `tests/s003/contract/test_cli_contract.py` — FR-001, FR-029, FR-033
-- [ ] T014 Implement the `hgcl-s003` command shell and structured error mapping in `src/hgcl/studies/s003/cli.py` to satisfy T013, leaving story handlers injectable — FR-001, FR-027, FR-033
-- [ ] T015 [P] Write environment compatibility and fail-closed doctor tests for Python, dependencies, CUDA, device, RAM, VRAM, disk, and path overlap in `tests/s003/unit/test_environment.py` — FR-028, FR-046
-- [ ] T016 Implement the S003 environment doctor and resource probes in `src/hgcl/studies/s003/environment.py` to satisfy T015, with no automatic lab fallback — FR-028, FR-046
-- [ ] T017 [P] Add deterministic tiny transaction CSV fixtures and expected hashes/counts under `tests/s003/fixtures/` plus fixture loaders in `tests/s003/conftest.py` — FR-004, FR-042–FR-043
-- [ ] T018 [P] Add an isolation regression that rejects `native_wallet`, `fusion.alphas`, `hgcl`, S02 artifact roots, and modifications to frozen S02 paths in `tests/s003/contract/test_study_isolation.py` — FR-033–FR-034, SC-009
+- [X] T007 [P] Write strict config contract tests for required keys, exact smoke/dry-run limits, S02-key rejection, 182 model features, `source_to_target` flow, successor positives, fixed SSL epochs, 205 P1 cells, and compatible lab approval in `tests/s003/contract/test_config_contract.py` — FR-001, FR-003, FR-017, FR-028, FR-033, FR-037, FR-046
+- [X] T008 Implement canonical S003 config parsing, exact profile-limit validation, approval/cohort invariants, overrides, and SHA-256 serialization in `src/hgcl/studies/s003/config.py` to satisfy T007 — FR-001, FR-026, FR-028–FR-029, FR-033, FR-038, FR-046
+- [X] T009 [P] Write entity and state-transition tests for `SourceDataset`, `TemporalSnapshot`, `LabelBudget`, `ExperimentRun`, and `StatisticalComparison` in `tests/s003/unit/test_domain.py` — FR-017–FR-018, FR-027, FR-044
+- [X] T010 Implement typed domain entities, invariants, and terminal-state rules in `src/hgcl/studies/s003/domain.py` to satisfy T009 — FR-017–FR-018, FR-027, FR-044
+- [X] T011 [P] Write artifact-envelope, atomic-write, immutability, relative-path, `DryRunApproval`, and sealed `EvaluationCohort` contract tests in `tests/s003/contract/test_artifact_contract.py` — FR-004, FR-026–FR-027, FR-029, FR-038, SC-006
+- [X] T012 Implement the common envelope, hashing, atomic JSON/Parquet registration, immutable artifact index, `DryRunApproval`, and `EvaluationCohort` persistence in `src/hgcl/studies/s003/artifacts.py` to satisfy T011 — FR-004, FR-026–FR-027, FR-029, FR-038
+- [X] T013 [P] Write CLI parser, JSON-output, exit-code, identifier-prefix, `approve-dry-run`, incompatible-approval rejection, and no-S02-fallback contract tests in `tests/s003/contract/test_cli_contract.py` — FR-001, FR-029, FR-033
+- [X] T014 Implement the `hgcl-s003` command shell and structured error mapping in `src/hgcl/studies/s003/cli.py` to satisfy T013, leaving story handlers injectable — FR-001, FR-027, FR-033
+- [X] T015 [P] Write environment compatibility and fail-closed doctor tests for Python, dependencies, CUDA, device, RAM, VRAM, disk, and path overlap in `tests/s003/unit/test_environment.py` — FR-028, FR-046
+- [X] T016 Implement the S003 environment doctor and resource probes in `src/hgcl/studies/s003/environment.py` to satisfy T015, with no automatic lab fallback — FR-028, FR-046
+- [X] T017 [P] Add deterministic tiny transaction CSV fixtures and expected hashes/counts under `tests/s003/fixtures/` plus fixture loaders in `tests/s003/conftest.py` — FR-004, FR-042–FR-043
+- [X] T018 [P] Add an isolation regression that rejects `native_wallet`, `fusion.alphas`, `hgcl`, S02 artifact roots, and modifications to frozen S02 paths in `tests/s003/contract/test_study_isolation.py` — FR-033–FR-034, SC-009
 
 **Checkpoint**: Configuração, domínio, artefatos, CLI e ambiente possuem contratos testáveis; user stories podem começar.
 

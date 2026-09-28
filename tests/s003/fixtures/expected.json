@@ -1,0 +1,21 @@
+{
+  "files": {
+    "txs_features.csv": {
+      "rows": 4,
+      "sha256": "a596ae3743bdeef3c36bd0b50fdae773c6ebf65dd4666b00a66ff68ef8425dc0"
+    },
+    "txs_classes.csv": {
+      "rows": 4,
+      "sha256": "5173cfb80d06e80c05da15f87605fcc768e2a18f97160ab508c51f3750f6f76e"
+    },
+    "txs_edgelist.csv": {
+      "rows": 2,
+      "sha256": "8d5b8dea0b8fc75201194dd4efa258d28a9506a09eda876044424708cea09176"
+    }
+  },
+  "transactions": 4,
+  "edges": 2,
+  "time_steps": [1, 2],
+  "source_non_id_columns": 183,
+  "model_features": 182
+}
