@@ -18,6 +18,10 @@
 - Q: Quais controles de mascaramento são obrigatórios para sustentar a contribuição dos blocos funcionais? → A: No regime de 1%, comparar mascaramento aleatório individual, grupos aleatórios de mesma cardinalidade e blocos funcionais.
 - Q: Qual protocolo de sementes e inferência estatística deve sustentar as comparações primárias? → A: Usar as sementes fixas `[11, 23, 37, 53, 71]`, média e desvio padrão, diferenças pareadas, intervalo de confiança de 95%, teste t pareado bilateral e tamanho de efeito para as comparações com GCPAL e Inspection-L em 1% e 5%, com correção por comparações múltiplas predefinida no plano; significância isolada não basta para concluir superioridade.
 
+### Session 2026-09-27 — revisão pós-plano com literatura
+
+- Q: Como alinhar direção, encoder, features, seleção SSL, baselines, métricas e blindagem do teste após a auditoria no NotebookLM autorizado? → A: Usar propagação dirigida no núcleo e uma ablação condicionada com arestas reversas; GIN de 2 camadas e 128 dimensões; 182 features financeiras, mantendo `Time step` somente como metadado; épocas SSL fixas e predeclaradas após o dry-run, sem probe rotulado; F1 ilícito pooled como resultado principal acompanhado de resultados temporais; downstream nativo de Inspection-L e GCPAL; e shadow test em 1–34 com single-unblinding auditado de 35–49.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Executar o experimento principal sem vazamento temporal (Priority: P1)
@@ -30,7 +34,7 @@ Como pesquisador, quero executar o S003-TxGCL sobre snapshots de transações pa
 
 **Acceptance Scenarios**:
 
-1. **Given** os CSVs originais verificados do Elliptic++, **When** o pesquisador prepara o experimento principal, **Then** são produzidos snapshots homogêneos `Tx→Tx`, com nós-transação, arestas de fluxo e 183 atributos de transação, sem atributos de endereço na entrada principal.
+1. **Given** os CSVs originais verificados do Elliptic++, **When** o pesquisador prepara o experimento principal, **Then** são produzidos snapshots homogêneos `Tx→Tx`, com nós-transação, arestas de fluxo, 183 colunas não identificadoras preservadas e 182 features financeiras como entrada, sem `Time step`, identificadores ou atributos de endereço em `X_tx`.
 2. **Given** um experimento ainda não avaliado, **When** ocorre pré-treino, validação ou seleção, **Then** nenhuma aresta, atributo, rótulo, métrica ou estatística ajustada dos passos 35–49 influencia essas etapas.
 3. **Given** um modelo final selecionado, **When** os passos 35–49 são avaliados, **Then** cada snapshot é processado sem acesso a conexões ou atributos de snapshots posteriores e os resultados são reportados individualmente e de forma agregada.
 
@@ -101,7 +105,7 @@ Como pesquisador, quero avaliar previamente a causalidade e o custo do grafo `Ad
 
 - **FR-001**: O estudo MUST identificar toda execução, configuração e artefato com `study_id=s003` e um identificador prefixado por `s003-`.
 - **FR-002**: O experimento principal MUST classificar nós-transação, usando snapshots homogêneos, direcionados e temporais `Tx→Tx`.
-- **FR-003**: O experimento principal MUST usar os 183 atributos de transação do Elliptic++ e MUST NOT incluir atributos de endereço em sua concatenação downstream.
+- **FR-003**: O experimento principal MUST preservar as 183 colunas não identificadoras do Elliptic++ (`Time step` mais 182 features financeiras), MUST usar somente as 182 features financeiras em `X_tx` e MUST NOT incluir `Time step`, identificadores ou atributos de endereço na entrada do encoder ou na concatenação downstream.
 - **FR-004**: O sistema MUST preservar os CSVs originais sem alteração e registrar suas identidades verificáveis em cada preparação de dados.
 - **FR-005**: O sistema MUST reservar os time steps 1–34 para pré-treino, validação interna e treino, e MUST reservar 35–49 exclusivamente para avaliação final.
 - **FR-006**: Toda transformação ajustável, seleção de modelo, escolha de hiperparâmetro e threshold MUST usar somente informações permitidas dos passos 1–34. Eventual threshold ajustável MUST ser escolhido na validação interna e congelado antes do teste.
@@ -113,16 +117,16 @@ Como pesquisador, quero avaliar previamente a causalidade e o custo do grafo `Ad
 - **FR-012**: O índice KNN MUST ser construído separadamente por snapshot a partir de atributos normalizados sem criar conexões entre passos temporais.
 - **FR-013**: Para cada âncora, o próprio nó, seus vizinhos `Tx→Tx` e seus vizinhos KNN MUST formar o conjunto positivo; nenhum membro desse conjunto pode integrar seus negativos.
 - **FR-014**: A perda multi-positivo MUST manter uma variante diretamente comparável à formulação do GCPAL, permitindo atribuir diferenças ao mascaramento funcional.
-- **FR-015**: O encoder principal MUST pertencer à mesma família usada pelos baselines diretos Inspection-L e GCPAL e MUST manter orçamento comparável nas análises que isolam o pré-treino.
+- **FR-015**: O encoder principal MUST ser um GIN de duas camadas com dimensão escondida e embedding 128, alinhado estruturalmente aos baselines diretos Inspection-L e GCPAL; diferenças inevitáveis de orçamento MUST ser registradas nas análises que isolam o pré-treino.
 - **FR-016**: O resultado downstream principal MUST congelar o encoder e treinar um classificador leve sobre `H‖X_tx`.
 - **FR-017**: O estudo MUST avaliar 1%, 5%, 10% e 100% dos rótulos conhecidos dos passos 1–34 nas cinco sementes fixas `[11, 23, 37, 53, 71]`.
 - **FR-018**: Para cada semente, os subconjuntos rotulados MUST ser estratificados e aninhados; cada fração MUST ser dividida internamente em 80% para ajuste e 20% para validação, e o orçamento declarado MUST incluir ambos os subconjuntos. Após a seleção, o classificador final MUST ser reajustado com 100% da mesma fração antes do teste.
 - **FR-019**: O regime de 1% MUST comparar `X-only`, `H-only` e `H‖X_tx` com o mesmo classificador, IDs rotulados e sementes.
 - **FR-020**: O regime de 1% MUST comparar o método completo com, no mínimo, variantes sem KNN, sem edge dropout e com três políticas de mascaramento sob a mesma intensidade e orçamento: atributos individuais aleatórios, grupos aleatórios de mesma cardinalidade dos blocos funcionais e blocos funcionais.
-- **FR-021**: A matriz principal de 1%, 5%, 10% e 100% MUST incluir MLP `X-only`, Random Forest, XGBoost, GCN, GraphSAGE, GIN supervisionado, Inspection-L/DGI e GCPAL ou uma reprodução funcionalmente equivalente.
+- **FR-021**: A matriz principal de 1%, 5%, 10% e 100% MUST incluir MLP `X-only`, Random Forest, XGBoost, GCN, GraphSAGE, GIN supervisionado, Inspection-L/DGI e GCPAL. A adaptação Inspection-L MUST preservar GIN 2×128, DGI e Random Forest de 100 árvores; a adaptação GCPAL MUST preservar GIN 2×128, suas duas visões estocásticas, KNN com `K=10`, perda multi-positivo e MLP de duas camadas sobre `H‖X_tx`. Ambos MUST usar os mesmos 182 atributos, splits, budgets e seeds do S003, e toda diferença causada pela migração de dataset MUST ser declarada.
 - **FR-022**: Todos os métodos comparáveis MUST usar os mesmos splits, sementes, subconjuntos rotulados, alvo e política de avaliação.
-- **FR-023**: F1 da classe ilícita MUST controlar seleção de hiperparâmetros e early stopping na validação interna; MCC MUST ser o primeiro critério de desempate. Ambas MUST ser métricas primárias no relatório final. Precision, Recall e PR-AUC da classe ilícita MUST ser reportadas; métricas secundárias devem ser identificadas como tais.
-- **FR-024**: O relatório MUST apresentar média e desvio padrão entre as cinco sementes e métricas agregadas e por snapshot em 35–49.
+- **FR-023**: F1 da classe ilícita MUST controlar seleção de hiperparâmetros, early stopping e threshold dos componentes supervisionados na validação interna; MCC MUST ser o primeiro critério de desempate. O encoder SSL MUST usar um número fixo de épocas, congelado após o dry-run e antes de qualquer avaliação em 35–49, sem probe rotulado nem seleção de checkpoint por métricas downstream. F1 ilícito e MCC MUST ser métricas primárias no relatório final. Precision, Recall e PR-AUC da classe ilícita MUST ser reportadas; métricas secundárias devem ser identificadas como tais.
+- **FR-024**: O relatório MUST calcular as métricas agregadas concatenando as predições conhecidas dos snapshots 35–49 antes do cálculo; em particular, o F1 principal é o F1 da classe ilícita pooled e MUST NOT ser denominado micro-F1. O relatório também MUST apresentar média e desvio padrão entre as cinco sementes, além de métricas e suportes por snapshot em 35–49.
 - **FR-025**: Alignment, uniformity e effective rank MUST ser diagnósticos comparativos de representação e MUST NOT substituir as métricas downstream nem usar um threshold universal não validado.
 - **FR-026**: Cada execução MUST registrar dados, configuração, revisão, ambiente, semente, IDs amostrados, partições, duração, estado e artefatos produzidos.
 - **FR-027**: O pipeline MUST distinguir execução concluída, interrompida, inválida e falha, sem converter estados incompletos em sucesso.
@@ -135,10 +139,20 @@ Como pesquisador, quero avaliar previamente a causalidade e o custo do grafo `Ad
 - **FR-034**: Reutilização de um componente histórico MUST ser explícita, testada quanto ao contrato S003 e registrada como decisão antes de ser incorporada.
 - **FR-035**: O estudo MUST considerar cientificamente válido um resultado sem ganho sobre os baselines, desde que o protocolo e as evidências estejam completos.
 - **FR-036**: Para as comparações predefinidas do método completo contra GCPAL e Inspection-L em 1% e 5%, o relatório MUST apresentar diferenças pareadas por semente, intervalo de confiança de 95%, teste t pareado bilateral e tamanho de efeito. O plano MUST definir antes da avaliação final a correção aplicada à família dessas quatro comparações, e a conclusão MUST considerar magnitude, incerteza e consistência do efeito, sem usar `p < 0,05` isoladamente como critério de superioridade.
+- **FR-037**: Todas as GNNs da matriz principal MUST usar somente as arestas dirigidas `Tx→Tx` originais. Uma ablação P2 em 1% MAY adicionar explicitamente as arestas reversas ao S003-TxGCL, somente se aprovada no gate de recursos; ela MUST ser identificada como bidirecional e MUST NOT substituir o resultado principal dirigido.
+- **FR-038**: Smoke e dry-run MUST usar um shadow test contido em 1–34 e MUST NOT calcular métricas com rótulos de 35–49. O acesso aos rótulos 35–49 MUST ocorrer somente após seleção e threshold congelados, ser auditado por run e permitir apenas retomada ou rerun técnico com os mesmos hashes, pesos e threshold.
+- **FR-039**: A preparação MUST produzir uma auditoria versionada de disponibilidade causal para cada grupo de features. Evidência de qualquer atributo calculado com eventos posteriores ao snapshot MUST interromper o trabalho antes do treinamento e exigir decisão do pesquisador.
+- **FR-040**: O método completo MUST produzir duas representações aumentadas por âncora — estocástica e por blocos — e otimizar uma perda multi-positivo simétrica entre elas, com pesos iguais. A visão KNN MUST somente ampliar o conjunto positivo; negativos MUST ser os demais nós elegíveis do mesmo snapshot/batch após deduplicação e exclusão integral dos positivos.
+- **FR-041**: Métodos supervisionados MUST receber os mesmos IDs e uma política de desbalanceamento calculada somente no fit: pesos inversos por classe para perdas neurais, `class_weight` equivalente para RF e `scale_pos_weight` equivalente para XGBoost. Desvios exigidos por uma reprodução MUST ser declarados.
+- **FR-042**: Reprodutibilidade MUST exigir igualdade exata de hashes, IDs, splits e configs. Na mesma plataforma, scores neurais recarregados MUST respeitar `rtol=1e-5`, `atol=2e-6` e produzir as mesmas classes no threshold congelado; diferenças entre plataformas MUST ser quantificadas, não ocultadas.
+- **FR-043**: IDs duplicados ou arestas com referência ausente/time step divergente MUST invalidar a preparação. Arestas duplicadas e self-loops de entrada MUST ser removidos e contabilizados. Snapshots sem arestas e nós isolados MUST permanecer válidos; KNN MUST usar `min(K,N-1)`. Âncoras sem negativo elegível MUST ser excluídas da perda e uma época sem âncora válida MUST invalidar a run.
+- **FR-044**: Uma comparação inferencial primária MUST exigir os cinco pares de seeds completos e métricas definidas. Na falta de qualquer par, o relatório MUST mostrar os valores disponíveis de forma descritiva, marcar a comparação incompleta e MUST NOT calcular p-value, IC, tamanho de efeito ou alegar superioridade.
+- **FR-045**: “Superior em uma métrica e budget” MUST exigir diferença média positiva, IC 95% da diferença acima de zero, `p` ajustado por Holm abaixo de 0,05 e direção positiva em ao menos quatro das cinco seeds, sem degradação estatisticamente significativa na outra métrica primária. “Eficiente em rótulos” somente poderá ser usado para uma comparação que satisfaça esse critério em 1% ou 5%. Robustez temporal MUST ser descrita por resultados por snapshot, sem rótulo categórico predefinido. “Publicável” MUST NOT ser tratado como resultado mensurável do experimento.
+- **FR-046**: Falha do `doctor` em qualquer versão ou capacidade obrigatória MUST bloquear dry-run e matriz naquele ambiente; o sistema MUST NOT trocar dispositivo, versão ou método silenciosamente.
 
 ### Key Entities
 
-- **Transaction**: Unidade de predição; possui identificador externo, time step, classe conhecida ou desconhecida, 183 atributos e relações de fluxo com outras transações.
+- **Transaction**: Unidade de predição; possui identificador externo, time step como metadado, classe conhecida ou desconhecida, 182 features financeiras de modelo e relações de fluxo com outras transações.
 - **Temporal Snapshot**: Recorte de um único time step contendo somente transações, atributos e arestas permitidos naquele instante.
 - **Label Budget**: Subconjunto estratificado e aninhado de transações conhecidas em 1%, 5%, 10% ou 100%, incluindo ajuste e validação interna.
 - **Contrastive View**: Transformação sem rótulos de um snapshot usada para obter representações comparáveis da mesma âncora.
@@ -155,7 +169,7 @@ Como pesquisador, quero avaliar previamente a causalidade e o custo do grafo `Ad
 - **SC-001**: 100% das combinações P1 declaradas na matriz possuem resultado concluído ou falha explícita e rastreável; nenhuma combinação ausente é apresentada como concluída.
 - **SC-002**: Auditorias automatizadas encontram zero uso de dados, rótulos, estatísticas ajustadas ou decisões provenientes dos passos 35–49 antes da avaliação final.
 - **SC-003**: Para uma mesma configuração e semente, execuções repetidas produzem os mesmos hashes de dados, splits, subconjuntos rotulados e conjuntos de comparação.
-- **SC-004**: O relatório final apresenta, para cada método e orçamento principal, cobertura das sementes `[11, 23, 37, 53, 71]`, média, desvio padrão e resultados nos 15 snapshots de teste; nas quatro comparações primárias predefinidas, também apresenta diferenças pareadas, intervalo de confiança de 95%, teste t pareado bilateral, tamanho de efeito e correção por comparações múltiplas.
+- **SC-004**: O relatório final apresenta, para cada método e orçamento principal, cobertura das sementes `[11, 23, 37, 53, 71]`, métricas pooled sobre as predições concatenadas de 35–49, média, desvio padrão e resultados nos 15 snapshots de teste; nas quatro comparações primárias predefinidas, também apresenta diferenças pareadas, intervalo de confiança de 95%, teste t pareado bilateral, tamanho de efeito e correção por comparações múltiplas.
 - **SC-005**: No regime de 1%, o relatório separa quantitativamente o efeito de `X`, `H`, `H‖X_tx`, KNN, edge dropout e das políticas de mascaramento individual aleatório, por grupos aleatórios de mesma cardinalidade e por blocos funcionais.
 - **SC-006**: Uma linha de resultado escolhida arbitrariamente pode ser rastreada até todos os seus insumos e decisões por um identificador único, sem consultar estado não versionado do S02.
 - **SC-007**: O dry-run percorre preparação, pré-treino, downstream, seleção, inferência e relatório dentro dos limites de recursos declarados antes de qualquer matriz completa ser autorizada.
@@ -166,7 +180,7 @@ Como pesquisador, quero avaliar previamente a causalidade e o custo do grafo `Ad
 ## Assumptions
 
 - Os nove CSVs originais do Elliptic++ já disponíveis localmente continuam sendo a fonte de dados autorizada e permanecerão somente leitura.
-- Os 183 atributos de transação estão disponíveis no instante do respectivo time step conforme a auditoria já consolidada na proposta; qualquer evidência contrária interrompe o trabalho e exige decisão do pesquisador.
+- As 183 colunas não identificadoras estão disponíveis no instante do respectivo time step conforme a auditoria consolidada; apenas as 182 features financeiras integram `X_tx`, enquanto `Time step` permanece metadado. Qualquer evidência contrária interrompe o trabalho e exige decisão do pesquisador.
 - O NotebookLM autorizado contém as fontes de literatura necessárias; consultas futuras usarão somente o notebook registrado no contexto S003.
 - Os valores concretos de hiperparâmetros e o orçamento de busca serão definidos no plano, registrados antes do teste e escolhidos sem acessar 35–49.
 - A intensidade de mascaramento será mantida comparável entre os três controles; a regra determinística para formar grupos aleatórios por semente será definida no plano sem usar rótulos.

@@ -26,11 +26,11 @@
 
 ## R4 — Dimensionalidade e papéis das colunas
 
-**Decision**: modelar `txId` como chave; `Time step` como atributo temporal não mascarável; e 182 atributos financeiros mascaráveis, divididos em 93 locais, 72 agregados e 17 aumentados.
+**Decision**: modelar `txId` como chave; `Time step` exclusivamente como metadado temporal; e usar como entrada 182 features financeiras, divididas em 93 locais, 72 agregadas e 17 aumentadas.
 
 **Rationale**: o CSV possui 184 colunas totais: uma chave e 183 colunas não identificadoras. A distinção impede que ID ou tempo sejam tratados como atributos financeiros e torna os blocos verificáveis.
 
-**Alternatives considered**: chamar todas as 183 colunas de financeiras foi rejeitado; remover silenciosamente `Time step` violaria a especificação de entrada e reduziria comparabilidade.
+**Alternatives considered**: chamar todas as 183 colunas de features financeiras foi rejeitado; incluir `Time step` em `X_tx` foi rejeitado porque as fontes o usam para fatiamento, não como atributo contínuo do nó. A coluna permanece preservada e auditável.
 
 ## R5 — Normalização e KNN
 
@@ -50,11 +50,19 @@
 
 ## R7 — Seleção com custo controlado
 
-**Decision**: predeclarar hiperparâmetros estruturais do SSL e selecionar checkpoints por probe de 1% dentro de cada seed; limitar a busca do classificador a oito combinações baratas que reutilizam embeddings.
+**Decision**: predeclarar hiperparâmetros estruturais do SSL e congelar após o dry-run um número fixo de épocas comum às seeds, sem probe rotulado ou seleção retrospectiva de checkpoint; limitar a busca do classificador downstream a oito combinações baratas que reutilizam embeddings.
 
-**Rationale**: evita um produto cartesiano de pré-treinos, mantém a seleção nos passos 1–34 e atende à prioridade de F1 ilícito/MCC sem usar rótulos na perda contrastiva.
+**Rationale**: Inspection-L fornece precedente para épocas fixas; a decisão preserva SSL independente de rótulos, evita viés para 1% e elimina o custo de probes recorrentes. F1 ilícito/MCC continuam controlando somente seleção, early stopping e threshold supervisionados.
 
-**Alternatives considered**: busca completa do SSL foi rejeitada pelo custo; usar loss SSL para seleção foi rejeitado porque não segue a decisão de seleção downstream; usar uma sexta seed de tuning foi rejeitado por ampliar o protocolo aprovado.
+**Alternatives considered**: busca completa do SSL foi rejeitada pelo custo; menor loss SSL em holdout não rotulado foi rejeitada porque não tem precedente no corpus e pode não se alinhar ao downstream; probe de 1% foi rejeitado por tornar a seleção do encoder dependente de rótulos e da menor fração.
+
+## R7A — Direção da passagem de mensagens
+
+**Decision**: usar somente a direção original `Tx→Tx` em toda a matriz principal e permitir uma variante P2 com arestas reversas em 1%, condicionada ao gate de recursos.
+
+**Rationale**: a direção do fluxo é explícita no dataset, enquanto Inspection-L e GCPAL não documentam se suas implementações inverteram ou simetrizaram arestas. Um padrão dirigido é semanticamente defensável; a ablação mede o efeito da escolha sem contaminar o núcleo.
+
+**Alternatives considered**: converter silenciosamente para não dirigido foi rejeitado; tornar a variante reversa obrigatória P1 foi rejeitado pelo custo e pela ausência de precedente explícito.
 
 ## R8 — Inferência estatística
 

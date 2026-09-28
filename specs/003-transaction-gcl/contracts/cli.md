@@ -22,7 +22,8 @@ hgcl-s003 hetero-gate --config PATH --prepared PATH
 - `matrix` falha com código 4 sem aprovação de dry-run cujo config/data/code seja compatível.
 - `dry-run` usa apenas um shadow test contido em 1–34 e não abre rótulos de 35–49.
 - `evaluate` exige estado `selected`, pesos e threshold congelados e abre os rótulos de 35–49 uma única vez por run final.
-- `resume` aceita somente estado `interrupted` e verifica todos os digests.
+- `resume` aceita somente estado `interrupted` e verifica todos os digests. Se a interrupção ocorreu após a abertura do teste, nenhuma seleção ou configuração pode ser alterada.
+- Um rerun causado por corrupção técnica após abertura do teste recebe vínculo `technical_rerun_of`, mantém config, dados, pesos e threshold idênticos e não pode substituir silenciosamente o resultado original.
 - `report` inclui falhas e ausências; nunca preenche combinação inexistente.
 - `hetero-gate` não inicia treino heterogêneo nem altera a matriz homogênea.
 - Nenhum comando resolve `configs/lab.yaml` ou `artifacts/` do S02 como fallback.

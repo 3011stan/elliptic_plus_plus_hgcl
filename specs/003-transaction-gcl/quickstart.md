@@ -16,7 +16,7 @@ Este guia descreve validação esperada após a implementação. Não autoriza a
 .venv/bin/python -m pytest tests/s003/contract tests/s003/unit
 ```
 
-Esperado: config rejeita chaves do S02, blocos cobrem 182 features, budgets são aninhados, positivos e negativos são disjuntos e estatística reproduz os casos de referência.
+Esperado: config rejeita chaves do S02, `Time step` não integra `X_tx`, blocos cobrem 182 features, budgets são aninhados, positivos e negativos são disjuntos e estatística reproduz os casos de referência.
 
 ## 2. Inspect environment
 
@@ -24,7 +24,7 @@ Esperado: config rejeita chaves do S02, blocos cobrem 182 features, budgets são
 .venv/bin/hgcl-s003 doctor --config configs/s003/smoke.yaml
 ```
 
-Esperado: JSON `status=ready`, hashes dos nove CSVs válidos, Python/dependências registrados e nenhum path sobreposto.
+Esperado: JSON `status=ready`, hashes válidos dos três CSVs centrais, inventário dos seis CSVs de endereço quando disponíveis, Python/dependências registrados e nenhum path sobreposto. A ausência dos arquivos de endereço não bloqueia o núcleo homogêneo; ela é registrada para o `hetero-gate`.
 
 ## 3. Prepare original data
 
@@ -38,7 +38,7 @@ Use o path `prepared` retornado:
 .venv/bin/hgcl-s003 audit --config configs/s003/smoke.yaml --prepared ARTIFACT_PATH
 ```
 
-Esperado: 49 manifests de snapshot; 203.769 transações e 234.355 arestas antes do recorte; zero aresta entre time steps; 183 atributos não identificadores e 182 mascaráveis; transforms ajustados somente em 1–34.
+Esperado: 49 manifests de snapshot; 203.769 transações e 234.355 arestas antes do recorte; zero aresta entre time steps; 183 colunas não identificadoras preservadas, `X_tx` com 182 features, propagação principal dirigida e transforms ajustados somente em 1–34.
 
 ## 4. Run the engineering smoke test
 
@@ -86,6 +86,8 @@ O pacote de evidências deve demonstrar:
 - nenhum acesso a 35–49 antes de `evaluate`;
 - igualdade de budgets entre métodos;
 - cardinalidade idêntica nos três controles de masking;
+- GIN 2×128, épocas SSL fixas e ausência de probe rotulado no encoder;
+- F1 ilícito pooled calculado sem ser rotulado como micro-F1;
 - cobertura e estados explícitos;
 - custo medido e projeção da matriz;
 - arquivos congelados do S02 sem modificação.

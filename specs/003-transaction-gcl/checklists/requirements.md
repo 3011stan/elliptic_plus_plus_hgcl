@@ -32,4 +32,4 @@
 ## Notes
 
 - Scientific method names such as GIN, KNN, GCPAL and DGI are accepted protocol constraints, not software-stack decisions.
-- No clarification marker remains; the five scientific decisions were consolidated in the clarification session of 2026-09-27.
+- No clarification marker remains; the five initial decisions and the literature-guided post-plan review were consolidated on 2026-09-27.

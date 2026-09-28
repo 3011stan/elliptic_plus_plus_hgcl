@@ -55,6 +55,8 @@ Todo JSON possui:
 - Um artefato `completed` não pode ser sobrescrito.
 - Checkpoints contêm época, modelo, otimizador, RNGs, config/data/code digests e versão das dependências.
 - Predições preservam `tx_id`, `time_step`, label conhecido, score e decisão; a ordem não define identidade.
+- Resultados pooled registram que as predições conhecidas de 35–49 foram concatenadas antes do cálculo; `f1_illicit` e `micro_f1` são campos distintos e o segundo é secundário quando reportado.
 - `coverage.json` enumera todas as células esperadas e classifica cada uma como completed/interrupted/invalid/failed/missing.
 - `evaluation-access.json` não contém labels; registra o digest do store selado e cada abertura autorizada dos rótulos 35–49.
+- Um `technical_rerun` registra o run original e a causa técnica; divergência de qualquer digest, peso ou threshold invalida essa classificação.
 - Manifests pequenos e relatórios destinados à dissertação podem ser exportados para localização versionada; checkpoints, Parquet volumoso e predições permanecem fora do Git.

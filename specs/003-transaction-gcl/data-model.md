@@ -2,7 +2,7 @@
 
 ## 1. SourceDataset
 
-Representa os nove CSVs originais somente leitura.
+Representa os CSVs originais somente leitura. O núcleo `Tx→Tx` exige apenas `txs_features.csv`, `txs_classes.csv` e `txs_edgelist.csv`; os seis arquivos de endereço permanecem registrados quando disponíveis, mas só são obrigatórios para o gate/extensão `Addr↔Tx`.
 
 | Campo | Tipo | Regra |
 |---|---|---|
@@ -12,7 +12,7 @@ Representa os nove CSVs originais somente leitura.
 | `schema_version` | integer | inicia em `1` |
 | `verified_at` | timestamp | UTC |
 
-Validação: todos os arquivos do manifest devem existir, ter hash correspondente e schema esperado antes da preparação.
+Validação: os três arquivos do núcleo devem existir, ter hash correspondente e schema esperado antes da preparação homogênea. Ausência de um arquivo de endereço não bloqueia o núcleo e é registrada como `hetero_unavailable`; arquivo presente deve corresponder ao manifest antes de qualquer uso.
 
 ## 2. Transaction
 
@@ -28,7 +28,7 @@ Unidade de predição e nó do grafo.
 | `augmented_features` | float[17] | finitos após preprocessing |
 | `class` | enum | `illicit`, `licit`, `unknown` |
 
-`model_attributes` contém `time_step` e 182 atributos financeiros. `maskable_features` e `knn_features` contêm somente os 182 atributos financeiros.
+`source_attributes` contém `time_step` e 182 features financeiras. `model_features`, `maskable_features` e `knn_features` contêm somente as 182 features financeiras.
 
 ## 3. TransactionEdge
 
@@ -40,14 +40,15 @@ Unidade de predição e nó do grafo.
 
 Duplicatas são removidas de forma determinística e contabilizadas no manifest. A direção original é preservada; transformações que adicionem reversas devem declará-las na configuração do método.
 
+IDs duplicados, referências ausentes e arestas entre time steps invalidam a preparação. Self-loops de entrada são removidos e contabilizados; a contribuição própria do GIN é responsabilidade do operador, não do CSV.
+
 ## 4. TemporalSnapshot
 
 | Campo | Tipo | Regra |
 |---|---|---|
 | `time_step` | integer | chave única |
 | `tx_ids` | array | ordenação canônica persistida |
-| `x_model` | tensor `[N,183]` | sem identificador |
-| `x_financial` | tensor `[N,182]` | entrada de masking/KNN |
+| `x_model` | tensor `[N,182]` | entrada comum de encoder, downstream, masking e KNN |
 | `edge_index` | tensor `[2,E]` | índices locais válidos e intrassnapshot |
 | `labels` | tensor `[N]` ou null | `1`, `0`, `-1` em 1–34; null na visão de desenvolvimento de 35–49 |
 | `digest` | SHA-256 | cobre IDs, features, labels e arestas |
@@ -62,11 +63,10 @@ Relacionamento: SourceDataset 1→49 TemporalSnapshots; Transaction pertence a e
 | `feature_names` | list[string] | ordem canônica |
 | `center` | float[182] | calculado somente em 1–34 |
 | `scale` | float[182] | zero scale tratado explicitamente |
-| `time_step_divisor` | integer | `34`, sem consulta a 35–49 |
 | `policy` | enum | transformação declarada no config |
 | `digest` | SHA-256 | obrigatório |
 
-O estado é somente aplicado em 35–49; nunca reajustado. O time step normalizado pode exceder 1 no teste, o que é registrado e não provoca clipping ajustado pelo teste.
+O estado é somente aplicado em 35–49; nunca reajustado. `Time step` não integra o estado porque não é feature de modelo.
 
 ## 5A. TestLabelStore
 
@@ -108,6 +108,8 @@ Partição derivada deterministicamente de `FunctionalBlockMap` e da seed, com t
 
 `ContrastiveView` registra política, seed/RNG state, máscara de features, arestas removidas e snapshot de origem. `PositiveSet(anchor)` é a união deduplicada de self, vizinhos `Tx→Tx` e vizinhos KNN. Deve ser disjunto de `NegativeSet(anchor)` e nunca atravessar snapshots.
 
+Para snapshot com `N` nós, KNN usa `min(K,N-1)`. Nó isolado permanece representável. Âncora sem negativo elegível não contribui à loss; zero âncoras válidas invalida a época/run.
+
 ## 10. ExperimentConfiguration
 
 Configuração validada segundo [contracts/config-schema.md](contracts/config-schema.md). Campos identitários obrigatórios: `schema_version`, `study_id`, `task`, `method_id`, `graph_schema`, `target_node_type`, `profile`, split, seed, fraction e hashes das seções científicas.
@@ -120,7 +122,7 @@ Configuração validada segundo [contracts/config-schema.md](contracts/config-sc
 | `config_digest` | SHA-256 | obrigatório |
 | `data_digest` | SHA-256 | obrigatório |
 | `code_revision` | git SHA + dirty flag | obrigatório |
-| `state` | enum | conforme máquina abaixo |
+| `state` | enum | conforme máquina abaixo, incluindo `technical_rerun` de avaliação |
 | `started_at`, `ended_at` | timestamp/null | UTC |
 | `durations` | map | prepare/pretrain/downstream/evaluate |
 | `environment` | object | SO, Python, libs, CPU/GPU/RAM |
@@ -137,6 +139,8 @@ planned -> running -> selected -> evaluating -> completed
 ```
 
 Estados `completed`, `invalid` e `failed` são terminais. `evaluate` só aceita `selected`.
+
+Um `technical_rerun` não é uma nova seleção: referencia o run original e exige igualdade de config, dados, pesos, threshold e revisão. Qualquer diferença cria análise exploratória separada.
 
 ## 12. ModelSelection
 
@@ -158,6 +162,8 @@ Métrica indefinida por ausência de classe é `null` com razão, nunca zero inv
 ## 14. StatisticalComparison
 
 Contém método proposto, baseline, fração, métrica, cinco diferenças pareadas, média, desvio padrão, IC 95%, t, p bruto, p Holm, Cohen's `d_z` e interpretação limitada. Existem exatamente quatro comparações primárias por métrica.
+
+O objeto somente pode ter estado `inferential` com cinco pares completos e definidos; caso contrário é `descriptive_incomplete` e os campos `ci`, `t`, `p` e `effect_size` são `null` com razão.
 
 ## 15. HeterogeneousExtensionDecision
 
