@@ -6,7 +6,7 @@ graph_schema: tx_tx
 target_node_type: transaction
 profile: smoke
 paths:
-  data_root: datasets/elliptic-plus-plus
+  data_root: elliptic-plus-plus/raw
   artifacts_root: artifacts/s003
 data:
   required_files: [txs_features.csv, txs_classes.csv, txs_edgelist.csv]

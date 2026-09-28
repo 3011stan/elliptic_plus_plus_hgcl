@@ -1,0 +1,13 @@
+schema_version: 1
+study_id: s003
+groups:
+  local:
+    causal: true
+    source: Elliptic transaction-local feature dictionary; values belong to the transaction snapshot.
+  aggregate:
+    causal: true
+    source: Elliptic Tx-to-Tx aggregation over the observed intrastep graph; cross-step edges are rejected.
+  augmented:
+    causal: true
+    source: Elliptic++ transaction fields computed from the transaction inputs and outputs present at its snapshot.
+excluded: [txId, Time step]

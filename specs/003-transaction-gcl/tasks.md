@@ -60,32 +60,32 @@
 
 ### Tests for User Story 1
 
-- [ ] T019 [P] [US1] Write source-schema tests for required core CSVs, optional address CSVs, 183 non-ID columns, 182 model features, class mapping, duplicate IDs, and invalid references in `tests/s003/contract/test_data_contract.py` — FR-003–FR-004, FR-039, FR-043
-- [ ] T020 [P] [US1] Write causal feature-audit tests for local, aggregate, augmented, identifier, and time-step groups in `tests/s003/unit/test_feature_audit.py` — FR-003, FR-010–FR-011, FR-039
-- [ ] T021 [P] [US1] Write snapshot tests for `edge_index[0]=source`, `edge_index[1]=target`, PyG `source_to_target`, intrastep edges, duplicate/self-loop accounting, empty-edge graphs, isolated nodes, and canonical external-ID mapping in `tests/s003/unit/test_snapshots.py` — FR-002, FR-007, FR-037, FR-042–FR-043
-- [ ] T022 [P] [US1] Write nested stratified budget tests for all fractions/seeds, 80/20 fit-validation pools, rounding, class preservation, refit union, and hash stability in `tests/s003/unit/test_budgets.py` — FR-017–FR-018, FR-042
-- [ ] T023 [P] [US1] Write augmentation and positive-set tests for exactly two stochastic/block representations, KNN-only positive expansion, successor-only structural positives, snapshot-local KNN, `min(K,N-1)`, deduplication, and positive-negative disjointness in `tests/s003/unit/test_augmentations.py` and `tests/s003/unit/test_positives.py` — FR-009–FR-014, FR-037, FR-040, FR-043
-- [ ] T024 [P] [US1] Write GIN 2×128, shared-encoder, symmetric multi-positive loss, invalid-anchor, and finite-gradient tests in `tests/s003/unit/test_models.py` — FR-008, FR-013–FR-015, FR-040, FR-043
-- [ ] T025 [P] [US1] Write TestLabelStore sealing, exact shadow partition, 205-cell cohort accounting with selected/terminal states, single global release, frozen-threshold, and post-release mutation/repeated-release rejection tests in `tests/s003/contract/test_evaluation_access.py` — FR-005–FR-007, FR-028, FR-038, SC-001–SC-002
-- [ ] T026 [P] [US1] Write an end-to-end temporal-isolation dry-run test with original-data marker, deterministic 256-node smoke cap, full-snapshot batching, and exact smoke/dry-run epoch limits in `tests/s003/integration/test_temporal_isolation.py` — FR-005–FR-008, FR-028, FR-038, SC-002, SC-007
-- [ ] T027 [P] [US1] Write reload determinism tests for exact manifests and `rtol=1e-5`, `atol=2e-6` neural scores/classes in `tests/s003/integration/test_reproducibility.py` — FR-042, SC-003
+- [X] T019 [P] [US1] Write source-schema tests for required core CSVs, optional address CSVs, 183 non-ID columns, 182 model features, class mapping, duplicate IDs, and invalid references in `tests/s003/contract/test_data_contract.py` — FR-003–FR-004, FR-039, FR-043
+- [X] T020 [P] [US1] Write causal feature-audit tests for local, aggregate, augmented, identifier, and time-step groups in `tests/s003/unit/test_feature_audit.py` — FR-003, FR-010–FR-011, FR-039
+- [X] T021 [P] [US1] Write snapshot tests for `edge_index[0]=source`, `edge_index[1]=target`, PyG `source_to_target`, intrastep edges, duplicate/self-loop accounting, empty-edge graphs, isolated nodes, and canonical external-ID mapping in `tests/s003/unit/test_snapshots.py` — FR-002, FR-007, FR-037, FR-042–FR-043
+- [X] T022 [P] [US1] Write nested stratified budget tests for all fractions/seeds, 80/20 fit-validation pools, rounding, class preservation, refit union, and hash stability in `tests/s003/unit/test_budgets.py` — FR-017–FR-018, FR-042
+- [X] T023 [P] [US1] Write augmentation and positive-set tests for exactly two stochastic/block representations, KNN-only positive expansion, successor-only structural positives, snapshot-local KNN, `min(K,N-1)`, deduplication, and positive-negative disjointness in `tests/s003/unit/test_augmentations.py` and `tests/s003/unit/test_positives.py` — FR-009–FR-014, FR-037, FR-040, FR-043
+- [X] T024 [P] [US1] Write GIN 2×128, shared-encoder, symmetric multi-positive loss, invalid-anchor, and finite-gradient tests in `tests/s003/unit/test_models.py` — FR-008, FR-013–FR-015, FR-040, FR-043
+- [X] T025 [P] [US1] Write TestLabelStore sealing, exact shadow partition, 205-cell cohort accounting with selected/terminal states, single global release, frozen-threshold, and post-release mutation/repeated-release rejection tests in `tests/s003/contract/test_evaluation_access.py` — FR-005–FR-007, FR-028, FR-038, SC-001–SC-002
+- [X] T026 [P] [US1] Write an end-to-end temporal-isolation dry-run test with original-data marker, deterministic 256-node smoke cap, full-snapshot batching, and exact smoke/dry-run epoch limits in `tests/s003/integration/test_temporal_isolation.py` — FR-005–FR-008, FR-028, FR-038, SC-002, SC-007
+- [X] T027 [P] [US1] Write reload determinism tests for exact manifests and `rtol=1e-5`, `atol=2e-6` neural scores/classes in `tests/s003/integration/test_reproducibility.py` — FR-042, SC-003
 
 ### Implementation for User Story 1
 
-- [ ] T028 [US1] Implement read-only core-source discovery, schema validation, hashes, class mapping, and optional address-file inventory in `src/hgcl/studies/s003/data.py` — FR-003–FR-004, FR-039, FR-043
-- [ ] T029 [US1] Implement the versioned per-feature-group causal availability audit and stop condition in `src/hgcl/studies/s003/data.py` — FR-039
-- [ ] T030 [US1] Implement 49 canonical directed snapshots, external-ID maps, edge validation/deduplication, and manifests in `src/hgcl/studies/s003/data.py` — FR-002, FR-007, FR-037, FR-042–FR-043
-- [ ] T031 [US1] Implement fit-only normalization for the 182 financial features and immutable preprocessing state in `src/hgcl/studies/s003/data.py` — FR-003, FR-005–FR-006
-- [ ] T032 [P] [US1] Implement deterministic nested label budgets and 80/20 internal pools in `src/hgcl/studies/s003/splits.py` — FR-017–FR-018
-- [ ] T033 [P] [US1] Implement sealed test-label storage, exact engineering shadow partition, cohort-level single global release, per-member access audit, and post-release mutation guard in `src/hgcl/studies/s003/evaluation.py` — FR-005–FR-007, FR-028, FR-038
-- [ ] T034 [P] [US1] Implement PyG `source_to_target` directed GIN 2×128, projection head, and frozen embedding extraction in `src/hgcl/studies/s003/models.py` — FR-008, FR-015–FR-016, FR-037
-- [ ] T035 [P] [US1] Implement stochastic and functional-block transformations with deterministic generators in `src/hgcl/studies/s003/augmentations.py` — FR-009–FR-011, FR-020
-- [ ] T036 [US1] Implement per-snapshot cosine KNN, self/successor/KNN positive masks, full-snapshot negatives, invalid-anchor handling, and stable ID tie-breaking in `src/hgcl/studies/s003/positives.py` — FR-012–FR-014, FR-037, FR-040, FR-043
-- [ ] T037 [US1] Implement the symmetric GCPAL-compatible multi-positive loss over stochastic/block embeddings in `src/hgcl/studies/s003/models.py` — FR-013–FR-014, FR-040
-- [ ] T038 [US1] Implement label-free fixed-epoch SSL training, diagnostics capture, resource guards, and checkpoint hooks in `src/hgcl/studies/s003/training.py` — FR-008, FR-023, FR-025, FR-028, FR-046
-- [ ] T039 [US1] Implement frozen-encoder `H‖X_tx` MLP search, F1/MCC selection, threshold freezing, and full-budget refit in `src/hgcl/studies/s003/training.py` — FR-016, FR-018, FR-023
-- [ ] T040 [P] [US1] Implement pooled and per-snapshot MCC, illicit F1/precision/recall, PR-AUC, null metric reasons, and support accounting in `src/hgcl/studies/s003/evaluation.py` — FR-023–FR-024, FR-044
-- [ ] T041 [US1] Implement independent snapshot inference, immutable predictions, and resumable evaluation of every frozen cohort member after one global test release in `src/hgcl/studies/s003/evaluation.py` — FR-005–FR-007, FR-024, FR-038
+- [X] T028 [US1] Implement read-only core-source discovery, schema validation, hashes, class mapping, and optional address-file inventory in `src/hgcl/studies/s003/data.py` — FR-003–FR-004, FR-039, FR-043
+- [X] T029 [US1] Implement the versioned per-feature-group causal availability audit and stop condition in `src/hgcl/studies/s003/data.py` — FR-039
+- [X] T030 [US1] Implement 49 canonical directed snapshots, external-ID maps, edge validation/deduplication, and manifests in `src/hgcl/studies/s003/data.py` — FR-002, FR-007, FR-037, FR-042–FR-043
+- [X] T031 [US1] Implement fit-only normalization for the 182 financial features and immutable preprocessing state in `src/hgcl/studies/s003/data.py` — FR-003, FR-005–FR-006
+- [X] T032 [P] [US1] Implement deterministic nested label budgets and 80/20 internal pools in `src/hgcl/studies/s003/splits.py` — FR-017–FR-018
+- [X] T033 [P] [US1] Implement sealed test-label storage, exact engineering shadow partition, cohort-level single global release, per-member access audit, and post-release mutation guard in `src/hgcl/studies/s003/evaluation.py` — FR-005–FR-007, FR-028, FR-038
+- [X] T034 [P] [US1] Implement PyG `source_to_target` directed GIN 2×128, projection head, and frozen embedding extraction in `src/hgcl/studies/s003/models.py` — FR-008, FR-015–FR-016, FR-037
+- [X] T035 [P] [US1] Implement stochastic and functional-block transformations with deterministic generators in `src/hgcl/studies/s003/augmentations.py` — FR-009–FR-011, FR-020
+- [X] T036 [US1] Implement per-snapshot cosine KNN, self/successor/KNN positive masks, full-snapshot negatives, invalid-anchor handling, and stable ID tie-breaking in `src/hgcl/studies/s003/positives.py` — FR-012–FR-014, FR-037, FR-040, FR-043
+- [X] T037 [US1] Implement the symmetric GCPAL-compatible multi-positive loss over stochastic/block embeddings in `src/hgcl/studies/s003/models.py` — FR-013–FR-014, FR-040
+- [X] T038 [US1] Implement label-free fixed-epoch SSL training, diagnostics capture, resource guards, and checkpoint hooks in `src/hgcl/studies/s003/training.py` — FR-008, FR-023, FR-025, FR-028, FR-046
+- [X] T039 [US1] Implement frozen-encoder `H‖X_tx` MLP search, F1/MCC selection, threshold freezing, and full-budget refit in `src/hgcl/studies/s003/training.py` — FR-016, FR-018, FR-023
+- [X] T040 [P] [US1] Implement pooled and per-snapshot MCC, illicit F1/precision/recall, PR-AUC, null metric reasons, and support accounting in `src/hgcl/studies/s003/evaluation.py` — FR-023–FR-024, FR-044
+- [X] T041 [US1] Implement independent snapshot inference, immutable predictions, and resumable evaluation of every frozen cohort member after one global test release in `src/hgcl/studies/s003/evaluation.py` — FR-005–FR-007, FR-024, FR-038
 - [ ] T042 [US1] Orchestrate `prepare`, `audit`, exact-profile shadow dry-run, selected model, cohort sealing, and guarded global evaluation flows in `src/hgcl/studies/s003/pipeline.py` — FR-004–FR-008, FR-026–FR-029, FR-038–FR-039
 - [ ] T043 [US1] Wire `doctor`, `prepare`, `audit`, `dry-run`, and `evaluate` handlers in `src/hgcl/studies/s003/cli.py` — FR-028–FR-029, FR-038, FR-046
 - [ ] T044 [US1] Run and make green the US1 contract/unit/integration suite in `tests/s003/`, recording the smoke evidence path in `docs/studies/s003/status.md` — SC-002–SC-003, SC-007
