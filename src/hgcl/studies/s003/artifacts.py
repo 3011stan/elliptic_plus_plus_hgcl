@@ -105,6 +105,27 @@ class ArtifactStore:
 
 
 @dataclass(frozen=True)
+class EmbeddingCacheKey:
+    method_id: str
+    variant_id: str
+    seed: int
+    data_digest: str
+    config_digest: str
+    code_revision: str
+
+    def __post_init__(self) -> None:
+        if not _is_sha256(self.data_digest) or not _is_sha256(self.config_digest):
+            raise ArtifactError("embedding cache requires data/config SHA-256 digests")
+        if len(self.code_revision) != 40:
+            raise ArtifactError("embedding cache requires a commit revision")
+
+    @property
+    def digest(self) -> str:
+        payload = json.dumps(asdict(self), sort_keys=True, separators=(",", ":"))
+        return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+@dataclass(frozen=True)
 class DryRunApproval:
     approval_id: str
     approved_by: str

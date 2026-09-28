@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 import yaml
+import hgcl.studies.s003.cli as cli_module
 
 from hgcl.studies.s003.cli import CommandError, build_parser, run
 
@@ -70,6 +72,24 @@ def test_structural_dry_run_writes_no_training_artifacts(
     prepared = tmp_path / "prepared"
     prepared.mkdir()
     monkeypatch.chdir(tmp_path)
+    fake_prepared = SimpleNamespace(data_digest="a" * 64)
+    monkeypatch.setattr(cli_module, "load_prepared", lambda *_args, **_kwargs: fake_prepared)
+    monkeypatch.setattr(
+        cli_module,
+        "run_structural_dry_run",
+        lambda *_args, **_kwargs: {
+            "study_id": "s003",
+            "profile": "dry-run",
+            "config_digest": "b" * 64,
+            "data_digest": "a" * 64,
+            "design_digest": "c" * 64,
+            "cells": [f"cell-{index}" for index in range(205)],
+            "expected_p1_cells": 205,
+            "training_performed": False,
+            "inference_performed": False,
+            "test_labels_materialized": False,
+        },
+    )
 
     code = run(
         [
@@ -90,6 +110,7 @@ def test_structural_dry_run_writes_no_training_artifacts(
     assert payload["expected_p1_cells"] == 205
     run_root = tmp_path / "artifacts" / "s003" / "runs" / "s003-dry-structural"
     assert (run_root / "run.json").is_file()
+    assert (run_root / "design.json").is_file()
     assert not (run_root / "checkpoints").exists()
     assert not (run_root / "predictions").exists()
     assert not (run_root / "metrics").exists()

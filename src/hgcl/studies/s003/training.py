@@ -164,6 +164,9 @@ def search_downstream(
     seed: int,
 ) -> DownstreamSelection:
     inputs = torch.cat((embeddings.detach(), features.detach()), dim=1)
+    fit_labels = labels[fit_indices]
+    positives = max(1, int(fit_labels.sum()))
+    fit_pos_weight = (len(fit_labels) - positives) / positives
     candidates = []
     for hidden in (64, 128):
         for learning_rate in (1e-3, 3e-4):
@@ -178,7 +181,7 @@ def search_downstream(
     frozen_marker = nn.Parameter(embeddings.detach().clone(), requires_grad=False)
     return DownstreamSelection(
         model=best[5], threshold=best[6], f1_illicit=best[0], mcc=best[1],
-        hyperparameters={"hidden": best[7], "learning_rate": best[8], "weight_decay": best[9]},
+        hyperparameters={"hidden": best[7], "learning_rate": best[8], "weight_decay": best[9], "fit_pos_weight": fit_pos_weight},
         input_dim=inputs.shape[1], encoder_parameters=(frozen_marker,),
     )
 
@@ -198,9 +201,9 @@ def refit_downstream(
     hidden = int(selection.hyperparameters["hidden"])
     model = DownstreamMLP(inputs.shape[1], hidden)
     selected_labels = labels[refit_indices].float()
-    positives = max(1, int(selected_labels.sum()))
-    negatives = max(1, len(selected_labels) - positives)
-    criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(negatives / positives))
+    criterion = nn.BCEWithLogitsLoss(
+        pos_weight=torch.tensor(float(selection.hyperparameters["fit_pos_weight"]))
+    )
     optimizer = torch.optim.Adam(
         model.parameters(),
         lr=float(selection.hyperparameters["learning_rate"]),

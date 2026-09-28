@@ -5,7 +5,7 @@ from __future__ import annotations
 import torch
 from torch import nn
 import torch.nn.functional as functional
-from torch_geometric.nn import GINConv
+from torch_geometric.nn import GCNConv, GINConv, SAGEConv
 
 from .positives import PositiveSets
 
@@ -50,6 +50,43 @@ class S003ContrastiveModel(nn.Module):
         result = self.encode(x, edge_index).detach()
         self.train(was_training)
         return result
+
+
+class DirectedSupervisedGNN(nn.Module):
+    """Two-layer directed 128d encoder with a node-classification head."""
+
+    def __init__(self, kind: str, input_dim: int = 182) -> None:
+        super().__init__()
+        if kind not in {"gcn", "graphsage", "gin"}:
+            raise ValueError(f"unsupported supervised GNN: {kind}")
+        self.kind = kind
+        self.layers = 2
+        self.hidden_dim = 128
+        if kind == "gcn":
+            self.convolutions = nn.ModuleList(
+                [GCNConv(input_dim, 128, flow="source_to_target"), GCNConv(128, 128, flow="source_to_target")]
+            )
+        elif kind == "graphsage":
+            self.convolutions = nn.ModuleList(
+                [SAGEConv(input_dim, 128, flow="source_to_target"), SAGEConv(128, 128, flow="source_to_target")]
+            )
+        else:
+            self.convolutions = nn.ModuleList(
+                [
+                    GINConv(nn.Sequential(nn.Linear(input_dim, 128), nn.ReLU(), nn.Linear(128, 128)), train_eps=True, flow="source_to_target"),
+                    GINConv(nn.Sequential(nn.Linear(128, 128), nn.ReLU(), nn.Linear(128, 128)), train_eps=True, flow="source_to_target"),
+                ]
+            )
+        self.normalizations = nn.ModuleList([nn.LayerNorm(128), nn.LayerNorm(128)])
+        self.classifier = nn.Linear(128, 1)
+
+    def encode(self, x: torch.Tensor, edge_index: torch.Tensor) -> torch.Tensor:
+        for convolution, normalization in zip(self.convolutions, self.normalizations):
+            x = functional.relu(normalization(convolution(x, edge_index)))
+        return x
+
+    def forward(self, x: torch.Tensor, edge_index: torch.Tensor) -> torch.Tensor:
+        return self.classifier(self.encode(x, edge_index)).squeeze(-1)
 
 
 def _directional_loss(anchor: torch.Tensor, target: torch.Tensor, sets: PositiveSets, temperature: float) -> torch.Tensor:

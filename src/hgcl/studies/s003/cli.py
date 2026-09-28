@@ -14,11 +14,14 @@ from .config import ConfigError, load_config
 from .data import DataError, discover_source
 from .environment import EnvironmentError, RequiredEnvironment, doctor
 from .pipeline import (
+    audit_prepared,
     load_causal_evidence,
     load_prepared,
     persist_prepared,
     prepare_dataset,
+    run_structural_dry_run,
     run_shadow_smoke,
+    validate_guarded_evaluation,
 )
 
 
@@ -144,9 +147,7 @@ def default_handlers() -> dict[str, Handler]:
         def action() -> Mapping[str, Any]:
             config = load_config(args.config)
             prepared = load_prepared(args.prepared, config)
-            if not prepared.feature_audit.passed or prepared.test_access_count:
-                raise ArtifactError("prepared dataset failed temporal audit")
-            return {"status": "valid", "data_digest": prepared.data_digest, "test_label_accesses": 0, "artifacts": []}
+            return {**audit_prepared(prepared), "artifacts": []}
         return _translate_errors(action)
 
     def smoke_handler(args: argparse.Namespace) -> Mapping[str, Any]:
@@ -158,8 +159,15 @@ def default_handlers() -> dict[str, Handler]:
             result = run_shadow_smoke(config, prepared.training_snapshots, device=config.raw["resources"]["device"])
             store = ArtifactStore(config.raw["paths"]["artifacts_root"])
             relative = Path("runs") / args.run_id / "run.json"
-            path = store.write_json(relative, result)
-            return {"status": "complete", "engineering_only": True, "artifacts": [str(path)]}
+            envelope = store.envelope(
+                artifact_type="smoke_run",
+                config_digest=config.digest,
+                data_digest=prepared.data_digest,
+                code_revision={"commit": "working-tree", "dirty": True},
+                payload=result,
+            )
+            path = store.write_json(relative, envelope)
+            return {"status": "complete", "engineering_only": True, "data_digest": prepared.data_digest, "artifacts": [str(path)]}
         return _translate_errors(action)
 
     def dry_run_handler(args: argparse.Namespace) -> Mapping[str, Any]:
@@ -167,29 +175,41 @@ def default_handlers() -> dict[str, Handler]:
             config = load_config(args.config)
             if config.profile != "dry-run":
                 raise ValueError("dry-run command requires profile=dry-run")
-            prepared = Path(args.prepared)
-            if not prepared.is_dir():
-                raise ValueError("dry-run requires an existing prepared dataset")
-            result = {
-                "study_id": "s003",
-                "profile": "dry-run",
-                "training_performed": False,
-                "test_labels_materialized": False,
-                "expected_p1_cells": config.raw["matrix"]["expected_p1_cells"],
-            }
+            prepared = load_prepared(args.prepared, config)
+            result = run_structural_dry_run(config, prepared)
             store = ArtifactStore(config.raw["paths"]["artifacts_root"])
-            relative = Path("runs") / args.run_id / "run.json"
-            path = store.write_json(relative, result)
-            return {"status": "complete", **result, "artifacts": [str(path)]}
+            prefix = Path("runs") / args.run_id
+            revision = {"commit": "working-tree", "dirty": True}
+            run_payload = {key: value for key, value in result.items() if key != "cells"}
+            run_path = store.write_json(
+                prefix / "run.json",
+                store.envelope(
+                    artifact_type="structural_dry_run",
+                    config_digest=config.digest,
+                    data_digest=prepared.data_digest,
+                    code_revision=revision,
+                    payload=run_payload,
+                ),
+            )
+            design_path = store.write_json(
+                prefix / "design.json",
+                store.envelope(
+                    artifact_type="matrix_design",
+                    config_digest=config.digest,
+                    data_digest=prepared.data_digest,
+                    code_revision=revision,
+                    payload={"design_digest": result["design_digest"], "cells": result["cells"]},
+                ),
+            )
+            return {"status": "complete", **run_payload, "artifacts": [str(run_path), str(design_path)]}
         return _translate_errors(action)
 
     def evaluate_handler(args: argparse.Namespace) -> Mapping[str, Any]:
         def action() -> Mapping[str, Any]:
-            run_path = Path(args.run)
-            cohort = run_path / "evaluation-cohort.json"
-            if not cohort.is_file():
-                raise ArtifactError("evaluate requires a sealed evaluation-cohort.json")
-            raise ArtifactError("cohort model loading is completed with the Phase 4 matrix registry")
+            gate = validate_guarded_evaluation(args.run)
+            raise ArtifactError(
+                f"cohort {gate['cohort_id']} is sealed, but model loading remains blocked until the matrix registry is implemented"
+            )
         return _translate_errors(action)
 
     return {

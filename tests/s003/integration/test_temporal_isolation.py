@@ -4,7 +4,15 @@ from hgcl.studies.s003.config import load_config
 import torch
 
 from hgcl.studies.s003.data import PreparedSnapshot
-from hgcl.studies.s003.pipeline import engineering_profile_contract, prepare_dataset, run_shadow_smoke
+from hgcl.studies.s003.pipeline import (
+    audit_prepared,
+    engineering_profile_contract,
+    load_prepared,
+    persist_prepared,
+    prepare_dataset,
+    run_shadow_smoke,
+    run_structural_dry_run,
+)
 
 
 def test_profile_contract_never_opens_real_test_labels() -> None:
@@ -33,6 +41,30 @@ def test_prepare_seals_test_labels_and_samples_by_stable_hash(s003_fixture_root)
     assert prepared.test_labels.labels is None
     assert prepared.feature_audit.passed
     assert prepared.test_access_count == 0
+    assert prepared.preprocessing.fit_steps == tuple(range(1, 35))
+
+
+def test_prepared_dataset_is_reusable_by_structural_profile(
+    s003_fixture_root, tmp_path
+) -> None:
+    smoke_config = load_config("configs/s003/smoke.yaml")
+    prepared = prepare_dataset(
+        smoke_config,
+        data_root=s003_fixture_root,
+        causal_evidence={name: {"causal": True, "source": "fixture-dictionary-v1"} for name in ("local", "aggregate", "augmented")},
+    )
+    path = persist_prepared(prepared, smoke_config, artifact_root=tmp_path / "artifacts" / "s003")
+    reloaded = load_prepared(path, load_config("configs/s003/dry-run.yaml"))
+
+    audit = audit_prepared(reloaded)
+    result = run_structural_dry_run(load_config("configs/s003/dry-run.yaml"), reloaded)
+
+    assert audit["snapshot_count"] == 49
+    assert result["expected_p1_cells"] == 205
+    assert len(result["cells"]) == len(set(result["cells"])) == 205
+    assert result["training_performed"] is False
+    assert result["inference_performed"] is False
+    assert result["test_labels_materialized"] is False
 
 
 def test_end_to_end_shadow_training_uses_only_steps_1_to_34() -> None:
