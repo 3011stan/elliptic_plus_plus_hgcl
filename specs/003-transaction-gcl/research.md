@@ -50,11 +50,19 @@
 
 ## R7 — Seleção com custo controlado
 
-**Decision**: predeclarar hiperparâmetros estruturais do SSL e congelar após o dry-run um número fixo de épocas comum às seeds, sem probe rotulado ou seleção retrospectiva de checkpoint; limitar a busca do classificador downstream a oito combinações baratas que reutilizam embeddings.
+**Decision**: predeclarar os hiperparâmetros estruturais do SSL e usar exatamente 100 épocas em toda execução aplicável da matriz e em todas as seeds, antes do dry-run estrutural, sem probe rotulado ou seleção retrospectiva de checkpoint; limitar a busca do classificador downstream a oito combinações baratas que reutilizam embeddings.
 
 **Rationale**: Inspection-L fornece precedente para épocas fixas; a decisão preserva SSL independente de rótulos, evita viés para 1% e elimina o custo de probes recorrentes. F1 ilícito/MCC continuam controlando somente seleção, early stopping e threshold supervisionados.
 
 **Alternatives considered**: busca completa do SSL foi rejeitada pelo custo; menor loss SSL em holdout não rotulado foi rejeitada porque não tem precedente no corpus e pode não se alinhar ao downstream; probe de 1% foi rejeitado por tornar a seleção do encoder dependente de rótulos e da menor fração.
+
+## R7B — Gate estrutural antes da matriz
+
+**Decision**: manter um único smoke treinado ponta a ponta e substituir o antigo dry-run treinado de uma seed por um dry-run estritamente estrutural. Ele enumera e valida as 205 células P1, identidades, budgets, splits, registry, cache, checkpoints, retomada, isolamento do teste, dependências, capacidade de recursos e projeção conservadora, registrando `training_performed=false` e `test_labels_materialized=false`.
+
+**Rationale**: depois que o smoke exercita o caminho real de treino com dados originais, repetir pré-treino e downstream abreviados no laboratório acrescenta custo de implementação e execução sem aumentar a validade científica da matriz. A validade continua sustentada pelo smoke, pelos contratos, pela auditoria estrutural e pelo aceite humano; as 205 células científicas permanecem inalteradas.
+
+**Alternatives considered**: um dry-run treinado com uma seed, 10 épocas SSL e 20 downstream foi rejeitado por duplicar a finalidade do smoke e produzir uma projeção enviesada por um protocolo abreviado. Remover o gate foi rejeitado porque eliminaria a verificação de cobertura, recursos, retomada e vínculo criptográfico antes da matriz.
 
 ## R7A — Direção da passagem de mensagens
 

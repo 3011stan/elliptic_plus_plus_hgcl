@@ -18,7 +18,7 @@ from .pipeline import (
     load_prepared,
     persist_prepared,
     prepare_dataset,
-    run_shadow_dry_run,
+    run_shadow_smoke,
 )
 
 
@@ -51,9 +51,14 @@ def build_parser() -> argparse.ArgumentParser:
     audit.add_argument("--config", required=True)
     audit.add_argument("--prepared", required=True)
 
+    smoke = commands.add_parser("smoke")
+    smoke.add_argument("--config", required=True)
+    smoke.add_argument("--prepared")
+    smoke.add_argument("--run-id", required=True, type=_s003_id)
+
     dry_run = commands.add_parser("dry-run")
     dry_run.add_argument("--config", required=True)
-    dry_run.add_argument("--prepared")
+    dry_run.add_argument("--prepared", required=True)
     dry_run.add_argument("--run-id", required=True, type=_s003_id)
 
     approve = commands.add_parser("approve-dry-run")
@@ -144,15 +149,38 @@ def default_handlers() -> dict[str, Handler]:
             return {"status": "valid", "data_digest": prepared.data_digest, "test_label_accesses": 0, "artifacts": []}
         return _translate_errors(action)
 
-    def dry_run_handler(args: argparse.Namespace) -> Mapping[str, Any]:
+    def smoke_handler(args: argparse.Namespace) -> Mapping[str, Any]:
         def action() -> Mapping[str, Any]:
             config = load_config(args.config)
+            if config.profile != "smoke":
+                raise ValueError("smoke command requires profile=smoke")
             prepared = load_prepared(args.prepared, config) if args.prepared else prepare_dataset(config, causal_evidence=load_causal_evidence())
-            result = run_shadow_dry_run(config, prepared.training_snapshots, device=config.raw["resources"]["device"])
+            result = run_shadow_smoke(config, prepared.training_snapshots, device=config.raw["resources"]["device"])
             store = ArtifactStore(config.raw["paths"]["artifacts_root"])
             relative = Path("runs") / args.run_id / "run.json"
             path = store.write_json(relative, result)
             return {"status": "complete", "engineering_only": True, "artifacts": [str(path)]}
+        return _translate_errors(action)
+
+    def dry_run_handler(args: argparse.Namespace) -> Mapping[str, Any]:
+        def action() -> Mapping[str, Any]:
+            config = load_config(args.config)
+            if config.profile != "dry-run":
+                raise ValueError("dry-run command requires profile=dry-run")
+            prepared = Path(args.prepared)
+            if not prepared.is_dir():
+                raise ValueError("dry-run requires an existing prepared dataset")
+            result = {
+                "study_id": "s003",
+                "profile": "dry-run",
+                "training_performed": False,
+                "test_labels_materialized": False,
+                "expected_p1_cells": config.raw["matrix"]["expected_p1_cells"],
+            }
+            store = ArtifactStore(config.raw["paths"]["artifacts_root"])
+            relative = Path("runs") / args.run_id / "run.json"
+            path = store.write_json(relative, result)
+            return {"status": "complete", **result, "artifacts": [str(path)]}
         return _translate_errors(action)
 
     def evaluate_handler(args: argparse.Namespace) -> Mapping[str, Any]:
@@ -168,6 +196,7 @@ def default_handlers() -> dict[str, Handler]:
         "doctor": doctor_handler,
         "prepare": prepare_handler,
         "audit": audit_handler,
+        "smoke": smoke_handler,
         "dry-run": dry_run_handler,
         "evaluate": evaluate_handler,
     }

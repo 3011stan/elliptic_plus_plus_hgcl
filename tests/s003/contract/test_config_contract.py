@@ -47,10 +47,13 @@ def test_exact_smoke_and_dry_run_limits() -> None:
 
     dry = load_config(CONFIG_ROOT / "dry-run.yaml").raw
     assert dry["data"]["max_nodes_per_snapshot"] is None
-    assert dry["labels"] == {"seeds": [11], "fractions": [0.01], "fit_ratio": 0.8}
-    assert dry["ssl"]["epochs"] == 10
-    assert dry["downstream"]["epochs"] == 20
-    assert dry["downstream"]["patience"] == 5
+    assert dry["labels"] == {"seeds": [11, 23, 37, 53, 71], "fractions": [0.01, 0.05, 0.10, 1.00], "fit_ratio": 0.8}
+    assert dry["ssl"]["epochs"] == 0
+    assert dry["downstream"]["epochs"] == 0
+    assert dry["downstream"]["patience"] == 0
+    assert dry["split"]["engineering_fit_steps"] is None
+    assert dry["split"]["shadow_test_steps"] is None
+    assert dry["evaluation"]["cohort_release"] == "none"
 
 
 @pytest.mark.parametrize(
@@ -86,11 +89,11 @@ def test_unknown_and_s02_keys_fail(tmp_path: Path) -> None:
 
 
 def test_lab_template_is_fail_closed_until_frozen(tmp_path: Path) -> None:
-    with pytest.raises(ConfigError, match="ssl.epochs"):
+    with pytest.raises(ConfigError, match="approval"):
         load_config(CONFIG_ROOT / "lab.template.yaml")
 
     raw = _raw("lab.template.yaml")
-    raw["ssl"]["epochs"] = 80
+    assert raw["ssl"]["epochs"] == 100
     raw["approval"] = {
         "approval_id": "s003-approval-001",
         "artifact_path": "matrices/s003-matrix-001/approval.json",
@@ -118,3 +121,11 @@ def test_lab_template_is_fail_closed_until_frozen(tmp_path: Path) -> None:
             code_revision="b" * 40,
             design_digest="c" * 64,
         )
+
+
+def test_lab_rejects_any_ssl_epoch_count_other_than_100(tmp_path: Path) -> None:
+    raw = _raw("lab.template.yaml")
+    raw["ssl"]["epochs"] = 99
+    raw["approval"] = {"approval_id": "s003-approval-001", "artifact_path": "approval.json"}
+    with pytest.raises(ConfigError, match="exactly 100"):
+        load_config(_write_config(tmp_path, raw))

@@ -4,18 +4,22 @@ from hgcl.studies.s003.config import load_config
 import torch
 
 from hgcl.studies.s003.data import PreparedSnapshot
-from hgcl.studies.s003.pipeline import dry_run_contract, prepare_dataset, run_shadow_dry_run
+from hgcl.studies.s003.pipeline import engineering_profile_contract, prepare_dataset, run_shadow_smoke
 
 
 def test_profile_contract_never_opens_real_test_labels() -> None:
-    smoke = dry_run_contract(load_config("configs/s003/smoke.yaml"), original_data=True)
-    dry = dry_run_contract(load_config("configs/s003/dry-run.yaml"), original_data=True)
+    smoke = engineering_profile_contract(load_config("configs/s003/smoke.yaml"), original_data=True)
+    dry = engineering_profile_contract(load_config("configs/s003/dry-run.yaml"), original_data=True)
     assert smoke["max_nodes_per_snapshot"] == 256
     assert smoke["ssl_epochs"] == 2 and smoke["downstream_epochs"] == 3
     assert dry["max_nodes_per_snapshot"] is None
-    assert dry["ssl_epochs"] == 10 and dry["downstream_epochs"] == 20
+    assert dry["ssl_epochs"] == 0 and dry["downstream_epochs"] == 0
     assert smoke["snapshot_batch_size"] == dry["snapshot_batch_size"] == 1
     assert smoke["test_labels_opened"] is False
+    assert smoke["training_performed"] is True
+    assert dry["training_performed"] is False
+    assert dry["test_labels_materialized"] is False
+    assert dry["expected_p1_cells"] == 205
 
 
 def test_prepare_seals_test_labels_and_samples_by_stable_hash(s003_fixture_root) -> None:
@@ -41,7 +45,7 @@ def test_end_to_end_shadow_training_uses_only_steps_1_to_34() -> None:
         edges = torch.tensor([list(range(count - 1)), list(range(1, count))])
         labels = torch.tensor([index % 2 for index in range(count)])
         snapshots.append(PreparedSnapshot(step, ids, x, edges, labels, {"time_step": step}, str(step) * 64))
-    result = run_shadow_dry_run(load_config("configs/s003/smoke.yaml"), snapshots, device="cpu")
+    result = run_shadow_smoke(load_config("configs/s003/smoke.yaml"), snapshots, device="cpu")
     assert result["epochs"] == {"ssl": 2, "downstream": 3}
     assert result["fit_steps"] == [1, 2]
     assert result["shadow_steps"] == [30, 31]

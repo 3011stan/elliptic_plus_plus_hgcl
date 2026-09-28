@@ -221,12 +221,11 @@ def _validate_common(raw: dict[str, Any]) -> None:
 
 def _validate_profile(raw: dict[str, Any]) -> None:
     profile = raw["profile"]
-    if profile in {"smoke", "dry-run"}:
+    if profile == "smoke":
         _fail(raw["split"]["engineering_fit_steps"] != FIT_STEPS, "invalid engineering fit steps")
         _fail(raw["split"]["shadow_test_steps"] != SHADOW_STEPS, "invalid shadow steps")
         _fail(raw["approval"] is not None, "engineering profiles cannot carry approval")
         _fail(raw["evaluation"]["cohort_release"] != "shadow_only", "invalid shadow release")
-    if profile == "smoke":
         _fail(raw["data"]["max_nodes_per_snapshot"] != 256, "smoke cap must be 256")
         _fail(raw["data"].get("sampling") != "sha256_tx_id", "invalid smoke sampling")
         _fail(raw["data"].get("sampling_salt") != "s003-smoke", "invalid smoke salt")
@@ -236,15 +235,19 @@ def _validate_profile(raw: dict[str, Any]) -> None:
         _fail(raw["downstream"]["epochs"] != 3, "smoke downstream epochs must be 3")
     elif profile == "dry-run":
         _fail(raw["data"]["max_nodes_per_snapshot"] is not None, "dry-run uses all nodes")
-        _fail(raw["labels"]["seeds"] != [11], "dry-run seed must be 11")
-        _fail(raw["labels"]["fractions"] != [0.01], "dry-run fraction must be 1%")
-        _fail(raw["ssl"]["epochs"] != 10, "dry-run ssl.epochs must be 10")
-        _fail(raw["downstream"]["epochs"] != 20, "dry-run downstream epochs must be 20")
-        _fail(raw["downstream"]["patience"] != 5, "dry-run patience must be 5")
+        _fail(raw["split"]["engineering_fit_steps"] is not None, "structural dry-run cannot fit")
+        _fail(raw["split"]["shadow_test_steps"] is not None, "structural dry-run cannot infer")
+        _fail(raw["approval"] is not None, "dry-run cannot carry approval")
+        _fail(raw["evaluation"]["cohort_release"] != "none", "dry-run cannot release labels")
+        _fail(raw["labels"]["seeds"] != ALL_SEEDS, "dry-run must enumerate all seeds")
+        _fail(raw["labels"]["fractions"] != ALL_FRACTIONS, "dry-run must enumerate all fractions")
+        _fail(raw["ssl"]["epochs"] != 0, "structural dry-run ssl.epochs must be 0")
+        _fail(raw["downstream"]["epochs"] != 0, "structural dry-run downstream epochs must be 0")
+        _fail(raw["downstream"]["patience"] != 0, "structural dry-run patience must be 0")
         _fail(raw["baselines"]["methods"] != ALL_METHODS, "dry-run must represent nine methods")
         _fail(raw["baselines"].get("include_s003_ablations") is not True, "dry-run needs ablations")
     else:
-        _fail(not isinstance(raw["ssl"]["epochs"], int) or raw["ssl"]["epochs"] <= 0, "lab ssl.epochs must be a fixed positive integer")
+        _fail(raw["ssl"]["epochs"] != 100, "lab ssl.epochs must be exactly 100")
         _fail(raw["labels"]["seeds"] != ALL_SEEDS, "lab seeds mismatch")
         _fail(raw["labels"]["fractions"] != ALL_FRACTIONS, "lab fractions mismatch")
         _fail(raw["split"]["engineering_fit_steps"] is not None, "lab cannot use engineering fit")

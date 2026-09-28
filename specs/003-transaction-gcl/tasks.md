@@ -8,6 +8,8 @@
 
 **Organization**: Tasks are grouped by user story so each story can be implemented and validated as an independent increment. Every task stays inside the S003 namespaces unless it explicitly adds the isolated `hgcl-s003` entry point or dependency metadata.
 
+**Revision 2026-09-28**: T001–T041 record completed work. The remaining work was regrouped into larger, verifiable increments after the researcher replaced the trained one-seed dry-run with a structural dry-run. This revision does not reduce the scientific matrix, methods, ablations, seeds, fractions, statistics, provenance, or test isolation.
+
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: pode ser executada em paralelo quando seus predecessores estiverem completos e não houver conflito de arquivo.
@@ -56,7 +58,7 @@
 
 **Goal**: Preparar snapshots `Tx→Tx`, pré-treinar o S003-TxGCL, selecionar/refazer o downstream e avaliar somente por meio do guard temporal.
 
-**Independent Test**: Executar o smoke/dry-run com CSVs originais e shadow test em 1–34; auditar manifests para demonstrar 182 features, encoder GIN 2×128 compartilhado, zero influência de 35–49 e inferência independente por snapshot.
+**Independent Test**: Executar o smoke treinado com CSVs originais e shadow test em 1–34, seguido do dry-run estrutural; auditar manifests para demonstrar 182 features, encoder GIN 2×128 compartilhado, zero influência de 35–49 e design íntegro sem treino adicional.
 
 ### Tests for User Story 1
 
@@ -67,7 +69,7 @@
 - [X] T023 [P] [US1] Write augmentation and positive-set tests for exactly two stochastic/block representations, KNN-only positive expansion, successor-only structural positives, snapshot-local KNN, `min(K,N-1)`, deduplication, and positive-negative disjointness in `tests/s003/unit/test_augmentations.py` and `tests/s003/unit/test_positives.py` — FR-009–FR-014, FR-037, FR-040, FR-043
 - [X] T024 [P] [US1] Write GIN 2×128, shared-encoder, symmetric multi-positive loss, invalid-anchor, and finite-gradient tests in `tests/s003/unit/test_models.py` — FR-008, FR-013–FR-015, FR-040, FR-043
 - [X] T025 [P] [US1] Write TestLabelStore sealing, exact shadow partition, 205-cell cohort accounting with selected/terminal states, single global release, frozen-threshold, and post-release mutation/repeated-release rejection tests in `tests/s003/contract/test_evaluation_access.py` — FR-005–FR-007, FR-028, FR-038, SC-001–SC-002
-- [X] T026 [P] [US1] Write an end-to-end temporal-isolation dry-run test with original-data marker, deterministic 256-node smoke cap, full-snapshot batching, and exact smoke/dry-run epoch limits in `tests/s003/integration/test_temporal_isolation.py` — FR-005–FR-008, FR-028, FR-038, SC-002, SC-007
+- [X] T026 [P] [US1] Write an end-to-end temporal-isolation profile test with original-data marker, deterministic 256-node trained smoke, full-snapshot batching, and structural dry-run with zero training epochs in `tests/s003/integration/test_temporal_isolation.py` — FR-005–FR-008, FR-028, FR-038, SC-002, SC-007
 - [X] T027 [P] [US1] Write reload determinism tests for exact manifests and `rtol=1e-5`, `atol=2e-6` neural scores/classes in `tests/s003/integration/test_reproducibility.py` — FR-042, SC-003
 
 ### Implementation for User Story 1
@@ -86,11 +88,11 @@
 - [X] T039 [US1] Implement frozen-encoder `H‖X_tx` MLP search, F1/MCC selection, threshold freezing, and full-budget refit in `src/hgcl/studies/s003/training.py` — FR-016, FR-018, FR-023
 - [X] T040 [P] [US1] Implement pooled and per-snapshot MCC, illicit F1/precision/recall, PR-AUC, null metric reasons, and support accounting in `src/hgcl/studies/s003/evaluation.py` — FR-023–FR-024, FR-044
 - [X] T041 [US1] Implement independent snapshot inference, immutable predictions, and resumable evaluation of every frozen cohort member after one global test release in `src/hgcl/studies/s003/evaluation.py` — FR-005–FR-007, FR-024, FR-038
-- [ ] T042 [US1] Orchestrate `prepare`, `audit`, exact-profile shadow dry-run, selected model, cohort sealing, and guarded global evaluation flows in `src/hgcl/studies/s003/pipeline.py` — FR-004–FR-008, FR-026–FR-029, FR-038–FR-039
-- [ ] T043 [US1] Wire `doctor`, `prepare`, `audit`, `dry-run`, and `evaluate` handlers in `src/hgcl/studies/s003/cli.py` — FR-028–FR-029, FR-038, FR-046
-- [ ] T044 [US1] Run and make green the US1 contract/unit/integration suite in `tests/s003/`, recording the smoke evidence path in `docs/studies/s003/status.md` — SC-002–SC-003, SC-007
+- [X] T042 [US1] Reconcile config, artifact, and CLI contracts with the approved profile change: add the trained `smoke` command, make `dry-run` structural with zero training epochs, require `ssl.epochs=100` for `lab`, require `training_performed=false` and `test_labels_materialized=false`, and update the affected contract/integration tests and profile YAMLs — FR-023, FR-028–FR-029, FR-038
+- [ ] T043 [US1] Complete and test `prepare`, `audit`, trained smoke, structural dry-run, selected-model/cohort sealing, guarded evaluation, and their `doctor`/`prepare`/`audit`/`smoke`/`dry-run`/`evaluate` CLI handlers in `src/hgcl/studies/s003/pipeline.py` and `src/hgcl/studies/s003/cli.py` — FR-004–FR-008, FR-026–FR-029, FR-038–FR-039, FR-046
+- [ ] T044 [US1] Run and make green the US1 contract/unit/integration suite, proving that smoke trains only on the engineering partition and structural dry-run creates no checkpoint, prediction, model metric, or test-label access — SC-002–SC-003, SC-007
 
-**Checkpoint**: O método principal percorre o pipeline em shadow data sem abrir os rótulos reais de teste. Este é o MVP implementável.
+**Checkpoint**: O método principal percorre o smoke em shadow data e o dry-run estrutural audita o design sem abrir os rótulos reais de teste. Este é o MVP implementável.
 
 ---
 
@@ -100,32 +102,16 @@
 
 **Independent Test**: Gerar o design de 205 células P1, executar uma matriz reduzida com IDs compartilhados e demonstrar que baselines/ablações reutilizam budgets, que masking tem cardinalidade pareada e que estatística só é inferencial com cinco pares completos.
 
-### Tests for User Story 2
-
-- [ ] T045 [P] [US2] Write exact-cardinality functional, random-group, random-individual, no-KNN, no-edge-dropout, and reverse-edge ablation tests in `tests/s003/unit/test_ablations.py` — FR-020, FR-037
-- [ ] T046 [P] [US2] Write method-adapter contract tests for all nine matrix methods, including Inspection-L and GCPAL characteristic components in `tests/s003/contract/test_method_registry.py` — FR-015, FR-021–FR-022, FR-041
-- [ ] T047 [P] [US2] Write canonical design tests for 180 main cells, five H-only cells, twenty additional P1 ablations, optional five P2 cells, and deduplication in `tests/s003/unit/test_matrix_design.py` — FR-017, FR-019–FR-022, SC-001, SC-005
-- [ ] T048 [P] [US2] Write fairness tests for identical IDs, splits, seeds, target, directed graph, fit-only prevalence, selection policy, and evaluation policy across adapters in `tests/s003/integration/test_method_fairness.py` — FR-022–FR-023, FR-037, FR-041
-- [ ] T049 [P] [US2] Write alignment, uniformity, and effective-rank aggregation tests by snapshot/seed in `tests/s003/unit/test_diagnostics.py` — FR-025
-- [ ] T050 [P] [US2] Write paired t, t-interval, Cohen `d_z`, Holm-family, zero-SD, incomplete-pair, and claim-gate tests in `tests/s003/unit/test_statistics.py` — FR-036, FR-044–FR-045
-- [ ] T051 [P] [US2] Write pooled-versus-snapshot reporting and 205-cell coverage tests in `tests/s003/integration/test_matrix_reporting.py` — FR-024, FR-026–FR-027, SC-001, SC-004–SC-005
-
-### Implementation for User Story 2
-
-- [ ] T052 [US2] Implement MLP X-only, Random Forest 300-tree, and XGBoost adapters with shared fit-only prevalence policy in `src/hgcl/studies/s003/baselines.py` — FR-021–FR-023, FR-041
-- [ ] T053 [US2] Implement directed two-layer GCN, GraphSAGE, and supervised GIN adapters with 128d embeddings in `src/hgcl/studies/s003/baselines.py` — FR-015, FR-021–FR-023, FR-037, FR-041
-- [ ] T054 [US2] Implement the Inspection-L adaptation with GIN 2×128, DGI, RF 100 trees, and declared Elliptic++ feature migration in `src/hgcl/studies/s003/baselines.py` — FR-015, FR-021–FR-023
-- [ ] T055 [US2] Implement the GCPAL adaptation with GIN 2×128, two stochastic views, KNN `K=10`, multi-positive loss, and two-layer `H‖X_tx` MLP in `src/hgcl/studies/s003/baselines.py` — FR-014–FR-015, FR-021–FR-023
-- [ ] T056 [US2] Implement the S003-TxGCL adapter plus `X-only`, `H-only`, and `H‖X_tx` representations in `src/hgcl/studies/s003/baselines.py` — FR-016, FR-019
-- [ ] T057 [P] [US2] Implement deterministic random-group/random-individual controls, no-KNN/no-edge-dropout variants, and gated reverse-edge augmentation in `src/hgcl/studies/s003/augmentations.py` — FR-020, FR-037
-- [ ] T058 [US2] Implement the validated method/variant registry and reject incomplete reproductions as `approximation` in `src/hgcl/studies/s003/baselines.py` — FR-021–FR-022
-- [ ] T059 [P] [US2] Implement immutable frozen-embedding cache keys and reuse across downstream fractions in `src/hgcl/studies/s003/artifacts.py` — FR-016–FR-019, FR-026, FR-042
-- [ ] T060 [US2] Implement canonical matrix design, 205-cell coverage, digest-bound approval checks, failure states, resumable scheduling without test access, and final cohort sealing in `src/hgcl/studies/s003/pipeline.py` — FR-017, FR-019–FR-022, FR-027–FR-029, FR-038
-- [ ] T061 [P] [US2] Implement alignment, uniformity, and effective-rank per-snapshot/seed aggregation in `src/hgcl/studies/s003/evaluation.py` — FR-025
-- [ ] T062 [P] [US2] Implement paired comparisons, t intervals/tests, Cohen `d_z`, Holm correction, incomplete-pair handling, and scientific claim gates in `src/hgcl/studies/s003/statistics.py` — FR-036, FR-044–FR-045
-- [ ] T063 [US2] Implement matrix coverage, pooled/per-snapshot tables, temporal series, ablation attribution, and statistical report assembly in `src/hgcl/studies/s003/evaluation.py` — FR-024–FR-025, FR-035–FR-036, FR-044–FR-045
-- [ ] T064 [US2] Wire `approve-dry-run`, `matrix`, and `report` handlers with evidence/design digest binding and fail-closed approval enforcement in `src/hgcl/studies/s003/cli.py` — FR-027–FR-029
-- [ ] T065 [US2] Run and make green all US2 tests, persisting only non-scientific reduced-matrix evidence under `artifacts/s003/` — SC-001, SC-004–SC-005
+- [ ] T045 [P] [US2] Implement and contract-test the nine-method registry, shared adapter interface, identical budgets/splits/seeds/target/evaluation policy, fit-only prevalence, directed-flow invariant, and `approximation` marking for incomplete reproductions — FR-015, FR-021–FR-023, FR-037, FR-041
+- [ ] T046 [US2] Implement and test MLP X-only, Random Forest 300-tree, and XGBoost adapters with the shared prevalence and selection policies in `src/hgcl/studies/s003/baselines.py` — FR-021–FR-023, FR-041
+- [ ] T047 [US2] Implement and test directed two-layer GCN, GraphSAGE, and supervised GIN adapters with 128-dimensional embeddings — FR-015, FR-021–FR-023, FR-037, FR-041
+- [ ] T048 [US2] Implement and test faithful Elliptic++ adaptations of Inspection-L (GIN 2×128, DGI, RF 100) and GCPAL (GIN 2×128, two stochastic views, K=10 multi-positive loss, two-layer `H‖X_tx` MLP), declaring unavoidable migration differences — FR-014–FR-015, FR-021–FR-023
+- [ ] T049 [P] [US2] Implement and test the S003-TxGCL adapter, `X-only`/`H-only`/`H‖X_tx`, exact-cardinality functional/random-group/random-individual controls, no-KNN/no-edge-dropout variants, and gated reverse-edge P2 variant — FR-016, FR-019–FR-020, FR-037
+- [ ] T050 [US2] Implement and test the canonical design of 205 P1 cells, optional five P2 cells, immutable embedding-cache keys, digest-bound approval compatibility, and the structural dry-run coverage/resource/resume plan — FR-017, FR-019–FR-022, FR-026, FR-028–FR-029, SC-001, SC-005
+- [ ] T051 [US2] Implement and test resumable matrix scheduling, explicit failure states, cache reuse across fractions, zero pre-evaluation test access, 205-cell accounting, and final evaluation-cohort sealing — FR-016–FR-019, FR-027–FR-029, FR-038, FR-042
+- [ ] T052 [P] [US2] Implement and test representation diagnostics, pooled/per-snapshot reporting, temporal series, ablation attribution, paired t intervals/tests, Cohen `d_z`, Holm correction, incomplete-pair behavior, and scientific claim gates — FR-024–FR-025, FR-035–FR-036, FR-044–FR-045, SC-004
+- [ ] T053 [US2] Wire and integration-test `approve-dry-run`, `matrix`, and `report`, including fail-closed digest binding and a tiny non-scientific matrix fixture — FR-027–FR-029, SC-001, SC-004–SC-005
+- [ ] T054 [US2] Run and make green all US2 tests, persisting only non-scientific fixture evidence under `artifacts/s003/` — SC-001, SC-004–SC-005
 
 **Checkpoint**: Toda comparação científica está implementada e verificável em escala reduzida, sem autorização para executar a matriz completa.
 
@@ -137,23 +123,10 @@
 
 **Independent Test**: Selecionar uma linha do relatório reduzido e reconstruir todos os insumos e decisões por `run_id`; interromper/retomar uma run e demonstrar que estados incompletos não entram como sucesso.
 
-### Tests for User Story 3
-
-- [ ] T066 [P] [US3] Write lineage tests from a report row through run, config, source, budget, selection, predictions, metrics, and code revision in `tests/s003/contract/test_lineage.py` — FR-004, FR-026, SC-006
-- [ ] T067 [P] [US3] Write run-state, atomic-transition, terminal-state, timeout, disk-full, and no-overwrite tests in `tests/s003/unit/test_run_state.py` — FR-027, FR-038
-- [ ] T068 [P] [US3] Write checkpoint interruption/resume and post-unblinding `technical_rerun` integration tests in `tests/s003/integration/test_resume.py` — FR-026–FR-027, FR-038, FR-042
-
-### Implementation for User Story 3
-
-- [ ] T069 [P] [US3] Implement source, preparation, run, environment, selection, and evaluation manifests with file hashes in `src/hgcl/studies/s003/provenance.py` — FR-004, FR-026, SC-006
-- [ ] T070 [P] [US3] Implement atomic run-state transitions, failure categorization, phase-aware interruption, and terminal immutability in `src/hgcl/studies/s003/artifacts.py` — FR-027
-- [ ] T071 [P] [US3] Implement checkpoints containing model, optimizer, epoch, RNGs, dependency versions, and compatibility digests in `src/hgcl/studies/s003/training.py` — FR-026–FR-027, FR-042
-- [ ] T072 [US3] Implement strict resume validation and prediction reload equivalence in `src/hgcl/studies/s003/pipeline.py` — FR-027, FR-042, SC-003
-- [ ] T073 [US3] Implement evaluation-access logging and `technical_rerun_of` enforcement in `src/hgcl/studies/s003/evaluation.py` — FR-038
-- [ ] T074 [US3] Implement row-level lineage and explicit missing/failed/invalid/interrupted coverage in `src/hgcl/studies/s003/evaluation.py` — FR-026–FR-027, SC-001, SC-006
-- [ ] T075 [US3] Wire `resume` and provenance-query output into `src/hgcl/studies/s003/cli.py` — FR-026–FR-027, FR-038
-- [ ] T076 [US3] Add the end-to-end arbitrary-result reconstruction scenario in `tests/s003/integration/test_lineage_roundtrip.py` — SC-006
-- [ ] T077 [US3] Run and make green all US3 provenance/resume tests, inspect that no completed artifact is mutated, and record the result in `docs/studies/s003/status.md` — SC-003, SC-006
+- [ ] T055 [P] [US3] Implement and test source/preparation/run/environment/selection/evaluation manifests, atomic run-state transitions, failure categorization, terminal immutability, and checkpoint contents with hashes, RNGs and dependency versions — FR-004, FR-026–FR-027, FR-042, SC-006
+- [ ] T056 [US3] Implement and integration-test strict resume, reload equivalence, evaluation-access logging, and post-unblinding `technical_rerun_of` enforcement without permitting reselection — FR-026–FR-027, FR-038, FR-042, SC-003
+- [ ] T057 [US3] Implement and test row-level lineage, explicit incomplete-state coverage, `resume`/provenance CLI output, and an end-to-end arbitrary-result reconstruction scenario — FR-026–FR-027, SC-001, SC-006
+- [ ] T058 [US3] Run and make green all US3 tests and verify that no completed artifact is mutated — SC-003, SC-006
 
 **Checkpoint**: Qualquer resultado reduzido possui cadeia de custódia reconstruível e estados incompletos permanecem explícitos.
 
@@ -165,18 +138,8 @@
 
 **Independent Test**: Executar o gate com arquivos de endereço ausentes, features globais não causais e projeção acima do orçamento; cada caso deve produzir `defer` rastreável sem bloquear o núcleo homogêneo.
 
-### Tests for User Story 4
-
-- [ ] T078 [P] [US4] Write gate-decision contract tests for causality, supervision, comparability, resources, approval, and include/defer invariants in `tests/s003/contract/test_hetero_gate.py` — FR-030–FR-032
-- [ ] T079 [P] [US4] Write integration tests proving missing address files and failed gates do not block homogeneous preparation/reporting in `tests/s003/integration/test_hetero_nonblocking.py` — FR-030, FR-032, SC-008
-
-### Implementation for User Story 4
-
-- [ ] T080 [P] [US4] Implement address-file inventory and causal timestamp/aggregation evidence collection in `src/hgcl/studies/s003/hetero/gate.py` — FR-030–FR-031
-- [ ] T081 [P] [US4] Implement supervision and target-alignment checks against homogeneous budgets and transaction IDs in `src/hgcl/studies/s003/hetero/gate.py` — FR-030–FR-031
-- [ ] T082 [US4] Implement memory/time projection and four-gate include/defer decision assembly in `src/hgcl/studies/s003/hetero/gate.py` — FR-030–FR-032
-- [ ] T083 [US4] Persist `HeterogeneousExtensionDecision` evidence and wire `hetero-gate` in `src/hgcl/studies/s003/cli.py` — FR-030–FR-032, SC-008
-- [ ] T084 [US4] Run and make green all US4 tests without creating an Addr↔Tx encoder or training run, recording the result in `docs/studies/s003/status.md` — SC-008
+- [ ] T059 [P] [US4] Write the heterogeneous-gate contract and nonblocking integration tests for causality, supervision, comparability, resources, approval, missing files, and include/defer invariants — FR-030–FR-032, SC-008
+- [ ] T060 [US4] Implement address evidence inventory, causal/supervision/target/resource checks, persisted `HeterogeneousExtensionDecision`, and `hetero-gate` CLI; make US4 tests green without creating an encoder or training run — FR-030–FR-032, SC-008
 
 **Checkpoint**: A extensão possui decisão reproduzível; implementação heterogênea continua fora de escopo até aceite futuro explícito.
 
@@ -186,13 +149,11 @@
 
 **Purpose**: Fechar documentação, validação integrada e evidências do dry-run sem iniciar a matriz científica.
 
-- [ ] T085 [P] Update S003 usage, command examples, artifact lifecycle, and S02 boundary in `README.md` and `docs/studies/s003/context.md` — FR-033–FR-034
-- [ ] T086 [P] Add requirement-to-test/task traceability and implementation status fields to `docs/studies/s003/status.md` — FR-026, SC-006
-- [ ] T087 Run the complete `tests/s003/` suite plus historical regression tests and record command/results in `docs/studies/s003/status.md` — FR-033–FR-034, SC-009
-- [ ] T088 Execute the Mac smoke path from `specs/003-transaction-gcl/quickstart.md`, verify ≤10 minutes training and zero test-label access, and record evidence under `artifacts/s003/` — FR-028, FR-038, SC-007
-- [ ] T089 Execute the one-seed laboratory dry-run, produce resource/timing/matrix projections with 20% margin and a proposed immutable lab config, and write the review package under `artifacts/s003/` — FR-028–FR-029, SC-007
-- [ ] T090 Stop and request explicit researcher acceptance of the dry-run evidence and proposed lab config; only after acceptance materialize the byte-identical proposal as `configs/s003/lab.yaml`, then invoke `approve-dry-run` to bind its digest and produce `approval.json`, without launching the matrix, recording both paths in `docs/studies/s003/status.md` — FR-023, FR-029, FR-037
-- [ ] T091 Re-run contract checks, `git diff --check`, S02 frozen-path audit, and the quickstart release gate; update `docs/studies/s003/status.md` with remaining limitations — FR-033–FR-035, SC-009–SC-010
+- [ ] T061 [P] Update S003 usage, command examples, artifact lifecycle, requirement traceability, implementation status, and the S02 boundary in `README.md`, `docs/studies/s003/context.md`, and `docs/studies/s003/status.md` — FR-026, FR-033–FR-034, SC-006
+- [ ] T062 Run the complete `tests/s003/` suite, historical regression tests, contract checks, `git diff --check`, and frozen-S02-path audit; record exact commands/results and remaining limitations — FR-033–FR-035, SC-009–SC-010
+- [ ] T063 Execute the trained Mac smoke from `quickstart.md`, verify ≤10 minutes and zero test-label access, and record its non-scientific evidence under `artifacts/s003/` — FR-028, FR-038, SC-007
+- [ ] T064 Execute the laboratory `doctor` and structural dry-run without training; verify exactly 205 P1 cells, `ssl.epochs=100` in the proposed immutable lab config, zero test-label materialization, cache/checkpoint/resume plans, resource capacity, and a documented duration projection with 20% margin — FR-023, FR-028–FR-029, SC-007
+- [ ] T065 Stop and request explicit researcher acceptance of the smoke/dry-run evidence and proposed lab config; only after acceptance materialize the byte-identical proposal as `configs/s003/lab.yaml`, invoke `approve-dry-run`, rerun the release checks, and record `approval.json` without launching the matrix — FR-023, FR-029, FR-037, SC-009–SC-010
 
 **Final Checkpoint**: Software e protocolo estão prontos para uma decisão humana sobre a matriz; nenhuma célula científica completa foi executada automaticamente.
 
@@ -213,7 +174,7 @@
 ### User Story Dependency Graph
 
 ```text
-Setup -> Foundation -> US1 (MVP) -> US2 -> Polish/dry-run gate
+Setup -> Foundation -> US1 (MVP) -> US2 -> Polish/structural gate
                          └-------> US3 ----┘
                    └------------> US4 (non-blocking gate)
 ```
@@ -224,14 +185,14 @@ Setup -> Foundation -> US1 (MVP) -> US2 -> Polish/dry-run gate
 - Implementar dados/modelos antes de orquestração e handlers CLI.
 - Congelar interfaces e manifests antes dos testes de integração.
 - Não avançar ao teste real 35–49 em smoke, dry-run ou implementação.
-- Não iniciar T090 sem evidências de T087–T089 completas.
+- Não iniciar T065 sem evidências de T062–T064 completas.
 
 ## Parallel Opportunities
 
 - Setup T003–T006 pode avançar em paralelo após confirmação de T001/T002 quando aplicável.
 - Testes foundational T007, T009, T011, T013, T015, T017 e T018 ocupam arquivos distintos.
 - Em US1, testes T019–T027 podem ser escritos em paralelo; após dados básicos, splits, guard, modelo e augmentations também se separam por arquivo.
-- Em US2, os testes dos adapters podem avançar separadamente, mas T052–T056 são sequenciais por compartilharem `baselines.py`; controles e estatística permanecem paralelizáveis em módulos distintos antes da integração no registry.
+- Em US2, adapters que compartilham `baselines.py` são sequenciais; T049 e T052 podem avançar em módulos distintos depois de T045.
 - US3 e US4 podem avançar paralelamente após US1, pois provenance e gate heterogêneo têm superfícies distintas.
 
 ## Parallel Example: User Story 1
@@ -246,13 +207,12 @@ Task T025: contrato de blindagem em tests/s003/contract/test_evaluation_access.p
 ## Parallel Example: User Story 2
 
 ```text
-Task T052: baselines tabulares em src/hgcl/studies/s003/baselines.py
-Task T057: controles de ablação em src/hgcl/studies/s003/augmentations.py
-Task T061: diagnósticos em src/hgcl/studies/s003/evaluation.py
-Task T062: estatística em src/hgcl/studies/s003/statistics.py
+Task T046: baselines tabulares em src/hgcl/studies/s003/baselines.py
+Task T049: controles de ablação em src/hgcl/studies/s003/augmentations.py
+Task T052: diagnósticos e estatística em módulos distintos
 ```
 
-T052 não deve ser executada simultaneamente com T053–T056 porque compartilham `baselines.py`; os testes correspondentes e T057/T061/T062 permanecem paralelizáveis.
+T046 não deve ser executada simultaneamente com T047–T048 porque compartilham `baselines.py`; T049 e partes de T052 permanecem paralelizáveis.
 
 ---
 
@@ -262,7 +222,7 @@ T052 não deve ser executada simultaneamente com T053–T056 porque compartilham
 
 1. Completar Setup e Foundation.
 2. Implementar US1 com testes primeiro.
-3. Parar após T044 e demonstrar o dry-run em shadow data.
+3. Parar após T044 e demonstrar o smoke em shadow data e o dry-run estrutural.
 4. Não adicionar baselines ou matriz até o pipeline temporal estar auditável.
 
 ### Incremental Delivery
@@ -271,12 +231,12 @@ T052 não deve ser executada simultaneamente com T053–T056 porque compartilham
 2. **US2**: baselines, ablações, matriz reduzida e estatística.
 3. **US3**: cadeia de custódia e retomada completa.
 4. **US4**: decisão heterogênea não bloqueante.
-5. **Polish**: smoke, dry-run de uma seed e parada para aceite.
+5. **Polish**: smoke treinado, dry-run estrutural e parada para aceite.
 
 ### Research Matrix Boundary
 
 - Implementar o executor da matriz faz parte do SDD.
-- Executar smoke e dry-run faz parte da validação de engenharia.
+- Executar o smoke treinado e o dry-run estrutural faz parte da validação de engenharia.
 - Executar as 205 células P1 ou cinco células P2 não está autorizado por este `tasks.md`.
 - Qualquer impedimento, incompatibilidade do laboratório ou necessidade de alterar protocolo exige interrupção e consulta ao pesquisador.
 

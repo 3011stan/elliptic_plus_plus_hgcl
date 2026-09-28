@@ -30,8 +30,10 @@ histórica explícita.
 - Teste: time steps 35–49 intocados, inferência independente por snapshot.
 - Métricas primárias: MCC e F1 da classe ilícita; também Precision, Recall e PR-AUC.
 - Ablações completas concentradas no regime de 1%.
-- Encoder SSL treinado por número fixo de épocas, congelado após o dry-run e sem
-  seleção por probe rotulado.
+- Encoder SSL treinado por exatamente 100 épocas em toda execução aplicável da
+  matriz, predeclaradas antes do dry-run e sem seleção por probe rotulado.
+- Smoke treinado ponta a ponta; dry-run pré-matriz estritamente estrutural, sem
+  treino, inferência ou materialização de rótulos de teste.
 - Resultado agregado principal calculado sobre as predições concatenadas de
   35–49, acompanhado de resultados por snapshot.
 

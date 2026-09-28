@@ -51,8 +51,8 @@ features financeiras. `Time step` permanece metadado de partição e auditoria.
 
 ## D003-010 — Seleção do SSL
 
-O encoder SSL usa número fixo de épocas definido após o dry-run e congelado antes
-do teste. Não há probe rotulado nem seleção downstream de checkpoint do encoder.
+Substituída por D003-016. A decisão anterior previa definir o número fixo de
+épocas após um dry-run treinado.
 
 ## D003-011 — Equivalência dos baselines
 
@@ -69,7 +69,8 @@ snapshot permanecem obrigatórios para auditoria temporal.
 
 ## D003-013 — Blindagem e single-unblinding
 
-Smoke e dry-run usam shadow test dentro de 1–34. Antes de abrir rótulos 35–49,
+O smoke usa shadow test dentro de 1–34; o dry-run estrutural não executa
+inferência nem materializa rótulos. Antes de abrir rótulos 35–49,
 todas as 205 células P1 devem ter seleção, pesos e threshold congelados em um
 manifesto de coorte. Uma única liberação global avalia a coorte sem permitir nova
 seleção; cada acesso físico é auditado por coorte e run. Retomada ou rerun técnico
@@ -79,10 +80,9 @@ mantêm os mesmos hashes, pesos e threshold e ficam registrados.
 
 O smoke usa no máximo 256 nós por snapshot por seleção de hash estável,
 `engineering_fit_steps=1..29`, `shadow_test_steps=30..34`, um snapshot completo
-por batch, duas épocas SSL e três downstream. O dry-run de laboratório usa todos
-os nós de 1–34, a mesma divisão shadow, um snapshot completo por batch, seed 11,
-fração 1%, dez épocas SSL e vinte downstream com paciência cinco. Ambos são
-evidência de engenharia, nunca resultado científico.
+por batch, duas épocas SSL e três downstream. A definição anterior do dry-run
+treinado foi substituída por D003-016. O smoke é evidência de engenharia, nunca
+resultado científico.
 
 ## D003-015 — Aprovação do dry-run
 
@@ -90,3 +90,17 @@ O aceite é materializado por `DryRunApproval`, vinculado aos digests de dados,
 configuração, código e pacote de evidências, à janela máxima de custo aceita, à
 identidade declarada do pesquisador e ao instante UTC. Aprovação incompatível,
 alterada ou reutilizada para outro design falha fechado.
+
+## D003-016 — Dry-run estrutural e 100 épocas SSL
+
+Decisão aceita pelo pesquisador em 2026-09-28. O smoke permanece como única
+validação treinada pré-matriz. O dry-run é estritamente estrutural: não treina,
+não executa inferência e registra `training_performed=false` e
+`test_labels_materialized=false`. Ele valida as 205 células P1, identidades,
+budgets, splits, registry, cache, checkpoints, retomada, isolamento do teste,
+dependências, capacidade e projeção conservadora antes do aceite humano.
+
+Toda execução aplicável da matriz usa exatamente 100 épocas SSL em cada seed,
+predeclaradas antes do dry-run estrutural e nunca escolhidas por probe, rótulo,
+convergência observada ou métrica downstream. A matriz científica e suas 205
+células não foram reduzidas.

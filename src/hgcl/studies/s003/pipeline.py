@@ -165,7 +165,7 @@ def load_prepared(path: str | Path, config: S003Config) -> PreparedDataset:
     return PreparedDataset(source, tuple(snapshots), training, preprocessing, audit, test_store, data_digest)
 
 
-def dry_run_contract(config: S003Config, *, original_data: bool) -> dict[str, object]:
+def engineering_profile_contract(config: S003Config, *, original_data: bool) -> dict[str, object]:
     if config.profile not in {"smoke", "dry-run"}:
         raise ValueError("dry-run contract requires an engineering profile")
     raw = config.raw
@@ -177,26 +177,31 @@ def dry_run_contract(config: S003Config, *, original_data: bool) -> dict[str, ob
         "snapshot_batch_size": raw["ssl"]["snapshot_batch_size"],
         "ssl_epochs": raw["ssl"]["epochs"],
         "downstream_epochs": raw["downstream"]["epochs"],
-        "fit_steps": tuple(raw["split"]["engineering_fit_steps"]),
-        "shadow_steps": tuple(raw["split"]["shadow_test_steps"]),
+        "fit_steps": tuple(raw["split"]["engineering_fit_steps"] or ()),
+        "shadow_steps": tuple(raw["split"]["shadow_test_steps"] or ()),
         "test_labels_opened": False,
+        "training_performed": config.profile == "smoke",
+        "test_labels_materialized": False,
+        "expected_p1_cells": raw["matrix"]["expected_p1_cells"],
     }
 
 
-def run_shadow_dry_run(
+def run_shadow_smoke(
     config: S003Config,
     snapshots,
     *,
     device: str = "cpu",
 ) -> dict[str, object]:
-    """Run the engineering-only pipeline against a shadow partition in 1..34."""
+    """Run the trained engineering smoke against a shadow partition in 1..34."""
+    if config.profile != "smoke":
+        raise ValueError("trained shadow execution requires profile=smoke")
     raw = config.raw
     configured_fit = set(raw["split"]["engineering_fit_steps"])
     configured_shadow = set(raw["split"]["shadow_test_steps"])
     fit_snapshots = [snapshot for snapshot in snapshots if snapshot.time_step in configured_fit and snapshot.x.shape[0]]
     shadow_snapshots = [snapshot for snapshot in snapshots if snapshot.time_step in configured_shadow and snapshot.x.shape[0]]
     if not fit_snapshots or not shadow_snapshots:
-        raise ValueError("shadow dry-run requires non-empty fit and shadow snapshots")
+        raise ValueError("shadow smoke requires non-empty fit and shadow snapshots")
     if any(snapshot.time_step >= 35 for snapshot in fit_snapshots + shadow_snapshots):
         raise ValueError("engineering pipeline cannot consume steps 35..49")
 

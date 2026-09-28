@@ -24,9 +24,9 @@ O S003 será implementado sob `hgcl.studies.s003`, exposto pelo comando `hgcl-s0
 
 **Project Type**: pacote Python e CLI offline para experimentos científicos
 
-**Performance Goals**: smoke training no Mac em até 10 minutos, com preparação medida separadamente; inferência de cada snapshot sem exceder 4,5 GiB de VRAM no laboratório; dry-run deve medir duração e projetar o custo da matriz antes da autorização
+**Performance Goals**: smoke training no Mac em até 10 minutos, com preparação medida separadamente; inferência de cada snapshot sem exceder 4,5 GiB de VRAM no laboratório; dry-run estrutural deve validar o design e produzir uma projeção conservadora do custo da matriz antes da autorização
 
-**Constraints**: zero acesso aos passos 35–49 antes da avaliação final; pico de RAM alvo de 8 GiB no smoke e 24 GiB no laboratório; um snapshot completo por batch; smoke limitado a 256 nós por snapshot, duas épocas SSL e três downstream; dry-run de laboratório sem recorte de nós, com dez épocas SSL e vinte downstream; checkpoints atômicos e retomáveis; nenhuma gravação nos CSVs; nenhum artefato do S02 usado implicitamente; matriz completa bloqueada até aceite explícito do dry-run
+**Constraints**: zero acesso aos passos 35–49 antes da avaliação final; pico de RAM alvo de 8 GiB no smoke e 24 GiB no laboratório; um snapshot completo por batch; smoke limitado a 256 nós por snapshot, duas épocas SSL e três downstream; dry-run estrutural sem treino, inferência ou materialização de rótulos de teste; exatamente 100 épocas SSL nas execuções aplicáveis da matriz; checkpoints atômicos e retomáveis; nenhuma gravação nos CSVs; nenhum artefato do S02 usado implicitamente; matriz completa bloqueada até aceite explícito do gate pré-matriz
 
 **Scale/Scope**: 203.769 transações, 234.355 arestas intrassnapshot, 49 snapshots, 183 colunas não identificadoras por transação (`Time step` + 182 features financeiras), entrada `X_tx` com 182 dimensões, quatro frações, cinco sementes fixas, oito famílias de baseline e cinco famílias de ablação obrigatória em 1%, além de uma ablação P2 bidirecional condicionada a recursos
 
@@ -39,7 +39,7 @@ O S003 será implementado sob `hgcl.studies.s003`, exposto pelo comando `hgcl-s0
 | I. Especificação e decisões rastreáveis | Cinco clarificações persistidas; contratos e decisões técnicas abaixo são definidos antes das tasks. | PASS |
 | II. Integridade temporal | Preparação separa 1–34 de 35–49; transforms e KNN são ajustados sem teste; avaliação abre snapshots de teste somente no estágio final. | PASS |
 | III. Dados e proveniência | CSVs somente leitura, hashes obrigatórios, IDs externos separados de índices tensoriais e manifests imutáveis. | PASS |
-| IV. Validação e reprodução | Smoke original limitado, dry-run de uma semente, seeds fixas, limites explícitos e registro do ambiente. | PASS |
+| IV. Validação e reprodução | Smoke treinado limitado, dry-run estrutural das 205 células, seeds fixas, limites explícitos e registro do ambiente. | PASS |
 | V. Comparação justa | Registry de métodos impõe splits, IDs, seeds, métricas e orçamento comuns; resultado negativo permanece válido. | PASS |
 | VI. Isolamento entre estudos | Novo pacote, CLI, configs, testes e artefatos S003; S02 permanece congelado. | PASS |
 
@@ -66,12 +66,13 @@ As decisões e alternativas estão consolidadas em [research.md](research.md). N
 1. `doctor` valida ambiente, dispositivo, versões, dados, espaço e limites.
 2. `prepare` verifica hashes, schema e referências; cria snapshots, normalizador e budgets sem expor os rótulos de 35–49 às APIs de desenvolvimento.
 3. `audit` valida isolamento temporal, classes, cardinalidades, pares contrastivos e manifests.
-4. `dry-run` percorre preparação, pré-treino, downstream, seleção, inferência e relatório em recorte dos CSVs originais, usando um `shadow_test` contido em 1–34; ele não calcula métricas em 35–49.
-5. O pesquisador registra `approve-dry-run`; sem esse registro compatível, `matrix` falha fechado.
-6. `matrix` executa combinações declaradas com checkpoint/retomada e estados explícitos, mas não abre rótulos 35–49; ao terminar, contabiliza as 205 células como selecionadas ou falhas terminais e congela as runs selecionadas em `evaluation-cohort.json`.
-7. `evaluate` realiza uma única liberação global dos rótulos 35–49 e avalia todas as runs congeladas na coorte. Novas seleções ficam proibidas após essa transição.
-8. `report` consolida métricas, diagnósticos, estatística pareada e cobertura da matriz.
-9. `hetero-gate` produz uma decisão independente; sua falha não bloqueia o núcleo homogêneo.
+4. `smoke` percorre preparação, pré-treino, downstream, seleção, inferência no `shadow_test` contido em 1–34 e relatório usando o recorte determinístico dos CSVs originais.
+5. `dry-run` valida estruturalmente as 205 células P1, IDs, digests, budgets, splits, métodos, variantes, cache, checkpoints, retomada, isolamento do teste, dependências, recursos e projeção conservadora; não treina, não executa inferência e não materializa rótulos de 35–49.
+6. O pesquisador registra `approve-dry-run`; sem esse registro compatível, `matrix` falha fechado.
+7. `matrix` executa combinações declaradas com checkpoint/retomada e estados explícitos, mas não abre rótulos 35–49; ao terminar, contabiliza as 205 células como selecionadas ou falhas terminais e congela as runs selecionadas em `evaluation-cohort.json`.
+8. `evaluate` realiza uma única liberação global dos rótulos 35–49 e avalia todas as runs congeladas na coorte. Novas seleções ficam proibidas após essa transição.
+9. `report` consolida métricas, diagnósticos, estatística pareada e cobertura da matriz.
+10. `hetero-gate` produz uma decisão independente; sua falha não bloqueia o núcleo homogêneo.
 
 ### Política de dados e features
 
@@ -90,8 +91,8 @@ Para cada seed `[11, 23, 37, 53, 71]`, cada classe conhecida recebe uma permuta�
 ### Modelo e visões
 
 - Encoder principal: GIN com duas camadas, dimensão escondida/embedding 128, normalização por camada e projeção contrastiva de 128 dimensões.
-- Pré-treino: no máximo 100 épocas, Adam, `lr=1e-3`, `weight_decay=1e-5`, temperatura `0,2`, `K=10`, edge dropout `0,1` e feature masking independente `0,1` na visão estocástica.
-- Checkpoint SSL: o número de épocas é fixado após o dry-run a partir de custo e convergência de engenharia, registrado no config `lab` e congelado antes de 35–49. O encoder final usa exatamente esse número de épocas em cada seed; não há probe rotulado, early stopping do encoder orientado por métrica downstream nem escolha retrospectiva de checkpoint no SSL. Curvas de loss, alignment, uniformity e effective rank são diagnósticas.
+- Pré-treino: exatamente 100 épocas em toda execução aplicável da matriz, Adam, `lr=1e-3`, `weight_decay=1e-5`, temperatura `0,2`, `K=10`, edge dropout `0,1` e feature masking independente `0,1` na visão estocástica.
+- Checkpoint SSL: as 100 épocas são predeclaradas no config `lab` antes do dry-run estrutural e usadas em cada seed; não há probe rotulado, early stopping do encoder orientado por métrica downstream nem escolha retrospectiva de checkpoint no SSL. Curvas de loss, alignment, uniformity e effective rank são diagnósticas.
 - Perda: variante GCPAL compatível com soma dos positivos dentro do log; positivos são self, sucessores na direção original `source_tx_id→target_tx_id` e KNN, deduplicados e excluídos dos negativos.
 - Combinação das visões: o encoder compartilhado produz `z_stochastic` e `z_block`; a loss é a média de `L(z_stochastic→z_block)` e `L(z_block→z_stochastic)`. A visão KNN não cria um terceiro encoder: amplia a máscara positiva usada nos dois sentidos. Cada termo usa os demais nós elegíveis do mesmo snapshot/batch como negativos após remover o conjunto positivo; âncoras sem negativo são ignoradas e uma época sem âncora válida é inválida.
 - KNN: cosseno sobre os 182 atributos financeiros normalizados, separado por snapshot, sem self-loop duplicado e com desempate estável por `txId`.
@@ -101,10 +102,10 @@ Para cada seed `[11, 23, 37, 53, 71]`, cada classe conhecida recebe uma permuta�
 ### Perfis de engenharia
 
 - `smoke`: prepara os manifests completos, mas treina sobre recorte de no máximo 256 nós por snapshot escolhido por ordenação crescente de `SHA-256("s003-smoke" || tx_id)`; usa `engineering_fit_steps=1..29`, `shadow_test_steps=30..34`, um snapshot completo por batch, duas épocas SSL, três épocas downstream e uma seed exclusivamente de engenharia. O recorte é induzido sobre os nós selecionados e não consulta classes.
-- `dry-run`: usa todos os nós e arestas dos passos 1–34, `engineering_fit_steps=1..29`, `shadow_test_steps=30..34`, um snapshot completo por batch, seed 11, fração 1%, dez épocas SSL, vinte épocas downstream e paciência cinco. Executa uma célula representativa de cada um dos nove métodos e as quatro ablações adicionais do S003 necessárias à projeção; não acessa 35–49 nem produz evidência científica.
-- `lab`: usa dados completos, épocas SSL congeladas após o dry-run e o protocolo científico integral. Não contém limites de recorte.
+- `dry-run`: é estritamente estrutural e não treina nem infere. Enumera as 205 células P1 e valida design, IDs, digests, budgets, splits, registry, cache, checkpoints, retomada, isolamento do teste, dependências, capacidade do ambiente e projeção conservadora. Produz `training_performed=false` e `test_labels_materialized=false`.
+- `lab`: usa dados completos, cinco seeds, exatamente 100 épocas SSL em toda execução aplicável e o protocolo científico integral. Não contém limites de recorte.
 
-Um batch de grafo é exatamente um snapshot; todos os nós daquele snapshot participam juntos da propagação e da construção dos negativos. Se um snapshot exceder os limites de memória no dry-run, o gate falha e qualquer mudança de batching ou amostragem exige nova decisão científica antes da matriz.
+Um batch de grafo é exatamente um snapshot; todos os nós daquele snapshot participam juntos da propagação e da construção dos negativos. O `doctor` e o dry-run estrutural bloqueiam a matriz diante de capacidade declarada insuficiente. Se a execução real exceder memória, ela pausa em checkpoint; qualquer mudança de batching ou amostragem exige nova decisão científica.
 
 ### Controles de mascaramento
 
@@ -132,11 +133,11 @@ Os hiperparâmetros estruturais de SSL acima são predeclarados, não submetidos
 
 A matriz P1 possui 205 células de avaliação únicas: 180 da matriz principal (`9 métodos × 4 frações × 5 seeds`), cinco células adicionais de `H-only` em 1% e vinte ablações adicionais (`4 variantes além do método completo × 5 seeds`). `X-only` e `H‖X_tx` reutilizam as células canônicas correspondentes da matriz principal, sem duplicação. A ablação P2 bidirecional acrescenta cinco células somente após aprovação de recursos, elevando o total a 210. O `design.json` enumera todas as chaves canônicas antes da execução; `coverage.json` deve classificar cada uma sem criar linhas duplicadas.
 
-### Gate quantitativo do dry-run
+### Gate estrutural pré-matriz
 
-O dry-run somente pode ser aprovado quando: todos os estágios terminarem no shadow test; auditorias temporais e de identidade tiverem zero violações; retomada reproduzir IDs e digests; smoke training no Mac permanecer em até 10 minutos, com preparação separada; o dry-run do laboratório permanecer abaixo de 4,5 GiB de VRAM e 24 GiB de RAM; e o relatório apresentar duração medida por família e projeção da matriz.
+O dry-run somente pode ser aprovado quando: o smoke treinado terminar no shadow test em até 10 minutos no Mac, com preparação separada; auditorias temporais e de identidade tiverem zero violações; o design enumerar exatamente as 205 células P1 sem duplicação; IDs, budgets, splits, registry, cache, checkpoints e transições de retomada forem consistentes; o `doctor` confirmar dependências, dispositivo, espaço e capacidade declarada; e o relatório estrutural registrar `training_performed=false`, `test_labels_materialized=false` e uma projeção conservadora da matriz.
 
-A projeção soma o tempo medido de pré-treino, downstream e avaliação multiplicado pelas células/pretreinos aplicáveis e adiciona margem operacional de 20%. O arquivo de aprovação registra a janela máxima aceita pelo pesquisador. Durante a matriz, se a projeção atualizada superar em mais de 25% a duração aprovada ou qualquer limite de memória, a execução pausa em checkpoint e exige nova decisão; não reduz épocas, métodos ou seeds silenciosamente.
+A projeção parte dos componentes medidos no smoke e dos multiplicadores declarados de volume, métodos, variantes, épocas, seeds e células, documenta suas hipóteses e adiciona margem operacional de 20%. Ela é uma estimativa de planejamento, não uma medição de uma família piloto. O arquivo de aprovação registra a janela máxima aceita pelo pesquisador. Durante a matriz, a telemetria real atualiza a projeção; se ela superar em mais de 25% a duração aprovada ou qualquer limite de memória, a execução pausa em checkpoint e exige nova decisão, sem reduzir épocas, métodos ou seeds silenciosamente.
 
 `approve-dry-run` recebe um arquivo de aceite preparado pelo pesquisador e produz um `DryRunApproval` imutável contendo `approval_id`, `approved_by`, `approved_at`, digests de dados, configuração do dry-run, configuração `lab`, código, evidências e design, janela máxima de duração e autorização separada para a ablação P2. O comando rejeita evidências incompletas e o executor rejeita aprovação cujo digest não corresponda exatamente à matriz solicitada.
 
@@ -175,7 +176,7 @@ O pacote `hetero/` será criado somente para o gate e seus testes. A extensão e
 | FR-002–FR-007, FR-038–FR-039, FR-043 | política de dados, snapshots, normalização, auditoria causal, TestLabelStore, edge cases, shadow test e guard de avaliação |
 | FR-008–FR-015, FR-037, FR-040 | modelo e visões, direção, positivos, negativos, KNN, perda e orçamento comparável |
 | FR-016–FR-025, FR-041–FR-042 | budgets, downstream, desbalanceamento, determinismo, registry de baselines, seleção, métricas, ablações e diagnósticos |
-| FR-028–FR-029 | smoke, dry-run com shadow test e gate de aprovação explícita |
+| FR-028–FR-029 | smoke treinado, dry-run estrutural sem treino e gate de aprovação explícita |
 | FR-030–FR-032 | pacote e decisão do gate heterogêneo fora do caminho P1 |
 | FR-033–FR-035 | namespace S003, política de extração explícita e relatório válido com resultado negativo |
 | FR-036, FR-044–FR-045 | quatro comparações predefinidas, completude dos pares, critérios de alegação, IC, t pareado, Cohen's `d_z` e Holm |

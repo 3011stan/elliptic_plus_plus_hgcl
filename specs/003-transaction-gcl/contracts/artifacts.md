@@ -60,6 +60,7 @@ Todo JSON possui:
 - `coverage.json` enumera todas as células esperadas e classifica cada uma como completed/interrupted/invalid/failed/missing.
 - `evaluation-access.json` não contém labels; registra o digest do store selado e cada abertura autorizada dos rótulos 35–49.
 - `approval.json` segue `DryRunApproval` e vincula dados, config, código, evidências e design; divergência falha fechado.
+- O pacote do dry-run estrutural contém `design.json`, plano de cache/checkpoint/retomada, diagnóstico de capacidade e projeção documentada; declara `training_performed=false` e `test_labels_materialized=false` e não contém checkpoints, predições ou métricas de modelo.
 - `evaluation-cohort.json` contabiliza as 205 células P1, sela o subconjunto selecionado antes do teste e registra uma única transição global de `sealed` para `released`; falhas terminais permanecem explícitas e acessos físicos são auditados por membro.
 - Um `technical_rerun` registra o run original e a causa técnica; divergência de qualquer digest, peso ou threshold invalida essa classificação.
 - Manifests pequenos e relatórios destinados à dissertação podem ser exportados para localização versionada; checkpoints, Parquet volumoso e predições permanecem fora do Git.

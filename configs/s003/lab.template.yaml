@@ -39,7 +39,7 @@ ssl:
   hidden: 128
   loss: gcpal_multi_positive
   use_labels: false
-  epochs: null
+  epochs: 100
   snapshot_batch_size: 1
 downstream:
   encoder_frozen: true

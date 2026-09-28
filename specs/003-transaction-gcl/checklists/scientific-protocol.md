@@ -31,7 +31,7 @@
 ## Requirement Consistency
 
 - [x] CHK015 O uso de um probe de 1% para selecionar checkpoints SSL é consistente com a exigência de seleção por F1 ilícito e com o uso do mesmo encoder nas frações 5%, 10% e 100%? [Consistency, Spec §FR-017–FR-018, §FR-023, Plan §Modelo e visões] — Resolvido pela remoção do probe e adoção de épocas SSL fixas.
-- [x] CHK016 O shadow test do dry-run em 1–34 é consistente com a reserva desses passos para desenvolvimento e com a afirmação de que o dry-run percorre o pipeline completo? [Consistency, Spec §FR-005, §FR-028, §SC-007, Plan §Fluxo operacional]
+- [x] CHK016 O shadow test do smoke em 1–34 e a ausência de inferência no dry-run estrutural são consistentes com a reserva desses passos para desenvolvimento e com a blindagem de 35–49? [Consistency, Spec §FR-005, §FR-028, §SC-007, Plan §Fluxo operacional]
 - [x] CHK017 A preparação de features/grafo dos passos 35–49, sem exposição de labels, é consistente com o significado documentado de “teste intocado”? [Consistency, Spec §User Story 1, §FR-005–FR-007, Data Model §TestLabelStore]
 - [x] CHK018 A máquina de estados e os comandos concordam sobre quando uma run está `selected`, quando o teste pode ser aberto e quando ela se torna `completed`? [Consistency, Plan §Estado, Data Model §ExperimentRun, Contract CLI]
 - [x] CHK019 Os três controles de masking diferem somente na política declarada, mantendo idênticos cardinalidade, sorteio, encoder, perda, épocas, dados e demais aumentações? [Consistency, Spec §FR-020, Plan §Controles de mascaramento]
@@ -41,8 +41,8 @@
 ## Acceptance Criteria Quality
 
 - [x] CHK022 Os critérios de aceite definem objetivamente o que constitui “zero influência” dos passos 35–49, incluindo acesso, ajuste, seleção, logging e decisão humana? [Measurability, Spec §SC-002]
-- [x] CHK023 O gate de aprovação do dry-run enumera limites quantitativos de tempo, RAM, VRAM, cobertura e compatibilidade que devem ser satisfeitos? [Gap, Spec §FR-028–FR-029, §SC-007]
-- [x] CHK024 Está definido como a projeção de duração/custo da matriz será calculada a partir do dry-run e qual desvio exige nova autorização? [Gap, Plan §Performance Goals, §Fluxo operacional]
+- [x] CHK023 O gate de aprovação enumera limite de tempo do smoke, cobertura exata, capacidade do ambiente, compatibilidade de digests e flags negativas de treino/acesso ao teste? [Gap, Spec §FR-028–FR-029, §SC-007]
+- [x] CHK024 Está definido como a projeção de duração/custo será derivada das medições do smoke e dos multiplicadores declarados, com margem e desvio que exige nova autorização? [Gap, Plan §Performance Goals, §Gate estrutural pré-matriz]
 - [x] CHK025 A cobertura de 100% da matriz possui uma lista canônica de células esperadas e regras claras para distinguir `failed`, `invalid`, `interrupted` e `missing`? [Measurability, Spec §SC-001, Contract Artifacts]
 - [x] CHK026 A equivalência determinística exigida por SC-003 identifica exatamente quais hashes devem coincidir e quais diferenças numéricas de GPU são aceitáveis? [Clarity, Spec §SC-003, Constitution §IV]
 - [x] CHK027 O critério de “ganho consistente” usado na conclusão científica está separado e quantificado em termos de magnitude, IC, seeds e snapshots? [Gap, Spec §FR-035–FR-036, §SC-010]

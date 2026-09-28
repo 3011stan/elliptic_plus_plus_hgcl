@@ -43,7 +43,7 @@ Esperado: 49 manifests de snapshot; 203.769 transações e 234.355 arestas antes
 ## 4. Run the engineering smoke test
 
 ```bash
-.venv/bin/hgcl-s003 dry-run \
+.venv/bin/hgcl-s003 smoke \
   --config configs/s003/smoke.yaml \
   --prepared ARTIFACT_PATH \
   --run-id s003-smoke-local
@@ -63,7 +63,7 @@ Interrompa uma execução de teste após checkpoint e execute:
 
 Esperado: retomada produz os mesmos IDs e digests; alteração de config, dados ou revisão é rejeitada.
 
-## 6. Run the one-seed dry-run
+## 6. Run the structural dry-run
 
 ```bash
 .venv/bin/hgcl-s003 dry-run \
@@ -72,9 +72,9 @@ Esperado: retomada produz os mesmos IDs e digests; alteração de config, dados 
   --run-id s003-dry-run-001
 ```
 
-Revise `run.json`, `selection.json`, uso de RAM/VRAM, duração projetada e relatório do shadow test. Confirme que o audit log registra zero abertura dos rótulos 35–49. A aprovação é uma ação separada e explícita do pesquisador. Sem ela, o comando `matrix` deve terminar com código 4.
+Revise `run.json`, `design.json`, o plano de cache/checkpoint/retomada, a capacidade do ambiente e a projeção de duração. Confirme que existem exatamente 205 células P1, `training_performed=false`, `test_labels_materialized=false` e nenhum acesso aos rótulos 35–49. A aprovação é uma ação separada e explícita do pesquisador. Sem ela, o comando `matrix` deve terminar com código 4.
 
-O dry-run usa todos os nós de 1–34, passos 1–29 para ajuste de engenharia, 30–34 para shadow test, um snapshot completo por batch, seed 11, fração 1%, dez épocas SSL e vinte downstream com paciência cinco. Depois da revisão humana, o aceite é registrado separadamente:
+O dry-run não treina nem executa inferência. Ele audita a execução planejada completa, inclusive as 100 épocas SSL fixas de cada execução aplicável da matriz. Depois da revisão humana, o aceite é registrado separadamente:
 
 ```bash
 .venv/bin/hgcl-s003 approve-dry-run \
@@ -98,10 +98,10 @@ O pacote de evidências deve demonstrar:
 - nenhum acesso a 35–49 antes de `evaluate`;
 - igualdade de budgets entre métodos;
 - cardinalidade idêntica nos três controles de masking;
-- GIN 2×128, épocas SSL fixas e ausência de probe rotulado no encoder;
+- GIN 2×128, exatamente 100 épocas SSL na matriz e ausência de probe rotulado no encoder;
 - F1 ilícito pooled calculado sem ser rotulado como micro-F1;
 - cobertura e estados explícitos;
-- custo medido e projeção da matriz;
+- custo medido no smoke, hipóteses explícitas e projeção conservadora da matriz;
 - arquivos congelados do S02 sem modificação.
 - as 205 células P1 serão contabilizadas, e todas as runs selecionadas serão congeladas em uma única coorte antes da liberação global dos rótulos 35–49.
 

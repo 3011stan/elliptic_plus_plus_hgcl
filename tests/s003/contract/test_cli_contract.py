@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
+import yaml
 
 from hgcl.studies.s003.cli import CommandError, build_parser, run
 
@@ -11,6 +13,7 @@ COMMANDS = {
     "doctor",
     "prepare",
     "audit",
+    "smoke",
     "dry-run",
     "approve-dry-run",
     "matrix",
@@ -36,18 +39,60 @@ def test_success_is_json_and_requires_prefixed_identifier(capsys: pytest.Capture
         return {"status": "ready", "artifacts": []}
 
     code = run(
-        ["dry-run", "--config", "config.yaml", "--run-id", "s003-dry-001"],
-        handlers={"dry-run": handler},
+        ["smoke", "--config", "config.yaml", "--run-id", "s003-smoke-001"],
+        handlers={"smoke": handler},
     )
     assert code == 0
     payload = json.loads(capsys.readouterr().out)
     assert payload["study_id"] == "s003"
-    assert payload["command"] == "dry-run"
+    assert payload["command"] == "smoke"
 
     with pytest.raises(SystemExit):
         build_parser().parse_args(
-            ["dry-run", "--config", "config.yaml", "--run-id", "legacy-run"]
+            ["smoke", "--config", "config.yaml", "--run-id", "legacy-run"]
         )
+
+
+def test_structural_dry_run_requires_prepared_dataset() -> None:
+    with pytest.raises(SystemExit):
+        build_parser().parse_args(
+            ["dry-run", "--config", "config.yaml", "--run-id", "s003-dry-001"]
+        )
+
+
+def test_structural_dry_run_writes_no_training_artifacts(
+    tmp_path: Path, capsys: pytest.CaptureFixture, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = Path("configs/s003/dry-run.yaml")
+    raw = yaml.safe_load(source.read_text(encoding="utf-8"))
+    config_path = tmp_path / "dry-run.yaml"
+    config_path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
+    prepared = tmp_path / "prepared"
+    prepared.mkdir()
+    monkeypatch.chdir(tmp_path)
+
+    code = run(
+        [
+            "dry-run",
+            "--config",
+            str(config_path),
+            "--prepared",
+            str(prepared),
+            "--run-id",
+            "s003-dry-structural",
+        ]
+    )
+
+    assert code == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["training_performed"] is False
+    assert payload["test_labels_materialized"] is False
+    assert payload["expected_p1_cells"] == 205
+    run_root = tmp_path / "artifacts" / "s003" / "runs" / "s003-dry-structural"
+    assert (run_root / "run.json").is_file()
+    assert not (run_root / "checkpoints").exists()
+    assert not (run_root / "predictions").exists()
+    assert not (run_root / "metrics").exists()
 
 
 @pytest.mark.parametrize("exit_code", [2, 3, 4])
