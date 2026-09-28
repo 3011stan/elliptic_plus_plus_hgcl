@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-27
 
-**Status**: Draft
+**Status**: Ready for implementation
 
 **Input**: Iniciar o SDD do Estudo 003 a partir da proposta científica consolidada para classificar transações ilícitas no Elliptic++ sob escassez de rótulos, sem herdar silenciosamente o protocolo do Estudo 002.
 
@@ -111,11 +111,11 @@ Como pesquisador, quero avaliar previamente a causalidade e o custo do grafo `Ad
 - **FR-006**: Toda transformação ajustável, seleção de modelo, escolha de hiperparâmetro e threshold MUST usar somente informações permitidas dos passos 1–34. Eventual threshold ajustável MUST ser escolhido na validação interna e congelado antes do teste.
 - **FR-007**: A inferência final MUST processar cada snapshot de 35–49 sem acessar snapshots posteriores.
 - **FR-008**: O pré-treino principal MUST compartilhar o encoder entre snapshots de 1–34 e MUST NOT usar rótulos para construir visões, positivos, negativos ou a perda contrastiva.
-- **FR-009**: O pré-treino MUST oferecer três visões: perturbação estocástica controlada, mascaramento por blocos funcionais e similaridade KNN.
+- **FR-009**: O pré-treino MUST produzir duas visões aumentadas — perturbação estocástica controlada e mascaramento por blocos funcionais — e MUST usar similaridade KNN somente como mecanismo de expansão do conjunto positivo, sem criar uma terceira representação ou encoder.
 - **FR-010**: Os blocos de mascaramento MUST ser derivados do dicionário de dados, versionados e independentes das classes; MUST distinguir atributos locais, agregados de vizinhança e os 17 atributos aumentados.
 - **FR-011**: O time step e identificadores MUST NOT ser alvos do mascaramento funcional.
 - **FR-012**: O índice KNN MUST ser construído separadamente por snapshot a partir de atributos normalizados sem criar conexões entre passos temporais.
-- **FR-013**: Para cada âncora, o próprio nó, seus vizinhos `Tx→Tx` e seus vizinhos KNN MUST formar o conjunto positivo; nenhum membro desse conjunto pode integrar seus negativos.
+- **FR-013**: Para cada âncora, o próprio nó, seus sucessores na direção original `source_tx_id→target_tx_id` e seus vizinhos KNN MUST formar o conjunto positivo; predecessores estruturais só entram quando também forem sucessores por uma aresta original distinta. Nenhum membro do conjunto positivo pode integrar seus negativos.
 - **FR-014**: A perda multi-positivo MUST manter uma variante diretamente comparável à formulação do GCPAL, permitindo atribuir diferenças ao mascaramento funcional.
 - **FR-015**: O encoder principal MUST ser um GIN de duas camadas com dimensão escondida e embedding 128, alinhado estruturalmente aos baselines diretos Inspection-L e GCPAL; diferenças inevitáveis de orçamento MUST ser registradas nas análises que isolam o pré-treino.
 - **FR-016**: O resultado downstream principal MUST congelar o encoder e treinar um classificador leve sobre `H‖X_tx`.
@@ -130,7 +130,7 @@ Como pesquisador, quero avaliar previamente a causalidade e o custo do grafo `Ad
 - **FR-025**: Alignment, uniformity e effective rank MUST ser diagnósticos comparativos de representação e MUST NOT substituir as métricas downstream nem usar um threshold universal não validado.
 - **FR-026**: Cada execução MUST registrar dados, configuração, revisão, ambiente, semente, IDs amostrados, partições, duração, estado e artefatos produzidos.
 - **FR-027**: O pipeline MUST distinguir execução concluída, interrompida, inválida e falha, sem converter estados incompletos em sucesso.
-- **FR-028**: Um dry-run de uma semente MUST validar o pipeline completo, a política temporal e os limites declarados de recursos antes da liberação da matriz científica.
+- **FR-028**: Um dry-run de uma semente MUST validar o pipeline completo, a política temporal e os limites declarados de recursos antes da liberação da matriz científica. O smoke MUST usar no máximo 256 nós por snapshot, selecionados por hash estável, `engineering_fit_steps=1..29`, `shadow_test_steps=30..34`, batch de um snapshot completo, duas épocas SSL e três épocas downstream. O dry-run de laboratório MUST usar todos os nós de 1–34, a mesma divisão shadow, batch de um snapshot completo, seed 11, fração 1%, dez épocas SSL e vinte épocas downstream com paciência cinco; seus resultados são exclusivamente de engenharia.
 - **FR-029**: A execução da matriz completa MUST exigir aceite explícito das evidências do dry-run.
 - **FR-030**: A extensão `Addr↔Tx` MUST permanecer fora do caminho crítico e somente poderá entrar na matriz após aprovação documentada dos gates de causalidade, supervisão, comparabilidade e recursos.
 - **FR-031**: Se executada, a extensão heterogênea MUST classificar as mesmas transações do núcleo e MUST NOT usar atributos ou rótulos de endereço derivados de eventos posteriores ao snapshot.
@@ -139,8 +139,8 @@ Como pesquisador, quero avaliar previamente a causalidade e o custo do grafo `Ad
 - **FR-034**: Reutilização de um componente histórico MUST ser explícita, testada quanto ao contrato S003 e registrada como decisão antes de ser incorporada.
 - **FR-035**: O estudo MUST considerar cientificamente válido um resultado sem ganho sobre os baselines, desde que o protocolo e as evidências estejam completos.
 - **FR-036**: Para as comparações predefinidas do método completo contra GCPAL e Inspection-L em 1% e 5%, o relatório MUST apresentar diferenças pareadas por semente, intervalo de confiança de 95%, teste t pareado bilateral e tamanho de efeito. O plano MUST definir antes da avaliação final a correção aplicada à família dessas quatro comparações, e a conclusão MUST considerar magnitude, incerteza e consistência do efeito, sem usar `p < 0,05` isoladamente como critério de superioridade.
-- **FR-037**: Todas as GNNs da matriz principal MUST usar somente as arestas dirigidas `Tx→Tx` originais. Uma ablação P2 em 1% MAY adicionar explicitamente as arestas reversas ao S003-TxGCL, somente se aprovada no gate de recursos; ela MUST ser identificada como bidirecional e MUST NOT substituir o resultado principal dirigido.
-- **FR-038**: Smoke e dry-run MUST usar um shadow test contido em 1–34 e MUST NOT calcular métricas com rótulos de 35–49. O acesso aos rótulos 35–49 MUST ocorrer somente após seleção e threshold congelados, ser auditado por run e permitir apenas retomada ou rerun técnico com os mesmos hashes, pesos e threshold.
+- **FR-037**: Todas as GNNs da matriz principal MUST representar cada aresta original como `edge_index[0]=source_tx_id` e `edge_index[1]=target_tx_id` e usar propagação PyG `source_to_target`, de modo que o destino agregue mensagens da origem. Uma ablação P2 em 1% MAY adicionar explicitamente as arestas reversas ao S003-TxGCL, somente se aprovada no gate de recursos; ela MUST ser identificada como bidirecional e MUST NOT substituir o resultado principal dirigido.
+- **FR-038**: Smoke e dry-run MUST usar um shadow test contido em 1–34 e MUST NOT calcular métricas com rótulos de 35–49. Antes de qualquer abertura dos rótulos 35–49, todas as células P1 selecionadas MUST ser congeladas em um único manifesto de coorte com runs, hashes, pesos e thresholds. Uma única liberação global do teste MUST avaliar essa coorte sem permitir novas seleções; cada abertura física MUST ser auditada por coorte e run. Depois da liberação, somente retomada ou rerun técnico com os mesmos hashes, pesos e threshold é permitido.
 - **FR-039**: A preparação MUST produzir uma auditoria versionada de disponibilidade causal para cada grupo de features. Evidência de qualquer atributo calculado com eventos posteriores ao snapshot MUST interromper o trabalho antes do treinamento e exigir decisão do pesquisador.
 - **FR-040**: O método completo MUST produzir duas representações aumentadas por âncora — estocástica e por blocos — e otimizar uma perda multi-positivo simétrica entre elas, com pesos iguais. A visão KNN MUST somente ampliar o conjunto positivo; negativos MUST ser os demais nós elegíveis do mesmo snapshot/batch após deduplicação e exclusão integral dos positivos.
 - **FR-041**: Métodos supervisionados MUST receber os mesmos IDs e uma política de desbalanceamento calculada somente no fit: pesos inversos por classe para perdas neurais, `class_weight` equivalente para RF e `scale_pos_weight` equivalente para XGBoost. Desvios exigidos por uma reprodução MUST ser declarados.

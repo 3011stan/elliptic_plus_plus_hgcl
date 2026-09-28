@@ -49,7 +49,7 @@ IDs duplicados, referências ausentes e arestas entre time steps invalidam a pre
 | `time_step` | integer | chave única |
 | `tx_ids` | array | ordenação canônica persistida |
 | `x_model` | tensor `[N,182]` | entrada comum de encoder, downstream, masking e KNN |
-| `edge_index` | tensor `[2,E]` | índices locais válidos e intrassnapshot |
+| `edge_index` | tensor `[2,E]` | linha 0 = source, linha 1 = target; índices locais válidos e intrassnapshot |
 | `labels` | tensor `[N]` ou null | `1`, `0`, `-1` em 1–34; null na visão de desenvolvimento de 35–49 |
 | `digest` | SHA-256 | cobre IDs, features, labels e arestas |
 
@@ -106,7 +106,7 @@ Partição derivada deterministicamente de `FunctionalBlockMap` e da seed, com t
 
 ## 9. ContrastiveView / PositiveSet
 
-`ContrastiveView` registra política, seed/RNG state, máscara de features, arestas removidas e snapshot de origem. `PositiveSet(anchor)` é a união deduplicada de self, vizinhos `Tx→Tx` e vizinhos KNN. Deve ser disjunto de `NegativeSet(anchor)` e nunca atravessar snapshots.
+`ContrastiveView` registra política, seed/RNG state, máscara de features, arestas removidas e snapshot de origem. Existem somente duas representações aumentadas, estocástica e por blocos; KNN apenas expande positivos. `PositiveSet(anchor)` é a união deduplicada de self, sucessores estruturais para os quais `anchor` é `source_tx_id` e vizinhos KNN. Predecessores não entram automaticamente. O conjunto deve ser disjunto de `NegativeSet(anchor)` e nunca atravessar snapshots.
 
 Para snapshot com `N` nós, KNN usa `min(K,N-1)`. Nó isolado permanece representável. Âncora sem negativo elegível não contribui à loss; zero âncoras válidas invalida a época/run.
 
@@ -141,6 +141,39 @@ planned -> running -> selected -> evaluating -> completed
 Estados `completed`, `invalid` e `failed` são terminais. `evaluate` só aceita `selected`.
 
 Um `technical_rerun` não é uma nova seleção: referencia o run original e exige igualdade de config, dados, pesos, threshold e revisão. Qualquer diferença cria análise exploratória separada.
+
+## 11A. DryRunApproval
+
+| Campo | Tipo | Regra |
+|---|---|---|
+| `approval_id` | string | prefixo `s003-`, único |
+| `approved_by` | string | identidade declarada do pesquisador; não vazio |
+| `approved_at` | timestamp | UTC |
+| `data_digest` | SHA-256 | igual ao dry-run e à matriz |
+| `dry_run_config_digest` | SHA-256 | config usada para produzir as evidências |
+| `lab_config_digest` | SHA-256 | config científica congelada que será executada |
+| `code_revision` | git SHA + dirty flag | igual ao pacote revisado |
+| `evidence_digest` | SHA-256 | cobre relatório, auditorias e projeção |
+| `design_digest` | SHA-256 | cobre as 205 células P1 |
+| `max_projected_duration_seconds` | integer | janela máxima aceita, positiva |
+| `reverse_edge_ablation` | boolean | autorização P2 separada; default false |
+
+O artefato é imutável. Qualquer divergência de digest, expiração/revogação registrada ou tentativa de uso com outro design bloqueia `matrix` com código 4.
+
+## 11B. EvaluationCohort
+
+| Campo | Tipo | Regra |
+|---|---|---|
+| `cohort_id` | string | prefixo `s003-`, único |
+| `design_digest` | SHA-256 | exatamente o design aprovado |
+| `cells` | list | exatamente 205 chaves P1, cada uma `selected` ou em falha terminal explícita |
+| `members` | list | subconjunto `selected`; cada membro contém run, pesos, threshold e digests congelados |
+| `sealed_at` | timestamp | anterior à abertura do teste |
+| `release_state` | enum | `sealed`, `released`, `completed`, `interrupted` |
+| `released_at` | timestamp/null | preenchido uma única vez |
+| `test_store_digest` | SHA-256 | identidade do store selado, sem labels |
+
+Somente uma coorte `sealed`, com as 205 células contabilizadas e ao menos um membro selecionado, pode ser liberada. Células em falha terminal permanecem na cobertura e não são inventadas como membros avaliáveis. Após `released`, membros não podem ser adicionados, removidos ou novamente selecionados; retomada percorre somente membros ainda não concluídos com os mesmos digests.
 
 ## 12. ModelSelection
 

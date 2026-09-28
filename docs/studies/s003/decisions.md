@@ -22,9 +22,10 @@ inferir cada snapshot separadamente.
 
 ## D003-005 — Mecanismo contrastivo
 
-Usar três visões sem rótulos: perturbação estocástica, mascaramento por blocos
-funcionais e KNN. A perda multi-positivo considera o próprio nó, vizinhos `Tx→Tx`
-e vizinhos KNN como positivos, seguindo o GCPAL.
+Usar duas visões aumentadas sem rótulos: perturbação estocástica e mascaramento
+por blocos funcionais. KNN não produz uma terceira representação: apenas expande
+os positivos. A perda multi-positivo considera o próprio nó, sucessores na direção
+original `source_tx_id→target_tx_id` e vizinhos KNN como positivos.
 
 ## D003-006 — Nomenclatura
 
@@ -33,8 +34,10 @@ o grafo principal do S003 não é heterogêneo.
 
 ## D003-007 — Direção da propagação
 
-A matriz principal usa somente arestas na direção original `Tx→Tx`. Uma variante
-com arestas reversas é ablação P2 em 1% e depende do gate de recursos.
+A matriz principal codifica a aresta original como `edge_index[0]=source` e
+`edge_index[1]=target`, com propagação PyG `source_to_target`: o destino agrega
+mensagens da origem. Uma variante com arestas reversas é ablação P2 em 1% e
+depende do gate de recursos.
 
 ## D003-008 — Encoder e dimensão
 
@@ -66,6 +69,24 @@ snapshot permanecem obrigatórios para auditoria temporal.
 
 ## D003-013 — Blindagem e single-unblinding
 
-Smoke e dry-run usam shadow test dentro de 1–34. Rótulos 35–49 só podem ser
-abertos após seleção e threshold congelados; retomada ou rerun técnico mantêm os
-mesmos hashes, pesos e threshold e ficam registrados.
+Smoke e dry-run usam shadow test dentro de 1–34. Antes de abrir rótulos 35–49,
+todas as 205 células P1 devem ter seleção, pesos e threshold congelados em um
+manifesto de coorte. Uma única liberação global avalia a coorte sem permitir nova
+seleção; cada acesso físico é auditado por coorte e run. Retomada ou rerun técnico
+mantêm os mesmos hashes, pesos e threshold e ficam registrados.
+
+## D003-014 — Perfis de engenharia
+
+O smoke usa no máximo 256 nós por snapshot por seleção de hash estável,
+`engineering_fit_steps=1..29`, `shadow_test_steps=30..34`, um snapshot completo
+por batch, duas épocas SSL e três downstream. O dry-run de laboratório usa todos
+os nós de 1–34, a mesma divisão shadow, um snapshot completo por batch, seed 11,
+fração 1%, dez épocas SSL e vinte downstream com paciência cinco. Ambos são
+evidência de engenharia, nunca resultado científico.
+
+## D003-015 — Aprovação do dry-run
+
+O aceite é materializado por `DryRunApproval`, vinculado aos digests de dados,
+configuração, código e pacote de evidências, à janela máxima de custo aceita, à
+identidade declarada do pesquisador e ao instante UTC. Aprovação incompatível,
+alterada ou reutilizada para outro design falha fechado.

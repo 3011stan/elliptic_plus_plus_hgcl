@@ -24,6 +24,7 @@ artifacts/s003/
 ├── matrices/<matrix_id>/
 │   ├── design.json
 │   ├── approval.json
+│   ├── evaluation-cohort.json
 │   ├── coverage.json
 │   ├── results.parquet
 │   ├── statistics.json
@@ -58,5 +59,7 @@ Todo JSON possui:
 - Resultados pooled registram que as predições conhecidas de 35–49 foram concatenadas antes do cálculo; `f1_illicit` e `micro_f1` são campos distintos e o segundo é secundário quando reportado.
 - `coverage.json` enumera todas as células esperadas e classifica cada uma como completed/interrupted/invalid/failed/missing.
 - `evaluation-access.json` não contém labels; registra o digest do store selado e cada abertura autorizada dos rótulos 35–49.
+- `approval.json` segue `DryRunApproval` e vincula dados, config, código, evidências e design; divergência falha fechado.
+- `evaluation-cohort.json` contabiliza as 205 células P1, sela o subconjunto selecionado antes do teste e registra uma única transição global de `sealed` para `released`; falhas terminais permanecem explícitas e acessos físicos são auditados por membro.
 - Um `technical_rerun` registra o run original e a causa técnica; divergência de qualquer digest, peso ou threshold invalida essa classificação.
 - Manifests pequenos e relatórios destinados à dissertação podem ser exportados para localização versionada; checkpoints, Parquet volumoso e predições permanecem fora do Git.

@@ -14,7 +14,7 @@ O S003 será implementado sob `hgcl.studies.s003`, exposto pelo comando `hgcl-s0
 
 **Language/Version**: Python 3.11.15 (`>=3.11,<3.12`)
 
-**Primary Dependencies**: PyTorch 2.6.0, PyTorch Geometric 2.6.1, scikit-learn 1.6.1, Polars 1.x, PyArrow 18–21, NumPy 1.26–2.x, PyYAML 6.x, SciPy 1.17.1 e XGBoost 3.2.0
+**Primary Dependencies**: PyTorch 2.6.0, PyTorch Geometric 2.6.1, scikit-learn 1.6.1, Polars 1.44.2, PyArrow 21.0.0, NumPy 2.4.6, PyYAML 6.0.3, SciPy 1.17.1, XGBoost 3.2.0 e pytest 8.4.2; o laboratório usa wheels CUDA 12.4 declarados nos locks próprios
 
 **Storage**: nove CSVs originais somente leitura; Parquet para tabelas preparadas; arquivos PyTorch para tensores/checkpoints; JSON para manifests, estados e métricas; YAML para configurações versionadas
 
@@ -26,7 +26,7 @@ O S003 será implementado sob `hgcl.studies.s003`, exposto pelo comando `hgcl-s0
 
 **Performance Goals**: smoke training no Mac em até 10 minutos, com preparação medida separadamente; inferência de cada snapshot sem exceder 4,5 GiB de VRAM no laboratório; dry-run deve medir duração e projetar o custo da matriz antes da autorização
 
-**Constraints**: zero acesso aos passos 35–49 antes da avaliação final; pico de RAM alvo de 8 GiB no smoke e 24 GiB no laboratório; checkpoints atômicos e retomáveis; nenhuma gravação nos CSVs; nenhum artefato do S02 usado implicitamente; matriz completa bloqueada até aceite explícito do dry-run
+**Constraints**: zero acesso aos passos 35–49 antes da avaliação final; pico de RAM alvo de 8 GiB no smoke e 24 GiB no laboratório; um snapshot completo por batch; smoke limitado a 256 nós por snapshot, duas épocas SSL e três downstream; dry-run de laboratório sem recorte de nós, com dez épocas SSL e vinte downstream; checkpoints atômicos e retomáveis; nenhuma gravação nos CSVs; nenhum artefato do S02 usado implicitamente; matriz completa bloqueada até aceite explícito do dry-run
 
 **Scale/Scope**: 203.769 transações, 234.355 arestas intrassnapshot, 49 snapshots, 183 colunas não identificadoras por transação (`Time step` + 182 features financeiras), entrada `X_tx` com 182 dimensões, quatro frações, cinco sementes fixas, oito famílias de baseline e cinco famílias de ablação obrigatória em 1%, além de uma ablação P2 bidirecional condicionada a recursos
 
@@ -67,9 +67,9 @@ As decisões e alternativas estão consolidadas em [research.md](research.md). N
 2. `prepare` verifica hashes, schema e referências; cria snapshots, normalizador e budgets sem expor os rótulos de 35–49 às APIs de desenvolvimento.
 3. `audit` valida isolamento temporal, classes, cardinalidades, pares contrastivos e manifests.
 4. `dry-run` percorre preparação, pré-treino, downstream, seleção, inferência e relatório em recorte dos CSVs originais, usando um `shadow_test` contido em 1–34; ele não calcula métricas em 35–49.
-5. O pesquisador registra `approve-dry-run`; sem esse registro, `matrix` falha fechado.
-6. `matrix` executa combinações declaradas com checkpoint/retomada e estados explícitos.
-7. `evaluate` abre os snapshots 35–49 apenas para uma execução final selecionada e congelada.
+5. O pesquisador registra `approve-dry-run`; sem esse registro compatível, `matrix` falha fechado.
+6. `matrix` executa combinações declaradas com checkpoint/retomada e estados explícitos, mas não abre rótulos 35–49; ao terminar, contabiliza as 205 células como selecionadas ou falhas terminais e congela as runs selecionadas em `evaluation-cohort.json`.
+7. `evaluate` realiza uma única liberação global dos rótulos 35–49 e avalia todas as runs congeladas na coorte. Novas seleções ficam proibidas após essa transição.
 8. `report` consolida métricas, diagnósticos, estatística pareada e cobertura da matriz.
 9. `hetero-gate` produz uma decisão independente; sua falha não bloqueia o núcleo homogêneo.
 
@@ -92,11 +92,19 @@ Para cada seed `[11, 23, 37, 53, 71]`, cada classe conhecida recebe uma permuta�
 - Encoder principal: GIN com duas camadas, dimensão escondida/embedding 128, normalização por camada e projeção contrastiva de 128 dimensões.
 - Pré-treino: no máximo 100 épocas, Adam, `lr=1e-3`, `weight_decay=1e-5`, temperatura `0,2`, `K=10`, edge dropout `0,1` e feature masking independente `0,1` na visão estocástica.
 - Checkpoint SSL: o número de épocas é fixado após o dry-run a partir de custo e convergência de engenharia, registrado no config `lab` e congelado antes de 35–49. O encoder final usa exatamente esse número de épocas em cada seed; não há probe rotulado, early stopping do encoder orientado por métrica downstream nem escolha retrospectiva de checkpoint no SSL. Curvas de loss, alignment, uniformity e effective rank são diagnósticas.
-- Perda: variante GCPAL compatível com soma dos positivos dentro do log; positivos são self, vizinhos `Tx→Tx` e KNN, deduplicados e excluídos dos negativos.
+- Perda: variante GCPAL compatível com soma dos positivos dentro do log; positivos são self, sucessores na direção original `source_tx_id→target_tx_id` e KNN, deduplicados e excluídos dos negativos.
 - Combinação das visões: o encoder compartilhado produz `z_stochastic` e `z_block`; a loss é a média de `L(z_stochastic→z_block)` e `L(z_block→z_stochastic)`. A visão KNN não cria um terceiro encoder: amplia a máscara positiva usada nos dois sentidos. Cada termo usa os demais nós elegíveis do mesmo snapshot/batch como negativos após remover o conjunto positivo; âncoras sem negativo são ignoradas e uma época sem âncora válida é inválida.
 - KNN: cosseno sobre os 182 atributos financeiros normalizados, separado por snapshot, sem self-loop duplicado e com desempate estável por `txId`.
 - Downstream: encoder congelado; MLP de até duas camadas sobre `H‖X_tx`. A pequena grade declarada combina hidden `{64,128}`, learning rate `{1e-3,3e-4}` e weight decay `{1e-5,1e-4}`, no máximo oito candidatos, com até 100 épocas e paciência 10.
-- Propagação: todos os métodos da matriz principal recebem apenas `edge_index` na direção original `Tx→Tx`. A variante bidirecional adiciona o reverso de cada aresta apenas na ablação P2 de 1% e recebe identificador distinto.
+- Propagação: todos os métodos da matriz principal codificam `edge_index[0]=source` e `edge_index[1]=target` e usam o fluxo PyG `source_to_target`, portanto o destino agrega mensagens da origem. A variante bidirecional adiciona o reverso de cada aresta apenas na ablação P2 de 1% e recebe identificador distinto.
+
+### Perfis de engenharia
+
+- `smoke`: prepara os manifests completos, mas treina sobre recorte de no máximo 256 nós por snapshot escolhido por ordenação crescente de `SHA-256("s003-smoke" || tx_id)`; usa `engineering_fit_steps=1..29`, `shadow_test_steps=30..34`, um snapshot completo por batch, duas épocas SSL, três épocas downstream e uma seed exclusivamente de engenharia. O recorte é induzido sobre os nós selecionados e não consulta classes.
+- `dry-run`: usa todos os nós e arestas dos passos 1–34, `engineering_fit_steps=1..29`, `shadow_test_steps=30..34`, um snapshot completo por batch, seed 11, fração 1%, dez épocas SSL, vinte épocas downstream e paciência cinco. Executa uma célula representativa de cada um dos nove métodos e as quatro ablações adicionais do S003 necessárias à projeção; não acessa 35–49 nem produz evidência científica.
+- `lab`: usa dados completos, épocas SSL congeladas após o dry-run e o protocolo científico integral. Não contém limites de recorte.
+
+Um batch de grafo é exatamente um snapshot; todos os nós daquele snapshot participam juntos da propagação e da construção dos negativos. Se um snapshot exceder os limites de memória no dry-run, o gate falha e qualquer mudança de batching ou amostragem exige nova decisão científica antes da matriz.
 
 ### Controles de mascaramento
 
@@ -130,6 +138,8 @@ O dry-run somente pode ser aprovado quando: todos os estágios terminarem no sha
 
 A projeção soma o tempo medido de pré-treino, downstream e avaliação multiplicado pelas células/pretreinos aplicáveis e adiciona margem operacional de 20%. O arquivo de aprovação registra a janela máxima aceita pelo pesquisador. Durante a matriz, se a projeção atualizada superar em mais de 25% a duração aprovada ou qualquer limite de memória, a execução pausa em checkpoint e exige nova decisão; não reduz épocas, métodos ou seeds silenciosamente.
 
+`approve-dry-run` recebe um arquivo de aceite preparado pelo pesquisador e produz um `DryRunApproval` imutável contendo `approval_id`, `approved_by`, `approved_at`, digests de dados, configuração do dry-run, configuração `lab`, código, evidências e design, janela máxima de duração e autorização separada para a ablação P2. O comando rejeita evidências incompletas e o executor rejeita aprovação cujo digest não corresponda exatamente à matriz solicitada.
+
 ### Agregação das métricas
 
 Para cada seed e método, as predições conhecidas dos snapshots 35–49 são concatenadas antes do cálculo de MCC, F1 ilícito, Precision, Recall e PR-AUC pooled. O F1 pooled continua focado na classe ilícita e não é micro-F1. Cada snapshot também produz suporte e métricas próprias para tabela suplementar e curva temporal; quando uma classe estiver ausente, métricas dependentes das duas classes são `null` com razão explícita, sem substituir ou alterar o cálculo pooled.
@@ -151,7 +161,7 @@ Uma comparação inferencial exige cinco pares completos e definidos. Qualquer p
 
 ### Estado, retomada e imutabilidade
 
-Uma execução transita `planned → running → selected → evaluating → completed`, ou para `interrupted`, `invalid` ou `failed`. Somente `interrupted` pode voltar à fase registrada, sempre a partir de checkpoint compatível com hashes de config, dados e código. Timeout, falta de espaço ou interrupção com checkpoint íntegro resultam em `interrupted`; ausência de checkpoint íntegro resulta em `failed`. `completed`, `invalid` e `failed` são terminais; nova tentativa recebe novo `run_id`. Escritas de manifest/checkpoint usam arquivo temporário e renomeação atômica. `evaluate` aceita somente `selected`, registra a abertura do teste e nunca altera pesos ou threshold congelados. Se a avaliação for interrompida, ela pode apenas retomar com os mesmos hashes; corrupção exige um `technical_rerun` identificado, ainda com os mesmos pesos, threshold e configuração. Qualquer alteração após observar teste cria análise exploratória separada e não substitui o resultado confirmatório.
+Uma execução transita `planned → running → selected → evaluating → completed`, ou para `interrupted`, `invalid` ou `failed`. Somente `interrupted` pode voltar à fase registrada, sempre a partir de checkpoint compatível com hashes de config, dados e código. Timeout, falta de espaço ou interrupção com checkpoint íntegro resultam em `interrupted`; ausência de checkpoint íntegro resulta em `failed`. `completed`, `invalid` e `failed` são terminais; nova tentativa recebe novo `run_id`. Escritas de manifest/checkpoint usam arquivo temporário e renomeação atômica. Antes do teste, todas as runs P1 em estado `selected` são seladas em uma `EvaluationCohort`; depois disso, `evaluate` registra uma única liberação global, percorre somente os membros congelados e nunca altera pesos ou threshold. Se a avaliação for interrompida, ela pode apenas retomar a mesma coorte com os mesmos hashes; corrupção exige um `technical_rerun` identificado, ainda com os mesmos pesos, threshold e configuração. Qualquer alteração após observar teste cria análise exploratória separada e não substitui o resultado confirmatório.
 
 ### Extensão heterogênea
 
@@ -190,6 +200,8 @@ specs/003-transaction-gcl/
 ```
 
 ### Source Code (repository root)
+
+A árvore abaixo mostra os módulos de produção e os testes-base. Arquivos de teste especializados adicionais são enumerados de forma exaustiva em `tasks.md`.
 
 ```text
 configs/s003/

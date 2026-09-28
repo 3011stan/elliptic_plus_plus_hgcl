@@ -24,7 +24,7 @@
 - [x] CHK009 A política de direção da passagem de mensagens — somente `Tx→Tx` original ou inclusão declarada de arestas reversas — está especificada para cada GNN comparável? [Ambiguity, Spec §FR-002, Plan §Baselines e orçamento comparável]
 - [x] CHK010 A expressão “orçamento comparável” possui critérios mensuráveis para parâmetros, épocas, seleção e acesso a dados entre S003-TxGCL, GCPAL e Inspection-L? [Ambiguity, Spec §FR-015, §FR-022]
 - [x] CHK011 Os critérios que tornam uma reprodução “funcionalmente equivalente” a GCPAL ou Inspection-L estão definidos antes da implementação? [Ambiguity, Spec §FR-021]
-- [x] CHK012 A forma de combinar as três visões na perda, incluindo pares contrastivos, pesos e denominadores, está suficientemente definida para existir uma única interpretação implementável? [Clarity, Spec §FR-009, §FR-013–FR-014, Plan §Modelo e visões]
+- [x] CHK012 A forma de combinar as duas representações aumentadas e a expansão KNN dos positivos, incluindo pares contrastivos, pesos e denominadores, está suficientemente definida para existir uma única interpretação implementável? [Clarity, Spec §FR-009, §FR-013–FR-014, Plan §Modelo e visões]
 - [x] CHK013 A política de amostragem de negativos explicita universo elegível, deduplicação, comportamento sem negativos e exclusão completa de positivos? [Clarity, Spec §FR-013, §Edge Cases]
 - [x] CHK014 O termo “classificador leve” está quantificado por arquitetura, profundidade e orçamento de busca sem permitir variantes incomparáveis? [Clarity, Spec §FR-016, Plan §Modelo e visões]
 

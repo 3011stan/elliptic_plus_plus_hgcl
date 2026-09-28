@@ -20,9 +20,16 @@ Atualizado em: 2026-09-27
   `specs/003-transaction-gcl/tasks.md`: 91 tarefas rastreáveis, organizadas por
   história de usuário, com testes, dependências, pontos de paralelismo e gate
   explícito antes da matriz científica.
+- Primeira análise cruzada encontrou cinco bloqueios de especificação; as correções
+  aceitas foram incorporadas: limites exatos de engenharia, duas representações
+  com KNN apenas como expansão de positivos, semântica `source_to_target`, coorte
+  única de avaliação e aprovação do dry-run vinculada por digests.
+- A repetição da análise cruzada após a remediação não encontrou requisito sem
+  tarefa, tarefa sem rastreabilidade, conflito constitucional ou ambiguidade
+  bloqueante remanescente.
 
 ## Próximo passo autorizado
 
-Executar a análise cruzada não destrutiva entre `spec.md`, `plan.md` e `tasks.md`
-antes da implementação. Não iniciar a matriz científica; ela permanece condicionada
-à implementação, ao dry-run e ao aceite explícito de suas evidências.
+Iniciar a implementação verificada pelas tarefas de Setup e Foundation, preservando
+os gates descritos em `tasks.md`. Não iniciar a matriz científica; ela permanece
+condicionada à implementação, ao dry-run e ao aceite explícito de suas evidências.

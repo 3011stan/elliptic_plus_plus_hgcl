@@ -51,6 +51,8 @@ Esperado: 49 manifests de snapshot; 203.769 transações e 234.355 arestas antes
 
 Esperado: fluxo completo termina em até 10 minutos de treinamento no Mac, preparação reportada separadamente, métricas do shadow test em 1–34 marcadas `engineering_only=true`, zero abertura dos rótulos 35–49 e nenhum artefato científico liberado.
 
+O profile fixa 256 nós por snapshot por hash estável, passos 1–29 para ajuste de engenharia, 30–34 para shadow test, um snapshot completo por batch, duas épocas SSL e três downstream.
+
 ## 5. Exercise interruption and resume
 
 Interrompa uma execução de teste após checkpoint e execute:
@@ -72,6 +74,16 @@ Esperado: retomada produz os mesmos IDs e digests; alteração de config, dados 
 
 Revise `run.json`, `selection.json`, uso de RAM/VRAM, duração projetada e relatório do shadow test. Confirme que o audit log registra zero abertura dos rótulos 35–49. A aprovação é uma ação separada e explícita do pesquisador. Sem ela, o comando `matrix` deve terminar com código 4.
 
+O dry-run usa todos os nós de 1–34, passos 1–29 para ajuste de engenharia, 30–34 para shadow test, um snapshot completo por batch, seed 11, fração 1%, dez épocas SSL e vinte downstream com paciência cinco. Depois da revisão humana, o aceite é registrado separadamente:
+
+```bash
+.venv/bin/hgcl-s003 approve-dry-run \
+  --run artifacts/s003/runs/s003-dry-run-001 \
+  --approval-file APPROVAL_INPUT_PATH
+```
+
+O artefato resultante deve estar vinculado aos digests de dados, configuração, código, evidências e design, além da janela máxima de duração aceita. Esse comando não inicia a matriz.
+
 ## 7. Release gate
 
 Antes de pedir autorização para a matriz, execute:
@@ -91,5 +103,6 @@ O pacote de evidências deve demonstrar:
 - cobertura e estados explícitos;
 - custo medido e projeção da matriz;
 - arquivos congelados do S02 sem modificação.
+- as 205 células P1 serão contabilizadas, e todas as runs selecionadas serão congeladas em uma única coorte antes da liberação global dos rótulos 35–49.
 
 Somente depois do aceite do pesquisador será criado o arquivo de aprovação compatível e a matriz `lab` poderá ser iniciada.

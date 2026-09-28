@@ -11,5 +11,5 @@ Todo config deverá declarar ao menos:
 - `study_id: s003`
 - `task: transaction_classification`
 - `graph_schema: tx_tx`
-- `method_id: txgcl`
+- `method_id: s003_txgcl`
 - `target_node_type: transaction`
