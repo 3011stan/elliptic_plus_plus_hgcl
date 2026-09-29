@@ -55,6 +55,13 @@ def test_compatible_environment_passes(tmp_path: Path) -> None:
     assert report.violations == ()
 
 
+def test_torch_cuda_local_version_passes(tmp_path: Path) -> None:
+    snap = _snapshot(dependencies={**_snapshot().dependencies, "torch": "2.6.0+cu124"})
+    report = validate_environment(_required(tmp_path), snap)
+    assert report.ready
+    assert report.violations == ()
+
+
 @pytest.mark.parametrize(
     "changes",
     [

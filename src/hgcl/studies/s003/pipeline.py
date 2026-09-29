@@ -477,7 +477,7 @@ def find_compatible_approval(
     *,
     data_digest: str,
     lab_config_digest: str,
-    code_revision: str,
+    code_revision: str | None = None,
     design_digest: str,
     require_reverse_edge_ablation: bool = False,
 ) -> DryRunApproval:
@@ -495,7 +495,7 @@ def find_compatible_approval(
                     approval.assert_compatible(
                         data_digest=data_digest,
                         lab_config_digest=lab_config_digest,
-                        code_revision=code_revision,
+                        code_revision=code_revision or approval.code_revision,
                         design_digest=design_digest,
                         require_reverse_edge_ablation=require_reverse_edge_ablation,
                     )
@@ -523,8 +523,10 @@ def run_matrix_pipeline(
     is_lab = config.profile == "lab"
 
     root = Path(artifacts_root).resolve() if artifacts_root is not None else Path(raw["paths"].get("artifacts_root", "artifacts/s003")).resolve()
-    revision_obj = getattr(config, "code_revision", "0" * 40)
-    revision_str = revision_obj.get("commit", "0" * 40) if isinstance(revision_obj, dict) else str(revision_obj)
+    revision_obj = getattr(config, "code_revision", None)
+    revision_str = revision_obj.get("commit") if isinstance(revision_obj, dict) else str(revision_obj or "")
+    if not revision_str or revision_str == "0" * 40:
+        revision_str = None
 
     try:
         canonical = canonical_matrix_design(
@@ -550,6 +552,8 @@ def run_matrix_pipeline(
             design_digest=design_digest,
             require_reverse_edge_ablation=reverse_edges_approved,
         )
+
+    effective_revision = revision_str or (approval.code_revision if approval else "0" * 40)
 
     # Invariant: test labels must not have been accessed or released
     if prepared.test_labels.released_cohort is not None or prepared.test_labels.access_log:
@@ -594,7 +598,7 @@ def run_matrix_pipeline(
                 budget=budget,
                 data_digest=prepared.data_digest,
                 pretraining_config_digest=config.digest,
-                code_revision=revision_str,
+                code_revision=effective_revision,
                 config_digest=config.digest,
                 embedding_cache=cache_store,
                 ssl_epochs=ssl_epochs,

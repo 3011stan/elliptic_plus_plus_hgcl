@@ -59,6 +59,8 @@ def validate_environment(
     for package, expected in required.exact_dependencies.items():
         actual = snapshot.dependencies.get(package)
         if actual != expected:
+            if package == "torch" and actual and actual.split("+")[0] == expected.split("+")[0]:
+                continue
             violations.append(f"dependency {package}: expected {expected}, found {actual}")
     if snapshot.device != required.device:
         violations.append(f"device: expected {required.device}, found {snapshot.device}")
