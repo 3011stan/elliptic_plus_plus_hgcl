@@ -606,10 +606,15 @@ def run_matrix_pipeline(
 
         known_labels = {tx: int(label) for tx, label in zip(combined_ids, combined_labels.tolist()) if label in {0, 1}}
 
-        for key in cell_keys:
+        total_cells = len(cell_keys)
+        progress_file = matrix_dir / "progress.json"
+        temp_progress = matrix_dir / ".progress.json.tmp"
+
+        for index, key in enumerate(cell_keys, start=1):
+            print(f"[{index}/{total_cells}] Executing cell: {key}", flush=True)
             parsed = parse_cell_key(key)
             budget = build_label_budgets(known_labels, seeds=(parsed.seed,), fractions=(parsed.fraction,))[(parsed.seed, parsed.fraction)]
-            execute_matrix_cell(
+            cell_state = execute_matrix_cell(
                 key,
                 scheduler,
                 dataset=exec_dataset,
@@ -623,6 +628,16 @@ def run_matrix_pipeline(
                 downstream_epochs=downstream_epochs,
                 reverse_edges_approved=reverse_edges_approved,
             )
+            progress_payload = {
+                "completed_cells": index,
+                "total_cells": total_cells,
+                "percent": round(100.0 * index / total_cells, 1),
+                "last_cell": key,
+                "last_cell_state": cell_state.state,
+            }
+            with open(temp_progress, "w", encoding="utf-8") as f:
+                json.dump(progress_payload, f, indent=2)
+            temp_progress.replace(progress_file)
 
         if len(cell_keys) == 205:
             cohort = scheduler.seal_cohort(f"s003-cohort-{matrix_id}")
