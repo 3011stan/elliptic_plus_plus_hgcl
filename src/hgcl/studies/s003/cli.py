@@ -224,12 +224,13 @@ def default_handlers() -> dict[str, Handler]:
     def matrix_handler(args: argparse.Namespace) -> Mapping[str, Any]:
         def action() -> Mapping[str, Any]:
             config = load_config(args.config)
-            prepared = load_prepared(args.prepared)
+            prepared = load_prepared(args.prepared, config)
             return run_matrix_pipeline(
                 config,
                 prepared,
                 matrix_id=args.matrix_id,
                 artifacts_root=config.raw["paths"].get("artifacts_root", "artifacts/s003"),
+                execute_cells=True,
             )
         return _translate_errors(action)
 
