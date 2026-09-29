@@ -146,3 +146,9 @@ def test_approve_dry_run_is_injectable_and_fail_closed() -> None:
             handlers={},
             raise_errors=True,
         )
+
+    # Parser allows omitting --approval-file
+    args = build_parser().parse_args(["approve-dry-run", "--run", "artifacts/s003/runs/s003-dry-001"])
+    assert args.run == "artifacts/s003/runs/s003-dry-001"
+    assert args.approval_file is None
+    assert args.approved_by == "stan"

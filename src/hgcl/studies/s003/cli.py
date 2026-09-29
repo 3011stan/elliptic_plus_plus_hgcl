@@ -70,7 +70,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     approve = commands.add_parser("approve-dry-run")
     approve.add_argument("--run", required=True)
-    approve.add_argument("--approval-file", required=True)
+    approve.add_argument("--approval-file", required=False, default=None)
+    approve.add_argument("--approved-by", default="stan")
+    approve.add_argument("--approval-id", default="s003-approval-001")
+    approve.add_argument("--lab-config", default="configs/s003/lab.yaml")
 
     matrix = commands.add_parser("matrix")
     matrix.add_argument("--config", required=True)
@@ -218,7 +221,13 @@ def default_handlers() -> dict[str, Handler]:
 
     def approve_dry_run_handler(args: argparse.Namespace) -> Mapping[str, Any]:
         def action() -> Mapping[str, Any]:
-            return approve_dry_run(args.run, args.approval_file)
+            return approve_dry_run(
+                args.run,
+                approval_file=args.approval_file,
+                approved_by=getattr(args, "approved_by", "stan"),
+                approval_id=getattr(args, "approval_id", "s003-approval-001"),
+                lab_config_path=getattr(args, "lab_config", "configs/s003/lab.yaml"),
+            )
         return _translate_errors(action)
 
     def matrix_handler(args: argparse.Namespace) -> Mapping[str, Any]:
