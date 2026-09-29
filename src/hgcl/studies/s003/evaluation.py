@@ -3,12 +3,17 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from datetime import datetime, timezone
 import hashlib
 import json
-from typing import Mapping
+from typing import Any, Mapping
 
 import torch
 from sklearn.metrics import average_precision_score, f1_score, matthews_corrcoef, precision_score, recall_score
+
+
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
 
 
 class EvaluationAccessError(RuntimeError):
@@ -22,7 +27,7 @@ class TestLabelStore:
         self._sealed = deepcopy(dict(sealed_labels))
         self.digest = digest
         self._release: tuple[str, dict[str, dict]] | None = None
-        self.access_log: list[dict[str, str]] = []
+        self.access_log: list[dict[str, Any]] = []
 
     @classmethod
     def seal(cls, labels: Mapping[int, Mapping[str, int]]) -> "TestLabelStore":
@@ -48,16 +53,51 @@ class TestLabelStore:
             raise EvaluationAccessError("release requires a sealed S003 cohort")
         self._release = (cohort_id, deepcopy(dict(members)))
 
-    def read(self, cohort_id: str, run_id: str, weights_digest: str, threshold: float) -> dict[int, dict[str, int]]:
+    def read(
+        self,
+        cohort_id: str,
+        run_id: str,
+        weights_digest: str,
+        threshold: float,
+        *,
+        accessor: str = "evaluator",
+        purpose: str = "test_evaluation",
+        technical_rerun_of: str | None = None,
+        technical_failure_justification: str | None = None,
+    ) -> dict[int, dict[str, int]]:
         if self._release is None:
             raise EvaluationAccessError("test labels are sealed")
         frozen_cohort, members = self._release
-        member = members.get(run_id)
-        if cohort_id != frozen_cohort or member is None:
+        if cohort_id != frozen_cohort:
+            raise EvaluationAccessError("cohort ID mismatch with released cohort")
+
+        target_run_id = technical_rerun_of if technical_rerun_of is not None else run_id
+        member = members.get(target_run_id)
+        if member is None:
             raise EvaluationAccessError("run is not a frozen cohort member")
         if member.get("weights_digest") != weights_digest or member.get("threshold") != threshold:
             raise EvaluationAccessError("weights or threshold differ from frozen selection")
-        self.access_log.append({"cohort_id": cohort_id, "run_id": run_id})
+
+        if technical_rerun_of is not None:
+            if not run_id.startswith("s003-"):
+                raise EvaluationAccessError("run_id must start with s003-")
+            if run_id == technical_rerun_of:
+                raise EvaluationAccessError("technical rerun must have a distinct run_id from original")
+            if not technical_failure_justification or not str(technical_failure_justification).strip():
+                raise EvaluationAccessError("technical rerun requires a technical failure justification")
+
+        log_entry: dict[str, Any] = {
+            "cohort_id": cohort_id,
+            "run_id": run_id,
+            "timestamp": _now_iso(),
+            "accessor": accessor,
+            "purpose": purpose,
+        }
+        if technical_rerun_of is not None:
+            log_entry["technical_rerun_of"] = technical_rerun_of
+            log_entry["technical_failure_justification"] = technical_failure_justification
+
+        self.access_log.append(log_entry)
         return deepcopy(self._sealed)
 
 
@@ -74,20 +114,31 @@ def decisions_from_scores(scores: torch.Tensor, threshold: float) -> torch.Tenso
 
 
 def binary_metrics(labels, scores, threshold: float) -> dict[str, object]:
-    labels = list(map(int, labels))
-    scores = list(map(float, scores))
-    predicted = [int(score >= threshold) for score in scores]
-    support = {"illicit": labels.count(1), "licit": labels.count(0)}
+    known_pairs = [(int(y), float(s)) for y, s in zip(labels, scores) if int(y) in (0, 1)]
+    if not known_pairs:
+        return {
+            "support": {"illicit": 0, "licit": 0},
+            "f1_illicit": 0.0,
+            "precision_illicit": 0.0,
+            "recall_illicit": 0.0,
+            "mcc": None,
+            "pr_auc_illicit": None,
+            "reason": "metric requires known classes",
+        }
+    eval_labels = [y for y, _ in known_pairs]
+    eval_scores = [s for _, s in known_pairs]
+    predicted = [int(score >= threshold) for score in eval_scores]
+    support = {"illicit": eval_labels.count(1), "licit": eval_labels.count(0)}
     result: dict[str, object] = {
         "support": support,
-        "f1_illicit": float(f1_score(labels, predicted, pos_label=1, zero_division=0)),
-        "precision_illicit": float(precision_score(labels, predicted, pos_label=1, zero_division=0)),
-        "recall_illicit": float(recall_score(labels, predicted, pos_label=1, zero_division=0)),
+        "f1_illicit": float(f1_score(eval_labels, predicted, pos_label=1, zero_division=0)),
+        "precision_illicit": float(precision_score(eval_labels, predicted, pos_label=1, zero_division=0)),
+        "recall_illicit": float(recall_score(eval_labels, predicted, pos_label=1, zero_division=0)),
     }
-    if len(set(labels)) < 2:
+    if len(set(eval_labels)) < 2:
         result.update({"mcc": None, "pr_auc_illicit": None, "reason": "metric requires both known classes"})
     else:
-        result.update({"mcc": float(matthews_corrcoef(labels, predicted)), "pr_auc_illicit": float(average_precision_score(labels, scores))})
+        result.update({"mcc": float(matthews_corrcoef(eval_labels, predicted)), "pr_auc_illicit": float(average_precision_score(eval_labels, eval_scores))})
     return result
 
 
@@ -97,11 +148,12 @@ def pooled_and_snapshot_metrics(predictions: Mapping[int, tuple[object, object]]
     pooled_scores: list[float] = []
     for step in sorted(predictions):
         labels, scores = predictions[step]
-        labels = list(labels)
-        scores = list(scores)
-        snapshots[step] = binary_metrics(labels, scores, threshold)
-        pooled_labels.extend(labels)
-        pooled_scores.extend(scores)
+        known_pairs = [(int(y), float(s)) for y, s in zip(labels, scores) if int(y) in (0, 1)]
+        step_labels = [y for y, _ in known_pairs]
+        step_scores = [s for _, s in known_pairs]
+        snapshots[step] = binary_metrics(step_labels, step_scores, threshold)
+        pooled_labels.extend(step_labels)
+        pooled_scores.extend(step_scores)
     return {"pooled": binary_metrics(pooled_labels, pooled_scores, threshold), "snapshots": snapshots, "pooling": "concatenated_known_predictions"}
 
 
@@ -151,3 +203,35 @@ def evaluate_frozen_members(
             predictions[step] = (labels, scores)
         results[run_id] = pooled_and_snapshot_metrics(predictions, threshold)
     return results
+
+
+def evaluate_technical_rerun(
+    store: TestLabelStore,
+    cohort_id: str,
+    original_run_id: str,
+    rerun_run_id: str,
+    technical_failure_justification: str,
+    prediction_provider,
+    *,
+    weights_digest: str,
+    threshold: float,
+    accessor: str = "evaluator",
+) -> dict[str, object]:
+    """Evaluate a post-unblinding technical rerun bound to a frozen cohort member without reselection."""
+    labels_by_step = store.read(
+        cohort_id,
+        rerun_run_id,
+        weights_digest,
+        threshold,
+        accessor=accessor,
+        purpose="technical_rerun",
+        technical_rerun_of=original_run_id,
+        technical_failure_justification=technical_failure_justification,
+    )
+    predictions = {}
+    for step, labels_by_id in sorted(labels_by_step.items()):
+        tx_ids = tuple(sorted(labels_by_id))
+        labels = [labels_by_id[tx_id] for tx_id in tx_ids]
+        scores = prediction_provider(rerun_run_id, step, tx_ids)
+        predictions[step] = (labels, scores)
+    return pooled_and_snapshot_metrics(predictions, threshold)

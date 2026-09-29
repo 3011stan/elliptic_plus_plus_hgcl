@@ -37,6 +37,28 @@ histórica explícita.
 - Resultado agregado principal calculado sobre as predições concatenadas de
   35–49, acompanhado de resultados por snapshot.
 
+## Comandos CLI (`hgcl-s003`) e Ciclo de Vida
+
+A suíte de comandos exposta pelo entry point `hgcl-s003` é:
+1. `doctor`: verificação de ambiente, runtime e dependências congeladas.
+2. `prepare`: divisão temporal, z-score fit-only (1..29) e auditoria causal de atributos.
+3. `audit`: verificação temporal e de integridade dos dados preparados sem materializar rótulos 35–49.
+4. `smoke`: pipeline determinístico reduzido treinado no shadow test (1..29 fit, 30..34 test).
+5. `dry-run`: verificação estrutural das 205 células P1 sem treino (`training_performed=false`).
+6. `approve-dry-run`: registro imutável de aprovação vinculada a SHA-256 de dados, config, código e evidências.
+7. `matrix`: execução da matriz condicionada à aprovação e com selagem de coorte (`evaluation-cohort.json`).
+8. `resume`: retomada estrita de runs `interrupted`, com verificação de compatibilidade de checkpoints.
+9. `evaluate`: avaliação após liberação global única da coorte selada, com log de acesso (`access_log`).
+10. `report`: relatório consolidado com cobertura (`coverage.json`), linhagem por linha e teste t pareado (5 pares).
+11. `hetero-gate`: avaliação não-bloqueante dos 4 gates da extensão `Addr↔Tx` (causalidade, supervisão, comparabilidade, recursos).
+
+## Rastreabilidade e Imutabilidade
+
+- **Zero vazamento temporal**: rótulos de 35–49 selados em `TestLabelStore`, com acesso único auditado por coorte e run.
+- **Não-reseleção**: reruns técnicos post-unblinding (`technical_rerun_of`) proíbem alteração de pesos, threshold ou hiperparâmetros.
+- **Reconstrução completa de linhagem**: qualquer linha de resultado reconstrói dados, config, ambiente, seed, split, pesos e threshold via identificador único (`reconstruct_result_lineage`).
+- **Estados explícitos**: execuções incompletas (`failed`, `invalid`, `interrupted`) são contabilizadas explicitamente na cobertura e nunca computam métricas inferenciais de sucesso.
+
 ## Fronteira com o Estudo 002
 
 - O Estudo 002 está congelado na tag `s02-001-final`.

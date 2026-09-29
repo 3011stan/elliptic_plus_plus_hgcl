@@ -511,30 +511,44 @@ class InspectionLDGIAdapter:
         self.ssl_epochs = ssl_epochs
         self.rf_estimators = rf_estimators
 
-    def fit(self, dataset: GraphData, context: AdapterContext) -> FittedRepresentationModel:
-        torch.manual_seed(context.seed)
-        encoder = DirectedGINEncoder(182)
-        discriminator = torch.nn.Bilinear(128, 128, 1)
-        optimizer = torch.optim.Adam([*encoder.parameters(), *discriminator.parameters()], lr=1e-3)
-        for _ in range(self.ssl_epochs):
-            optimizer.zero_grad(set_to_none=True)
-            positive = encoder(dataset.features, dataset.edge_index)
-            permutation = torch.randperm(len(dataset.tx_ids))
-            negative = encoder(dataset.features[permutation], dataset.edge_index)
-            summary = torch.sigmoid(positive.mean(dim=0)).expand_as(positive)
-            positive_logits = discriminator(positive, summary).squeeze(-1)
-            negative_logits = discriminator(negative, summary).squeeze(-1)
-            loss = torch.nn.functional.binary_cross_entropy_with_logits(positive_logits, torch.ones_like(positive_logits))
-            loss += torch.nn.functional.binary_cross_entropy_with_logits(negative_logits, torch.zeros_like(negative_logits))
-            loss.backward()
-            optimizer.step()
-        encoder.eval()
-        with torch.no_grad():
-            embeddings = encoder(dataset.features, dataset.edge_index)
+    def fit(
+        self,
+        dataset: GraphData,
+        context: AdapterContext,
+        *,
+        cached_embeddings: torch.Tensor | None = None,
+        cached_model: Any = None,
+    ) -> FittedRepresentationModel:
+        if cached_embeddings is not None:
+            embeddings = cached_embeddings
+            encoder = cached_model if cached_model is not None else DirectedGINEncoder(182)
+        else:
+            torch.manual_seed(context.seed)
+            encoder = DirectedGINEncoder(182)
+            discriminator = torch.nn.Bilinear(128, 128, 1)
+            optimizer = torch.optim.Adam([*encoder.parameters(), *discriminator.parameters()], lr=1e-3)
+            for _ in range(self.ssl_epochs):
+                optimizer.zero_grad(set_to_none=True)
+                positive = encoder(dataset.features, dataset.edge_index)
+                permutation = torch.randperm(len(dataset.tx_ids))
+                negative = encoder(dataset.features[permutation], dataset.edge_index)
+                summary = torch.sigmoid(positive.mean(dim=0)).expand_as(positive)
+                positive_logits = discriminator(positive, summary).squeeze(-1)
+                negative_logits = discriminator(negative, summary).squeeze(-1)
+                loss = torch.nn.functional.binary_cross_entropy_with_logits(positive_logits, torch.ones_like(positive_logits))
+                loss += torch.nn.functional.binary_cross_entropy_with_logits(negative_logits, torch.zeros_like(negative_logits))
+                loss.backward()
+                optimizer.step()
+            encoder.eval()
+            with torch.no_grad():
+                embeddings = encoder(dataset.features, dataset.edge_index)
         embedded = TabularData(dataset.tx_ids, torch.cat((embeddings, torch.zeros(len(dataset.tx_ids), 54)), dim=1), dataset.labels)
         downstream = RandomForestAdapter(n_estimators=self.rf_estimators).fit(embedded, context)
         downstream = FittedTabularModel(self.method_id, downstream.estimator, downstream.threshold, downstream.validation_f1_illicit, downstream.validation_mcc, downstream.hyperparameters, downstream.prevalence)
         return FittedRepresentationModel(self.method_id, encoder, downstream, ("Elliptic++ uses 182 features instead of Elliptic's 166",))
+
+
+InspectionLAdapter = InspectionLDGIAdapter
 
 
 class GCPALAdapter:
@@ -546,20 +560,31 @@ class GCPALAdapter:
         self.downstream_epochs = downstream_epochs
         self.knn_k = knn_k
 
-    def fit(self, dataset: GraphData, context: AdapterContext) -> FittedRepresentationModel:
-        torch.manual_seed(context.seed)
-        model = S003ContrastiveModel(182)
-        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
-        positives = build_positive_sets(len(dataset.tx_ids), dataset.edge_index, cosine_knn(dataset.features, dataset.tx_ids, k=self.knn_k))
-        for epoch in range(self.ssl_epochs):
-            pair = make_two_stochastic_views(dataset.features, dataset.edge_index, seed=context.seed + epoch)
-            optimizer.zero_grad(set_to_none=True)
-            left, right = pair.views
-            z_left, z_right = model(left.x, left.edge_index, right.x, right.edge_index)
-            loss = symmetric_multi_positive_loss(z_left, z_right, positives)
-            loss.backward()
-            optimizer.step()
-        embeddings = model.frozen_embeddings(dataset.features, dataset.edge_index)
+    def fit(
+        self,
+        dataset: GraphData,
+        context: AdapterContext,
+        *,
+        cached_embeddings: torch.Tensor | None = None,
+        cached_model: Any = None,
+    ) -> FittedRepresentationModel:
+        if cached_embeddings is not None:
+            embeddings = cached_embeddings
+            model = cached_model if cached_model is not None else S003ContrastiveModel(182)
+        else:
+            torch.manual_seed(context.seed)
+            model = S003ContrastiveModel(182)
+            optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+            positives = build_positive_sets(len(dataset.tx_ids), dataset.edge_index, cosine_knn(dataset.features, dataset.tx_ids, k=self.knn_k))
+            for epoch in range(self.ssl_epochs):
+                pair = make_two_stochastic_views(dataset.features, dataset.edge_index, seed=context.seed + epoch)
+                optimizer.zero_grad(set_to_none=True)
+                left, right = pair.views
+                z_left, z_right = model(left.x, left.edge_index, right.x, right.edge_index)
+                loss = symmetric_multi_positive_loss(z_left, z_right, positives)
+                loss.backward()
+                optimizer.step()
+            embeddings = model.frozen_embeddings(dataset.features, dataset.edge_index)
         _, _, fit, validation, refit, prevalence = _fit_arrays(dataset, context)
         selection = search_downstream(embeddings, dataset.features, dataset.labels, fit_indices=torch.as_tensor(fit), validation_indices=torch.as_tensor(validation), epochs=self.downstream_epochs, patience=10, seed=context.seed)
         classifier = refit_downstream(selection, embeddings, dataset.features, dataset.labels, refit_indices=torch.as_tensor(refit), epochs=self.downstream_epochs, seed=context.seed)
@@ -579,20 +604,31 @@ class S003TxGCLAdapter:
         self.use_knn, self.edge_dropout = use_knn, edge_dropout
         self.reverse_edges, self.reverse_edges_approved = reverse_edges, reverse_edges_approved
 
-    def fit(self, dataset: GraphData, context: AdapterContext) -> FittedRepresentationModel:
+    def fit(
+        self,
+        dataset: GraphData,
+        context: AdapterContext,
+        *,
+        cached_embeddings: torch.Tensor | None = None,
+        cached_model: Any = None,
+    ) -> FittedRepresentationModel:
         edges = maybe_add_reverse_edges(dataset.edge_index, enabled=self.reverse_edges, approved=self.reverse_edges_approved)
-        model = S003ContrastiveModel(182)
-        optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
-        knn = cosine_knn(dataset.features, dataset.tx_ids, k=10) if self.use_knn else tuple(() for _ in dataset.tx_ids)
-        positives = build_positive_sets(len(dataset.tx_ids), edges, knn)
-        for epoch in range(self.ssl_epochs):
-            pair = make_s003_views(dataset.features, edges, seed=context.seed + epoch, masking_policy=self.masking_policy, edge_drop=0.1 if self.edge_dropout else 0.0)
-            optimizer.zero_grad(set_to_none=True)
-            left, right = pair.views
-            z_left, z_right = model(left.x, left.edge_index, right.x, right.edge_index)
-            loss = symmetric_multi_positive_loss(z_left, z_right, positives)
-            loss.backward(); optimizer.step()
-        embeddings = model.frozen_embeddings(dataset.features, edges)
+        if cached_embeddings is not None:
+            embeddings = cached_embeddings
+            model = cached_model if cached_model is not None else S003ContrastiveModel(182)
+        else:
+            model = S003ContrastiveModel(182)
+            optimizer = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
+            knn = cosine_knn(dataset.features, dataset.tx_ids, k=10) if self.use_knn else tuple(() for _ in dataset.tx_ids)
+            positives = build_positive_sets(len(dataset.tx_ids), edges, knn)
+            for epoch in range(self.ssl_epochs):
+                pair = make_s003_views(dataset.features, edges, seed=context.seed + epoch, masking_policy=self.masking_policy, edge_drop=0.1 if self.edge_dropout else 0.0)
+                optimizer.zero_grad(set_to_none=True)
+                left, right = pair.views
+                z_left, z_right = model(left.x, left.edge_index, right.x, right.edge_index)
+                loss = symmetric_multi_positive_loss(z_left, z_right, positives)
+                loss.backward(); optimizer.step()
+            embeddings = model.frozen_embeddings(dataset.features, edges)
         if self.representation == "x_only":
             h, x = torch.empty((len(dataset.tx_ids), 0)), dataset.features
         elif self.representation == "h_only":

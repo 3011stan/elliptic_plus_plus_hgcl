@@ -152,6 +152,7 @@ def read_source(source: SourceInventory) -> LoadedSource:
     features = pl.read_csv(source.core_files["txs_features.csv"].path).with_columns(pl.col("txId").cast(pl.String))
     columns = tuple(features.columns)
     groups = feature_groups(columns)
+    features = features.with_columns(pl.col(list(groups.model)).fill_null(0.0))
     if features.get_column("txId").n_unique() != features.height:
         raise DataError("duplicate transaction IDs in features")
     if features.get_column("Time step").min() < 1 or features.get_column("Time step").max() > 49:

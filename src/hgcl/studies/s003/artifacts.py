@@ -125,6 +125,12 @@ class EmbeddingCacheKey:
         return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
+def compute_evidence_digest(payload: Mapping[str, Any]) -> str:
+    """Compute deterministic SHA-256 covering dry-run evidence, audit, and projection."""
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 @dataclass(frozen=True)
 class DryRunApproval:
     approval_id: str
@@ -136,11 +142,14 @@ class DryRunApproval:
     evidence_digest: str
     design_digest: str
     max_projected_duration_seconds: int
+    reverse_edge_ablation: bool = False
     approved_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def __post_init__(self) -> None:
         if not self.approval_id.startswith("s003-"):
             raise ArtifactError("approval_id must start with s003-")
+        if not self.approved_by or not self.approved_by.strip():
+            raise ArtifactError("approved_by cannot be empty")
         for name in (
             "data_digest",
             "dry_run_config_digest",
@@ -162,6 +171,7 @@ class DryRunApproval:
         lab_config_digest: str,
         code_revision: str,
         design_digest: str,
+        require_reverse_edge_ablation: bool = False,
     ) -> None:
         expected = {
             "data_digest": data_digest,
@@ -172,9 +182,28 @@ class DryRunApproval:
         for name, value in expected.items():
             if getattr(self, name) != value:
                 raise ArtifactError(f"approval mismatch: {name}")
+        if require_reverse_edge_ablation and not self.reverse_edge_ablation:
+            raise ArtifactError("approval mismatch: reverse_edge_ablation is not approved")
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> DryRunApproval:
+        raw = payload.get("payload", payload)
+        return cls(
+            approval_id=str(raw["approval_id"]),
+            approved_by=str(raw["approved_by"]),
+            data_digest=str(raw["data_digest"]),
+            dry_run_config_digest=str(raw["dry_run_config_digest"]),
+            lab_config_digest=str(raw["lab_config_digest"]),
+            code_revision=str(raw["code_revision"]),
+            evidence_digest=str(raw["evidence_digest"]),
+            design_digest=str(raw["design_digest"]),
+            max_projected_duration_seconds=int(raw["max_projected_duration_seconds"]),
+            reverse_edge_ablation=bool(raw.get("reverse_edge_ablation", False)),
+            approved_at=str(raw.get("approved_at", datetime.now(timezone.utc).isoformat())),
+        )
 
 
 @dataclass(frozen=True)

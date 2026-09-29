@@ -104,3 +104,15 @@ Toda execução aplicável da matriz usa exatamente 100 épocas SSL em cada seed
 predeclaradas antes do dry-run estrutural e nunca escolhidas por probe, rótulo,
 convergência observada ou métrica downstream. A matriz científica e suas 205
 células não foram reduzidas.
+
+## D003-017 — Tratamento de valores ausentes por zeros estruturais (0.0)
+
+Decisão aceita pelo pesquisador em 2026-09-28 após consulta ao notebook NotebookLM
+autorizado (`66fb9e95-d225-4eaf-b45b-f8d232053677`). No dataset Elliptic++
+(Elmougy & Liu, 2023), 965 transações (~0,47% do total) não foram desanonimizadas
+na raspagem da blockchain e possuem valores vazios exclusivamente nas 17 features
+aumentadas. Conforme a literatura especializada em redes financeiras UTXO e o design
+do artigo, a ausência de registro representa inexistência da atividade (zero estrutural)
+e deve ser imputada como constante `0.0` antes da normalização causal fit-only (1–34).
+A imputação por média ou mediana é expressamente rejeitada por inflacionar
+artificialmente volumes e graus e distorcer a geometria das representações.

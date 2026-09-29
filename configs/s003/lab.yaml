@@ -1,0 +1,147 @@
+schema_version: 1
+study_id: s003
+task: transaction_classification
+method_id: s003_txgcl
+graph_schema: tx_tx
+target_node_type: transaction
+profile: lab
+paths:
+  data_root: elliptic-plus-plus/raw
+  artifacts_root: artifacts/s003
+data:
+  required_files:
+  - txs_features.csv
+  - txs_classes.csv
+  - txs_edgelist.csv
+  max_nodes_per_snapshot: null
+split:
+  development_steps:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  - 24
+  - 25
+  - 26
+  - 27
+  - 28
+  - 29
+  - 30
+  - 31
+  - 32
+  - 33
+  - 34
+  engineering_fit_steps: null
+  shadow_test_steps: null
+  test_steps:
+  - 35
+  - 36
+  - 37
+  - 38
+  - 39
+  - 40
+  - 41
+  - 42
+  - 43
+  - 44
+  - 45
+  - 46
+  - 47
+  - 48
+  - 49
+labels:
+  seeds:
+  - 11
+  - 23
+  - 37
+  - 53
+  - 71
+  fractions:
+  - 0.01
+  - 0.05
+  - 0.1
+  - 1.0
+  fit_ratio: 0.8
+features:
+  source_non_id_count: 183
+  model_count: 182
+  maskable_count: 182
+  functional_block_sizes:
+  - 93
+  - 72
+  - 17
+graph:
+  directed: true
+  edge_index_order: source_target
+  message_flow: source_to_target
+  add_reverse_edges: false
+positives:
+  structural_neighbors: successors
+  knn_k: 10
+ssl:
+  encoder: gin
+  layers: 2
+  hidden: 128
+  loss: gcpal_multi_positive
+  use_labels: false
+  epochs: 100
+  snapshot_batch_size: 1
+downstream:
+  encoder_frozen: true
+  representation: h_concat_x
+  epochs: 100
+  patience: 10
+baselines:
+  methods:
+  - mlp_x
+  - random_forest
+  - xgboost
+  - gcn_supervised
+  - graphsage_supervised
+  - gin_supervised
+  - inspection_l_dgi
+  - gcpal
+  - s003_txgcl
+  include_s003_ablations: true
+evaluation:
+  selection:
+    primary: f1_illicit
+    tiebreaker: mcc
+  cohort_release: single_global
+statistics:
+  test: paired_t_two_sided
+  correction: holm
+  alpha: 0.05
+  effect_size: cohen_dz
+resources:
+  device: cuda
+  max_vram_gib: 4.5
+  max_ram_gib: 24
+  projection_margin: 0.2
+  reapproval_threshold: 0.25
+provenance:
+  require_clean_revision: true
+matrix:
+  expected_p1_cells: 205
+approval:
+  approval_id: s003-approval-001
+  artifact_path: runs/s003-dry-run-001/approval.json

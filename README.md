@@ -10,14 +10,67 @@ transações em um grafo homogêneo `Tx→Tx`.
 - [Decisões](docs/studies/s003/decisions.md)
 - [Status](docs/studies/s003/status.md)
 - [Proposta científica](docs/reference/s003/proposta-003.md)
+- [Especificação de requisitos](specs/003-transaction-gcl/spec.md)
+- [Plano de implementação](specs/003-transaction-gcl/plan.md)
+- [Tarefas rastreáveis](specs/003-transaction-gcl/tasks.md)
 
-O SDD será criado em `specs/003-transaction-gcl/`. Novos configs, código, testes e
-artefatos pertencem respectivamente a `configs/s003/`, `src/hgcl/studies/s003/`,
-`tests/s003/` e `artifacts/s003/`.
+O Estudo 003 (**S003-TxGCL**) implementa a classificação de transações ilícitas em grafos homogêneos, direcionados e temporais `Tx→Tx` do Elliptic++.
+Código, configurações, testes e artefatos pertencem exclusivamente a:
+- `src/hgcl/studies/s003/`
+- `configs/s003/`
+- `tests/s003/`
+- `artifacts/s003/` (não versionado)
 
-O CLI `hgcl`, os configs na raiz de `configs/` e a feature
-`specs/001-hgcl-experiment/` ainda representam a implementação histórica do S02 e não
-devem ser reutilizados implicitamente pelo S003.
+### Interface de Linha de Comando (`hgcl-s003`)
+
+O CLI `hgcl-s003` expõe 11 comandos dedicados:
+
+```bash
+# Diagnóstico de ambiente e dependências
+hgcl-s003 doctor --config configs/s003/dry-run.yaml
+
+# Preparação de dados (time steps 1..49, z-score fit-only 1..29, auditoria causal)
+hgcl-s003 prepare --config configs/s003/dry-run.yaml
+
+# Auditoria temporal e de integridade dos dados preparados
+hgcl-s003 audit --config configs/s003/dry-run.yaml --prepared artifacts/s003/prepared/s003-prepared-canonical
+
+# Smoke determinístico treinado ponta a ponta (steps 1..29 fit, 30..34 shadow test)
+hgcl-s003 smoke --config configs/s003/smoke.yaml --run-id s003-smoke-001
+
+# Dry-run estrutural sem treino (design exato de 205 células P1, identidades, recursos)
+hgcl-s003 dry-run --config configs/s003/dry-run.yaml --prepared artifacts/s003/prepared/... --run-id s003-dry-001
+
+# Registro formal de aprovação do dry-run pelo pesquisador
+hgcl-s003 approve-dry-run --run artifacts/s003/runs/s003-dry-001 --approval-file approval.json
+
+# Execução da matriz (bloqueada até aprovação compatível com digests)
+hgcl-s003 matrix --config configs/s003/dry-run.yaml --prepared artifacts/s003/prepared/... --matrix-id s003-matrix-001
+
+# Retomada estrita de runs interrompidas
+hgcl-s003 resume --run artifacts/s003/runs/s003-run-...
+
+# Avaliação com guarda estrita de coorte selada
+hgcl-s003 evaluate --run artifacts/s003/matrices/s003-matrix-001
+
+# Relatório consolidado com cobertura e estatística pareada
+hgcl-s003 report --matrix artifacts/s003/matrices/s003-matrix-001
+
+# Avaliação dos gates da extensão heterogênea Addr↔Tx (não-bloqueante)
+hgcl-s003 hetero-gate --config configs/s003/dry-run.yaml --prepared artifacts/s003/prepared/...
+```
+
+### Ciclo de Vida dos Artefatos e Imutabilidade
+
+- **Preparação**: materializa `preparation-manifest.json`, `source-manifest.json`, `preprocessing.json`, `feature-audit.json` e snapshots temporais `graph.pt`. Os rótulos de teste 35–49 são selados em `test-label-store.pt` com acesso estritamente bloqueado.
+- **Dry-run estrutural**: produz `run.json` e `design.json` com `training_performed=false` e `test_labels_materialized=false`.
+- **Aprovação**: vincula digests de dados, config dry-run, config lab, código, evidências e design em `approval.json`.
+- **Matriz e Coorte**: executa células com reúso de cache de embeddings entre frações; ao concluir seleção, sela a coorte em `evaluation-cohort.json`.
+- **Avaliação e Auditoria**: realiza liberação global única do teste; todo acesso físico aos rótulos 35–49 registra timestamp, identidade, propósito e coorte em `access_log`.
+- **Retomada e Rerun Técnico**: somente runs `interrupted` podem retomar; post-unblinding técnico (`technical_rerun_of`) proíbe qualquer alteração de pesos, threshold ou config (sem reseleção).
+- **Relatório e Cobertura**: gera `coverage.json` classificando 100% das 205 células e `report.json` com linhagem por linha e inferência pareada com 5 pares completos.
+
+O CLI histórico `hgcl`, configs em `configs/` e a feature `specs/001-hgcl-experiment/` pertencem ao Estudo 002 congelado na tag `s02-001-final` e não devem ser modificados ou carregados pelo S003.
 
 ## Estudo histórico — S02
 

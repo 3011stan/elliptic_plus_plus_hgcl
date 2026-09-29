@@ -107,11 +107,11 @@
 - [X] T047 [US2] Implement and test directed two-layer GCN, GraphSAGE, and supervised GIN adapters with 128-dimensional embeddings — FR-015, FR-021–FR-023, FR-037, FR-041
 - [X] T048 [US2] Implement and test faithful Elliptic++ adaptations of Inspection-L (GIN 2×128, DGI, RF 100) and GCPAL (GIN 2×128, two stochastic views, K=10 multi-positive loss, two-layer `H‖X_tx` MLP), declaring unavoidable migration differences — FR-014–FR-015, FR-021–FR-023
 - [X] T049 [P] [US2] Implement and test the S003-TxGCL adapter, `X-only`/`H-only`/`H‖X_tx`, exact-cardinality functional/random-group/random-individual controls, no-KNN/no-edge-dropout variants, and gated reverse-edge P2 variant — FR-016, FR-019–FR-020, FR-037
-- [ ] T050 [US2] Implement and test the canonical design of 205 P1 cells, optional five P2 cells, immutable embedding-cache keys, digest-bound approval compatibility, and the structural dry-run coverage/resource/resume plan — FR-017, FR-019–FR-022, FR-026, FR-028–FR-029, SC-001, SC-005
-- [ ] T051 [US2] Implement and test resumable matrix scheduling, explicit failure states, cache reuse across fractions, zero pre-evaluation test access, 205-cell accounting, and final evaluation-cohort sealing — FR-016–FR-019, FR-027–FR-029, FR-038, FR-042
-- [ ] T052 [P] [US2] Implement and test representation diagnostics, pooled/per-snapshot reporting, temporal series, ablation attribution, paired t intervals/tests, Cohen `d_z`, Holm correction, incomplete-pair behavior, and scientific claim gates — FR-024–FR-025, FR-035–FR-036, FR-044–FR-045, SC-004
-- [ ] T053 [US2] Wire and integration-test `approve-dry-run`, `matrix`, and `report`, including fail-closed digest binding and a tiny non-scientific matrix fixture — FR-027–FR-029, SC-001, SC-004–SC-005
-- [ ] T054 [US2] Run and make green all US2 tests, persisting only non-scientific fixture evidence under `artifacts/s003/` — SC-001, SC-004–SC-005
+- [X] T050 [US2] Implement and test the canonical design of 205 P1 cells, optional five P2 cells, immutable embedding-cache keys, digest-bound approval compatibility, and the structural dry-run coverage/resource/resume plan — FR-017, FR-019–FR-022, FR-026, FR-028–FR-029, SC-001, SC-005
+- [X] T051 [US2] Implement and test resumable matrix scheduling, explicit failure states, cache reuse across fractions, zero pre-evaluation test access, 205-cell accounting, and final evaluation-cohort sealing — FR-016–FR-019, FR-027–FR-029, FR-038, FR-042
+- [X] T052 [P] [US2] Implement and test representation diagnostics, pooled/per-snapshot reporting, temporal series, ablation attribution, paired t intervals/tests, Cohen `d_z`, Holm correction, incomplete-pair behavior, and scientific claim gates — FR-024–FR-025, FR-035–FR-036, FR-044–FR-045, SC-004
+- [X] T053 [US2] Wire and integration-test `approve-dry-run`, `matrix`, and `report`, including fail-closed digest binding and a tiny non-scientific matrix fixture — FR-027–FR-029, SC-001, SC-004–SC-005
+- [X] T054 [US2] Run and make green all US2 tests, persisting only non-scientific fixture evidence under `artifacts/s003/` — SC-001, SC-004–SC-005
 
 **Checkpoint**: Toda comparação científica está implementada e verificável em escala reduzida, sem autorização para executar a matriz completa.
 
@@ -123,10 +123,10 @@
 
 **Independent Test**: Selecionar uma linha do relatório reduzido e reconstruir todos os insumos e decisões por `run_id`; interromper/retomar uma run e demonstrar que estados incompletos não entram como sucesso.
 
-- [ ] T055 [P] [US3] Implement and test source/preparation/run/environment/selection/evaluation manifests, atomic run-state transitions, failure categorization, terminal immutability, and checkpoint contents with hashes, RNGs and dependency versions — FR-004, FR-026–FR-027, FR-042, SC-006
-- [ ] T056 [US3] Implement and integration-test strict resume, reload equivalence, evaluation-access logging, and post-unblinding `technical_rerun_of` enforcement without permitting reselection — FR-026–FR-027, FR-038, FR-042, SC-003
-- [ ] T057 [US3] Implement and test row-level lineage, explicit incomplete-state coverage, `resume`/provenance CLI output, and an end-to-end arbitrary-result reconstruction scenario — FR-026–FR-027, SC-001, SC-006
-- [ ] T058 [US3] Run and make green all US3 tests and verify that no completed artifact is mutated — SC-003, SC-006
+- [X] T055 [P] [US3] Implement and test source/preparation/run/environment/selection/evaluation manifests, atomic run-state transitions, failure categorization, terminal immutability, and checkpoint contents with hashes, RNGs and dependency versions — FR-004, FR-026–FR-027, FR-042, SC-006
+- [X] T056 [US3] Implement and integration-test strict resume, reload equivalence, evaluation-access logging, and post-unblinding `technical_rerun_of` enforcement without permitting reselection — FR-026–FR-027, FR-038, FR-042, SC-003
+- [X] T057 [US3] Implement and test row-level lineage, explicit incomplete-state coverage, `resume`/provenance CLI output, and an end-to-end arbitrary-result reconstruction scenario — FR-026–FR-027, SC-001, SC-006
+- [X] T058 [US3] Run and make green all US3 tests and verify that no completed artifact is mutated — SC-003, SC-006
 
 **Checkpoint**: Qualquer resultado reduzido possui cadeia de custódia reconstruível e estados incompletos permanecem explícitos.
 
@@ -138,8 +138,8 @@
 
 **Independent Test**: Executar o gate com arquivos de endereço ausentes, features globais não causais e projeção acima do orçamento; cada caso deve produzir `defer` rastreável sem bloquear o núcleo homogêneo.
 
-- [ ] T059 [P] [US4] Write the heterogeneous-gate contract and nonblocking integration tests for causality, supervision, comparability, resources, approval, missing files, and include/defer invariants — FR-030–FR-032, SC-008
-- [ ] T060 [US4] Implement address evidence inventory, causal/supervision/target/resource checks, persisted `HeterogeneousExtensionDecision`, and `hetero-gate` CLI; make US4 tests green without creating an encoder or training run — FR-030–FR-032, SC-008
+- [X] T059 [P] [US4] Write the heterogeneous-gate contract and nonblocking integration tests for causality, supervision, comparability, resources, approval, missing files, and include/defer invariants — FR-030–FR-032, SC-008
+- [X] T060 [US4] Implement address evidence inventory, causal/supervision/target/resource checks, persisted `HeterogeneousExtensionDecision`, and `hetero-gate` CLI; make US4 tests green without creating an encoder or training run — FR-030–FR-032, SC-008
 
 **Checkpoint**: A extensão possui decisão reproduzível; implementação heterogênea continua fora de escopo até aceite futuro explícito.
 
@@ -149,11 +149,11 @@
 
 **Purpose**: Fechar documentação, validação integrada e evidências do dry-run sem iniciar a matriz científica.
 
-- [ ] T061 [P] Update S003 usage, command examples, artifact lifecycle, requirement traceability, implementation status, and the S02 boundary in `README.md`, `docs/studies/s003/context.md`, and `docs/studies/s003/status.md` — FR-026, FR-033–FR-034, SC-006
-- [ ] T062 Run the complete `tests/s003/` suite, historical regression tests, contract checks, `git diff --check`, and frozen-S02-path audit; record exact commands/results and remaining limitations — FR-033–FR-035, SC-009–SC-010
-- [ ] T063 Execute the trained Mac smoke from `quickstart.md`, verify ≤10 minutes and zero test-label access, and record its non-scientific evidence under `artifacts/s003/` — FR-028, FR-038, SC-007
-- [ ] T064 Execute the laboratory `doctor` and structural dry-run without training; verify exactly 205 P1 cells, `ssl.epochs=100` in the proposed immutable lab config, zero test-label materialization, cache/checkpoint/resume plans, resource capacity, and a documented duration projection with 20% margin — FR-023, FR-028–FR-029, SC-007
-- [ ] T065 Stop and request explicit researcher acceptance of the smoke/dry-run evidence and proposed lab config; only after acceptance materialize the byte-identical proposal as `configs/s003/lab.yaml`, invoke `approve-dry-run`, rerun the release checks, and record `approval.json` without launching the matrix — FR-023, FR-029, FR-037, SC-009–SC-010
+- [X] T061 [P] Update S003 usage, command examples, artifact lifecycle, requirement traceability, implementation status, and the S02 boundary in `README.md`, `docs/studies/s003/context.md`, and `docs/studies/s003/status.md` — FR-026, FR-033–FR-034, SC-006
+- [X] T062 Run the complete `tests/s003/` suite, historical regression tests, contract checks, `git diff --check`, and frozen-S02-path audit; record exact commands/results and remaining limitations — FR-033–FR-035, SC-009–SC-010
+- [X] T063 Execute the trained Mac smoke from `quickstart.md`, verify ≤10 minutes and zero test-label access, and record its non-scientific evidence under `artifacts/s003/` — FR-028, FR-038, SC-007
+- [X] T064 Execute the laboratory `doctor` and structural dry-run without training; verify exactly 205 P1 cells, `ssl.epochs=100` in the proposed immutable lab config, zero test-label materialization, cache/checkpoint/resume plans, resource capacity, and a documented duration projection with 20% margin — FR-023, FR-028–FR-029, SC-007
+- [X] T065 Stop and request explicit researcher acceptance of the smoke/dry-run evidence and proposed lab config; only after acceptance materialize the byte-identical proposal as `configs/s003/lab.yaml`, invoke `approve-dry-run`, rerun the release checks, and record `approval.json` without launching the matrix — FR-023, FR-029, FR-037, SC-009–SC-010
 
 **Final Checkpoint**: Software e protocolo estão prontos para uma decisão humana sobre a matriz; nenhuma célula científica completa foi executada automaticamente.
 

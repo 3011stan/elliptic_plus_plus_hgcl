@@ -299,13 +299,26 @@ def load_config(
 
 def validate_approval_compatibility(
     config: S003Config,
-    approval: Mapping[str, Any],
+    approval: Any,
     *,
     data_digest: str,
     code_revision: str,
     design_digest: str,
+    require_reverse_edge_ablation: bool = False,
 ) -> None:
     """Reject approval evidence that is not bound to the requested lab run."""
+    if hasattr(approval, "assert_compatible"):
+        try:
+            approval.assert_compatible(
+                data_digest=data_digest,
+                lab_config_digest=config.digest,
+                code_revision=code_revision,
+                design_digest=design_digest,
+                require_reverse_edge_ablation=require_reverse_edge_ablation,
+            )
+        except Exception as error:
+            raise ConfigError(str(error)) from error
+        return
     expected = {
         "lab_config_digest": config.digest,
         "data_digest": data_digest,
@@ -314,3 +327,5 @@ def validate_approval_compatibility(
     }
     for key, value in expected.items():
         _fail(approval.get(key) != value, f"approval {key} mismatch")
+    if require_reverse_edge_ablation and not approval.get("reverse_edge_ablation", False):
+        raise ConfigError("approval mismatch: reverse_edge_ablation is not approved")

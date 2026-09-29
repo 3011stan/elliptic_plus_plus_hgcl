@@ -1,0 +1,12 @@
+{
+  "approval_id": "s003-approval-001",
+  "approved_by": "stan",
+  "data_digest": "44940a242cf76682d1afc2874afb1418fa82aa43b42735f6b7cfd73d8fa154fb",
+  "dry_run_config_digest": "6129ae5119b167b59d20356ab775adaa1fa679360364bbc5ac44463feef75ab9",
+  "lab_config_digest": "ccff3e2177ab48ae52dd2380b5dfdd7e99653f127aad09b353bf2c07db49c9b7",
+  "code_revision": "848062aa587902da1da86634483e171a23d1cc2b",
+  "evidence_digest": "45fcb6fb3a66c76cba3eab61627e3a11259893ce3396365818aa5bb914c7cebc",
+  "design_digest": "0a76f84623ae452aeac389e4e0633bb86901c311394b71eb1929650f2cba25c8",
+  "max_projected_duration_seconds": 86400,
+  "reverse_edge_ablation": false
+}

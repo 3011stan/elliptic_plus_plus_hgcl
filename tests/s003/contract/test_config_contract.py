@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from hgcl.studies.s003.artifacts import DryRunApproval
 from hgcl.studies.s003.config import (
     ConfigError,
     load_config,
@@ -129,3 +130,79 @@ def test_lab_rejects_any_ssl_epoch_count_other_than_100(tmp_path: Path) -> None:
     raw["approval"] = {"approval_id": "s003-approval-001", "artifact_path": "approval.json"}
     with pytest.raises(ConfigError, match="exactly 100"):
         load_config(_write_config(tmp_path, raw))
+
+
+def test_validate_approval_compatibility_with_dry_run_approval_and_reverse_edges(
+    tmp_path: Path,
+) -> None:
+    raw = _raw("lab.template.yaml")
+    raw["approval"] = {
+        "approval_id": "s003-approval-001",
+        "artifact_path": "matrices/s003-matrix-001/approval.json",
+    }
+    config = load_config(_write_config(tmp_path, raw))
+
+    approval_obj = DryRunApproval(
+        approval_id="s003-approval-001",
+        approved_by="researcher",
+        data_digest="a" * 64,
+        dry_run_config_digest="b" * 64,
+        lab_config_digest=config.digest,
+        code_revision="c" * 40,
+        evidence_digest="d" * 64,
+        design_digest="e" * 64,
+        max_projected_duration_seconds=7200,
+        reverse_edge_ablation=False,
+    )
+
+    # Compatible approval passes
+    validate_approval_compatibility(
+        config,
+        approval_obj,
+        data_digest="a" * 64,
+        code_revision="c" * 40,
+        design_digest="e" * 64,
+    )
+
+    # Incompatible digest fails closed with ConfigError
+    with pytest.raises(ConfigError, match="data_digest"):
+        validate_approval_compatibility(
+            config,
+            approval_obj,
+            data_digest="0" * 64,
+            code_revision="c" * 40,
+            design_digest="e" * 64,
+        )
+
+    # Requiring reverse edges fails when approval has reverse_edge_ablation=False
+    with pytest.raises(ConfigError, match="reverse_edge_ablation is not approved"):
+        validate_approval_compatibility(
+            config,
+            approval_obj,
+            data_digest="a" * 64,
+            code_revision="c" * 40,
+            design_digest="e" * 64,
+            require_reverse_edge_ablation=True,
+        )
+
+    # When approved, passing require_reverse_edge_ablation=True succeeds
+    approved_p2 = DryRunApproval(
+        approval_id="s003-approval-002",
+        approved_by="researcher",
+        data_digest="a" * 64,
+        dry_run_config_digest="b" * 64,
+        lab_config_digest=config.digest,
+        code_revision="c" * 40,
+        evidence_digest="d" * 64,
+        design_digest="e" * 64,
+        max_projected_duration_seconds=7200,
+        reverse_edge_ablation=True,
+    )
+    validate_approval_compatibility(
+        config,
+        approved_p2,
+        data_digest="a" * 64,
+        code_revision="c" * 40,
+        design_digest="e" * 64,
+        require_reverse_edge_ablation=True,
+    )

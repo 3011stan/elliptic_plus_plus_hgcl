@@ -11,6 +11,7 @@ from hgcl.studies.s003.artifacts import (
     DryRunApproval,
     EvaluationCell,
     EvaluationCohort,
+    compute_evidence_digest,
 )
 
 
@@ -73,6 +74,108 @@ def test_dry_run_approval_is_digest_bound() -> None:
             code_revision="d" * 40,
             design_digest=_digest("f"),
         )
+
+
+def test_dry_run_approval_reverse_edge_ablation_and_validation() -> None:
+    # 1. Reverse edge ablation defaults to False
+    approval = DryRunApproval(
+        approval_id="s003-approval-001",
+        approved_by="researcher",
+        data_digest=_digest("a"),
+        dry_run_config_digest=_digest("b"),
+        lab_config_digest=_digest("c"),
+        code_revision="d" * 40,
+        evidence_digest=_digest("e"),
+        design_digest=_digest("f"),
+        max_projected_duration_seconds=3600,
+    )
+    assert approval.reverse_edge_ablation is False
+
+    # 2. Compatibility check rejects when reverse edge ablation is required but not approved
+    with pytest.raises(ArtifactError, match="reverse_edge_ablation is not approved"):
+        approval.assert_compatible(
+            data_digest=_digest("a"),
+            lab_config_digest=_digest("c"),
+            code_revision="d" * 40,
+            design_digest=_digest("f"),
+            require_reverse_edge_ablation=True,
+        )
+
+    # 3. Approved reverse edge ablation passes compatibility
+    approved_p2 = DryRunApproval(
+        approval_id="s003-approval-002",
+        approved_by="researcher",
+        data_digest=_digest("a"),
+        dry_run_config_digest=_digest("b"),
+        lab_config_digest=_digest("c"),
+        code_revision="d" * 40,
+        evidence_digest=_digest("e"),
+        design_digest=_digest("f"),
+        max_projected_duration_seconds=3600,
+        reverse_edge_ablation=True,
+    )
+    approved_p2.assert_compatible(
+        data_digest=_digest("a"),
+        lab_config_digest=_digest("c"),
+        code_revision="d" * 40,
+        design_digest=_digest("f"),
+        require_reverse_edge_ablation=True,
+    )
+
+    # 4. Empty approved_by is rejected
+    with pytest.raises(ArtifactError, match="approved_by cannot be empty"):
+        DryRunApproval(
+            approval_id="s003-approval-003",
+            approved_by="",
+            data_digest=_digest("a"),
+            dry_run_config_digest=_digest("b"),
+            lab_config_digest=_digest("c"),
+            code_revision="d" * 40,
+            evidence_digest=_digest("e"),
+            design_digest=_digest("f"),
+            max_projected_duration_seconds=3600,
+        )
+
+
+def test_dry_run_approval_serialization_round_trip() -> None:
+    approval = DryRunApproval(
+        approval_id="s003-approval-001",
+        approved_by="researcher",
+        data_digest=_digest("a"),
+        dry_run_config_digest=_digest("b"),
+        lab_config_digest=_digest("c"),
+        code_revision="d" * 40,
+        evidence_digest=_digest("e"),
+        design_digest=_digest("f"),
+        max_projected_duration_seconds=7200,
+        reverse_edge_ablation=True,
+    )
+    payload = approval.to_dict()
+    restored = DryRunApproval.from_dict(payload)
+    assert restored.approval_id == approval.approval_id
+    assert restored.approved_by == approval.approved_by
+    assert restored.data_digest == approval.data_digest
+    assert restored.dry_run_config_digest == approval.dry_run_config_digest
+    assert restored.lab_config_digest == approval.lab_config_digest
+    assert restored.code_revision == approval.code_revision
+    assert restored.evidence_digest == approval.evidence_digest
+    assert restored.design_digest == approval.design_digest
+    assert restored.max_projected_duration_seconds == approval.max_projected_duration_seconds
+    assert restored.reverse_edge_ablation is True
+
+
+def test_compute_evidence_digest() -> None:
+    payload1 = {"report": "valid", "p1_cells": 205}
+    payload2 = {"p1_cells": 205, "report": "valid"}  # Key order difference
+    payload3 = {"report": "valid", "p1_cells": 204}
+
+    digest1 = compute_evidence_digest(payload1)
+    digest2 = compute_evidence_digest(payload2)
+    digest3 = compute_evidence_digest(payload3)
+
+    assert len(digest1) == 64
+    assert digest1 == digest2  # Canonical order invariant
+    assert digest1 != digest3
 
 
 def test_evaluation_cohort_seals_205_cells_and_releases_once() -> None:

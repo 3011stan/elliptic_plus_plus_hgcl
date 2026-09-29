@@ -15,12 +15,16 @@ from .data import DataError, discover_source
 from .environment import EnvironmentError, RequiredEnvironment, doctor
 from .pipeline import (
     audit_prepared,
+    approve_dry_run,
+    generate_matrix_report,
     load_causal_evidence,
     load_prepared,
     persist_prepared,
     prepare_dataset,
+    run_matrix_pipeline,
     run_structural_dry_run,
     run_shadow_smoke,
+    resume_run,
     validate_guarded_evaluation,
 )
 
@@ -212,13 +216,73 @@ def default_handlers() -> dict[str, Handler]:
             )
         return _translate_errors(action)
 
+    def approve_dry_run_handler(args: argparse.Namespace) -> Mapping[str, Any]:
+        def action() -> Mapping[str, Any]:
+            return approve_dry_run(args.run, args.approval_file)
+        return _translate_errors(action)
+
+    def matrix_handler(args: argparse.Namespace) -> Mapping[str, Any]:
+        def action() -> Mapping[str, Any]:
+            config = load_config(args.config)
+            prepared = load_prepared(args.prepared)
+            return run_matrix_pipeline(
+                config,
+                prepared,
+                matrix_id=args.matrix_id,
+                artifacts_root=config.raw["paths"].get("artifacts_root", "artifacts/s003"),
+            )
+        return _translate_errors(action)
+
+    def resume_handler(args: argparse.Namespace) -> Mapping[str, Any]:
+        def action() -> Mapping[str, Any]:
+            return resume_run(args.run)
+        return _translate_errors(action)
+
+    def report_handler(args: argparse.Namespace) -> Mapping[str, Any]:
+        def action() -> Mapping[str, Any]:
+            return generate_matrix_report(args.matrix)
+        return _translate_errors(action)
+
+    def hetero_gate_handler(args: argparse.Namespace) -> Mapping[str, Any]:
+        def action() -> Mapping[str, Any]:
+            config = load_config(args.config)
+            prepared = load_prepared(args.prepared, config)
+            from .hetero import evaluate_heterogeneous_gate
+            artifacts_root = Path(config.raw["paths"].get("artifacts_root", "artifacts/s003")).resolve()
+            output_file = artifacts_root / "hetero" / "hetero_decision.json"
+            decision = evaluate_heterogeneous_gate(
+                config,
+                data_root=config.raw["paths"]["data_root"],
+                address_files_present="wallets_features" in getattr(prepared.source, "optional_files", {}),
+                features_are_causal_per_snapshot=False,
+                output_path=output_file,
+            )
+            return {
+                "status": "deferred" if decision.is_deferred else "included",
+                "decision": decision.decision,
+                "approved_by": decision.approved_by,
+                "gates": {
+                    "causality": decision.causality_gate.passed,
+                    "supervision": decision.supervision_gate.passed,
+                    "comparability": decision.comparability_gate.passed,
+                    "resources": decision.resources_gate.passed,
+                },
+                "artifacts": [str(output_file)],
+            }
+        return _translate_errors(action)
+
     return {
         "doctor": doctor_handler,
         "prepare": prepare_handler,
         "audit": audit_handler,
         "smoke": smoke_handler,
         "dry-run": dry_run_handler,
+        "approve-dry-run": approve_dry_run_handler,
+        "matrix": matrix_handler,
+        "resume": resume_handler,
         "evaluate": evaluate_handler,
+        "report": report_handler,
+        "hetero-gate": hetero_gate_handler,
     }
 
 

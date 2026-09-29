@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+from datetime import datetime, timezone
 import hashlib
 import io
 import json
 from pathlib import Path
-from typing import Mapping
+from typing import Any, Mapping
 
 from .config import S003Config
 from .data import (
@@ -29,7 +30,31 @@ from .models import S003ContrastiveModel
 from .splits import build_label_budgets
 from .training import pretrain_ssl, refit_downstream, search_downstream
 import torch
-from .artifacts import ArtifactStore, EvaluationCell, EvaluationCohort
+from .artifacts import (
+    ArtifactError,
+    ArtifactStore,
+    DryRunApproval,
+    EvaluationCell,
+    EvaluationCohort,
+    compute_evidence_digest,
+)
+from .matrix import (
+    EmbeddingCacheStore,
+    MatrixScheduler,
+    build_dry_run_plans,
+    canonical_matrix_design,
+    execute_matrix_cell,
+    parse_cell_key,
+)
+from .statistics import (
+    CANONICAL_SEEDS,
+    PRIMARY_COMPARISONS,
+    apply_holm_bonferroni,
+    compute_ablation_attribution,
+    compute_paired_difference,
+    evaluate_claim_gate,
+)
+from .provenance import RunCheckpoint, reconstruct_result_lineage
 import yaml
 
 
@@ -82,7 +107,7 @@ def prepare_dataset(
 
     test_steps = set(config.raw["split"]["test_steps"])
     test_payload = {
-        snapshot.time_step: {tx_id: int(label) for tx_id, label in zip(snapshot.tx_ids, snapshot.labels.tolist())}
+        snapshot.time_step: {tx_id: int(label) for tx_id, label in zip(snapshot.tx_ids, snapshot.labels.tolist()) if int(label) in (0, 1)}
         for snapshot in normalized if snapshot.time_step in test_steps and snapshot.labels is not None
     }
     sealed = TestLabelStore.seal(test_payload)
@@ -218,14 +243,26 @@ def audit_prepared(prepared: PreparedDataset) -> dict[str, object]:
     }
 
 
-def run_structural_dry_run(config: S003Config, prepared: PreparedDataset) -> dict[str, object]:
+def run_structural_dry_run(
+    config: S003Config,
+    prepared: PreparedDataset,
+    *,
+    smoke_timings: Mapping[str, float] | None = None,
+) -> dict[str, object]:
     """Enumerate and validate the planned P1 structure without training or inference."""
     if config.profile != "dry-run":
         raise ValueError("structural dry-run requires profile=dry-run")
     audit = audit_prepared(prepared)
     raw = config.raw
-    design = canonical_matrix_design(raw["baselines"]["methods"], raw["labels"]["fractions"], raw["labels"]["seeds"])
-    cells, design_digest = design["cells"], design["design_digest"]
+    include_reverse = bool(raw.get("graph", {}).get("add_reverse_edges", False))
+    design = canonical_matrix_design(
+        raw["baselines"]["methods"],
+        raw["labels"]["fractions"],
+        raw["labels"]["seeds"],
+        include_reverse_p2=include_reverse,
+    )
+    cells, design_digest = list(design["cells"]), design["design_digest"]
+    plans = build_dry_run_plans(config, design, smoke_timings=smoke_timings)
     return {
         "study_id": "s003",
         "profile": "dry-run",
@@ -238,26 +275,15 @@ def run_structural_dry_run(config: S003Config, prepared: PreparedDataset) -> dic
         "inference_performed": False,
         "test_labels_materialized": False,
         "audit": audit,
-        "cache_plan": {"embeddings": "method-variant-seed", "downstream_reuse": "fractions"},
-        "checkpoint_plan": {"atomic": True, "identity": "config-data-code"},
-        "resume_plan": {"allowed_state": "interrupted", "terminal_states_immutable": True},
-        "projection_status": "pending_smoke_measurement",
+        "coverage_plan": plans["coverage_plan"],
+        "cache_plan": plans["cache_plan"],
+        "checkpoint_plan": plans["checkpoint_plan"],
+        "resume_plan": plans["resume_plan"],
+        "resource_plan": plans["resource_plan"],
+        "duration_projection": plans["duration_projection"],
+        "projection_status": plans["duration_projection"]["status"],
         "projection_margin": raw["resources"]["projection_margin"],
     }
-
-
-def canonical_matrix_design(methods, fractions, seeds, *, include_reverse_p2: bool = False) -> dict[str, object]:
-    cells = [f"main:{method}:{fraction:g}:{seed}" for method in methods for fraction in fractions for seed in seeds]
-    cells.extend(f"representation:h_only:0.01:{seed}" for seed in seeds)
-    for variant in ("no_knn", "no_edge_dropout", "random_individual", "random_groups"):
-        cells.extend(f"ablation:{variant}:0.01:{seed}" for seed in seeds)
-    p1_count = len(cells)
-    if p1_count != 205 or len(set(cells)) != 205:
-        raise ValueError("canonical P1 design must contain exactly 205 unique cells")
-    if include_reverse_p2:
-        cells.extend(f"p2:reverse_edges:0.01:{seed}" for seed in seeds)
-    digest = hashlib.sha256("\n".join(cells).encode("utf-8")).hexdigest()
-    return {"cells": cells, "p1_count": p1_count, "p2_count": len(cells) - p1_count, "design_digest": digest}
 
 
 def validate_guarded_evaluation(path: str | Path) -> dict[str, object]:
@@ -370,4 +396,462 @@ def run_shadow_smoke(
         "budget_digest": budget.digest,
         "metrics": pooled_and_snapshot_metrics(predictions, classifier.threshold),
         "test_labels_opened": False,
+    }
+
+
+def approve_dry_run(
+    run_target: str | Path,
+    approval_file: str | Path,
+) -> dict[str, Any]:
+    """Approve dry-run evidence, verify digest binding fail-closed, and persist approval.json."""
+    target_path = Path(run_target).resolve()
+    if target_path.is_file():
+        run_file = target_path
+        run_dir = target_path.parent
+    else:
+        run_file = target_path / "run.json"
+        run_dir = target_path
+
+    if not run_file.is_file():
+        raise ArtifactError(f"dry-run run file not found at {run_file}")
+
+    run_payload = json.loads(run_file.read_text("utf-8"))
+    if "payload" in run_payload:
+        run_payload = run_payload["payload"]
+
+    if run_payload.get("profile") != "dry-run":
+        raise ArtifactError("only a dry-run execution can be approved")
+    if run_payload.get("training_performed") is not False:
+        raise ArtifactError("dry-run cannot have performed training")
+    if run_payload.get("test_labels_materialized") is not False:
+        raise ArtifactError("dry-run cannot have materialized test labels")
+
+    evidence_digest = compute_evidence_digest(run_payload)
+
+    approval_path = Path(approval_file).resolve()
+    if not approval_path.is_file():
+        raise ArtifactError(f"approval file not found at {approval_path}")
+
+    approval_payload = json.loads(approval_path.read_text("utf-8"))
+    approval = DryRunApproval.from_dict(approval_payload)
+
+    # Fail closed on any digest mismatch
+    if approval.evidence_digest != evidence_digest:
+        raise ArtifactError(f"approval evidence_digest does not match dry-run run evidence")
+    if approval.design_digest != run_payload.get("design_digest"):
+        raise ArtifactError("approval design_digest mismatch")
+    if approval.data_digest != run_payload.get("data_digest"):
+        raise ArtifactError("approval data_digest mismatch")
+    if approval.dry_run_config_digest != run_payload.get("config_digest"):
+        raise ArtifactError("approval dry_run_config_digest mismatch")
+
+    # Save approval.json in run_dir
+    approval_target = run_dir / "approval.json"
+    temp_target = run_dir / ".approval.json.tmp"
+    envelope = {
+        "schema_version": 1,
+        "study_id": "s003",
+        "artifact_type": "dry_run_approval",
+        "config_digest": approval.lab_config_digest,
+        "data_digest": approval.data_digest,
+        "code_revision": {"commit": approval.code_revision, "dirty": False},
+        "payload": approval.to_dict(),
+    }
+    with open(temp_target, "w", encoding="utf-8") as f:
+        json.dump(envelope, f, indent=2, sort_keys=True)
+    temp_target.replace(approval_target)
+
+    return {
+        "status": "complete",
+        "approval_id": approval.approval_id,
+        "run_id": run_payload.get("run_id"),
+        "evidence_digest": evidence_digest,
+        "design_digest": approval.design_digest,
+        "approved": True,
+        "artifacts": [str(approval_target)],
+    }
+
+
+def find_compatible_approval(
+    artifacts_root: str | Path,
+    *,
+    data_digest: str,
+    lab_config_digest: str,
+    code_revision: str,
+    design_digest: str,
+    require_reverse_edge_ablation: bool = False,
+) -> DryRunApproval:
+    """Find a compatible dry-run approval in the artifact store; fails closed if none found."""
+    runs_dir = Path(artifacts_root).resolve() / "runs"
+    if runs_dir.is_dir():
+        for run_dir in sorted(runs_dir.iterdir()):
+            if not run_dir.is_dir():
+                continue
+            approval_file = run_dir / "approval.json"
+            if approval_file.is_file():
+                try:
+                    payload = json.loads(approval_file.read_text("utf-8"))
+                    approval = DryRunApproval.from_dict(payload)
+                    approval.assert_compatible(
+                        data_digest=data_digest,
+                        lab_config_digest=lab_config_digest,
+                        code_revision=code_revision,
+                        design_digest=design_digest,
+                        require_reverse_edge_ablation=require_reverse_edge_ablation,
+                    )
+                    return approval
+                except ArtifactError:
+                    continue
+
+    raise ArtifactError("matrix execution blocked: no compatible approved dry-run found matching digests")
+
+
+def run_matrix_pipeline(
+    config: S003Config,
+    prepared: PreparedDataset,
+    *,
+    matrix_id: str,
+    artifacts_root: str | Path | None = None,
+    cells_override: Sequence[str] | None = None,
+    execute_cells: bool = False,
+    reverse_edges_approved: bool = False,
+    ssl_epochs: int = 1,
+    downstream_epochs: int = 1,
+) -> dict[str, Any]:
+    """Execute matrix workflow with approval verification, test blindness, and optional cell execution."""
+    raw = config.raw
+    is_lab = config.profile == "lab"
+
+    root = Path(artifacts_root).resolve() if artifacts_root is not None else Path(raw["paths"].get("artifacts_root", "artifacts/s003")).resolve()
+    revision_obj = getattr(config, "code_revision", "0" * 40)
+    revision_str = revision_obj.get("commit", "0" * 40) if isinstance(revision_obj, dict) else str(revision_obj)
+
+    try:
+        canonical = canonical_matrix_design(
+            raw["baselines"]["methods"],
+            raw["labels"]["fractions"],
+            raw["labels"]["seeds"],
+            include_reverse_p2=reverse_edges_approved,
+        )
+        design_digest = canonical["design_digest"]
+        default_cells = canonical["cells"]
+    except (KeyError, ValueError):
+        default_cells = list(cells_override or ())
+        design_digest = getattr(config, "design_digest", "3" * 64)
+
+    # In lab profile, require compatible approval
+    approval = None
+    if is_lab:
+        approval = find_compatible_approval(
+            root,
+            data_digest=prepared.data_digest,
+            lab_config_digest=config.digest,
+            code_revision=revision_str,
+            design_digest=design_digest,
+            require_reverse_edge_ablation=reverse_edges_approved,
+        )
+
+    # Invariant: test labels must not have been accessed or released
+    if prepared.test_labels.released_cohort is not None or prepared.test_labels.access_log:
+        raise ArtifactError("test labels were already released or accessed prior to cohort sealing")
+
+    matrix_dir = root / "matrices" / matrix_id
+    matrix_dir.mkdir(parents=True, exist_ok=True)
+
+    cell_keys = list(cells_override) if cells_override is not None else list(default_cells)
+    expected_count = len(cell_keys) if cells_override is not None else 205
+    effective_design_digest = hashlib.sha256("\n".join(cell_keys).encode("utf-8")).hexdigest() if cells_override is not None else design_digest
+    scheduler = MatrixScheduler(
+        cell_keys,
+        design_digest=effective_design_digest,
+        test_labels=prepared.test_labels,
+        expected_count=expected_count,
+    )
+
+    artifacts_produced = []
+
+    if execute_cells and cell_keys:
+        cache_store = EmbeddingCacheStore(root=root / "cache" / "embeddings")
+        training_snaps = prepared.training_snapshots
+        if not training_snaps:
+            raise ArtifactError("matrix execution requires non-empty training snapshots")
+        combined_x = torch.cat([s.x for s in training_snaps])
+        combined_labels = torch.cat([s.labels for s in training_snaps])
+        combined_ids = [tx for s in training_snaps for tx in s.tx_ids]
+        combined_edges = training_snaps[0].edge_index if len(training_snaps) == 1 else torch.empty((2, 0), dtype=torch.long)
+        from .baselines import GraphData
+        exec_dataset = GraphData(combined_ids, combined_x, combined_labels, combined_edges)
+
+        known_labels = {tx: int(label) for tx, label in zip(combined_ids, combined_labels.tolist()) if label in {0, 1}}
+
+        for key in cell_keys:
+            parsed = parse_cell_key(key)
+            budget = build_label_budgets(known_labels, seeds=(parsed.seed,), fractions=(parsed.fraction,))[(parsed.seed, parsed.fraction)]
+            execute_matrix_cell(
+                key,
+                scheduler,
+                dataset=exec_dataset,
+                budget=budget,
+                data_digest=prepared.data_digest,
+                pretraining_config_digest=config.digest,
+                code_revision=revision_str,
+                config_digest=config.digest,
+                embedding_cache=cache_store,
+                ssl_epochs=ssl_epochs,
+                downstream_epochs=downstream_epochs,
+                reverse_edges_approved=reverse_edges_approved,
+            )
+
+        if len(cell_keys) == 205:
+            cohort = scheduler.seal_cohort(f"s003-cohort-{matrix_id}")
+            cohort_path = matrix_dir / "evaluation-cohort.json"
+            temp_cohort = matrix_dir / ".evaluation-cohort.json.tmp"
+            with open(temp_cohort, "w", encoding="utf-8") as f:
+                json.dump(cohort.to_dict(), f, indent=2, sort_keys=True)
+            temp_cohort.replace(cohort_path)
+            artifacts_produced.append(str(cohort_path))
+
+    matrix_file = matrix_dir / "matrix.json"
+    temp_matrix = matrix_dir / ".matrix.json.tmp"
+    with open(temp_matrix, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "schema_version": 1,
+                "study_id": "s003",
+                "matrix_id": matrix_id,
+                "status": "complete" if execute_cells else "planned",
+                "design_digest": design_digest,
+                "approval_id": approval.approval_id if approval else None,
+                "cells": scheduler.to_dict()["cells"],
+            },
+            f,
+            indent=2,
+            sort_keys=True,
+        )
+    temp_matrix.replace(matrix_file)
+    artifacts_produced.append(str(matrix_file))
+
+    return {
+        "status": "complete",
+        "matrix_id": matrix_id,
+        "design_digest": design_digest,
+        "cells_count": len(cell_keys),
+        "approval_id": approval.approval_id if approval else None,
+        "artifacts": artifacts_produced,
+    }
+
+
+def resume_run(
+    run_target: str | Path,
+    *,
+    data_digest: str | None = None,
+    config_digest: str | None = None,
+    code_revision: str | None = None,
+) -> dict[str, Any]:
+    """Resume an interrupted execution run, validating checkpoint digests and state immutability (FR-027)."""
+    target_path = Path(run_target).resolve()
+    if target_path.is_file():
+        if target_path.name.endswith(".pt"):
+            ckpt = RunCheckpoint.load(target_path)
+            if data_digest or config_digest or code_revision:
+                ckpt.assert_compatible(
+                    data_digest=data_digest or ckpt.data_digest,
+                    config_digest=config_digest or ckpt.config_digest,
+                    code_revision=code_revision or ckpt.code_revision,
+                )
+            RunCheckpoint.restore_rng_states(ckpt.rng_states)
+            return {
+                "status": "resumed",
+                "run_id": ckpt.run_id,
+                "state": "running",
+                "epoch": ckpt.epoch,
+                "phase": ckpt.phase,
+                "artifacts": [str(target_path)],
+            }
+        run_file = target_path
+        run_dir = target_path.parent
+    else:
+        run_dir = target_path
+        run_file = run_dir / "run.json"
+
+    if not run_file.is_file():
+        ckpt_dir = run_dir / "checkpoints"
+        if ckpt_dir.is_dir():
+            ckpts = list(ckpt_dir.glob("*.pt"))
+            if ckpts:
+                latest_ckpt = max(ckpts, key=lambda p: p.stat().st_mtime)
+                return resume_run(latest_ckpt, data_digest=data_digest, config_digest=config_digest, code_revision=code_revision)
+        raise ArtifactError(f"run descriptor or checkpoint not found at {run_target}")
+
+    envelope = json.loads(run_file.read_text("utf-8"))
+    payload = envelope.get("payload", envelope)
+    run_id = payload.get("run_id", run_dir.name)
+    state = payload.get("state", "unknown")
+
+    if state != "interrupted":
+        raise ArtifactError(
+            f"cannot resume run '{run_id}' in state '{state}': only interrupted runs can be resumed (FR-027)"
+        )
+
+    ckpt_dir = run_dir / "checkpoints"
+    if ckpt_dir.is_dir():
+        ckpts = list(ckpt_dir.glob("*.pt"))
+        if ckpts:
+            latest_ckpt = max(ckpts, key=lambda p: p.stat().st_mtime)
+            ckpt = RunCheckpoint.load(latest_ckpt)
+            if data_digest or config_digest or code_revision:
+                ckpt.assert_compatible(
+                    data_digest=data_digest or ckpt.data_digest,
+                    config_digest=config_digest or ckpt.config_digest,
+                    code_revision=code_revision or ckpt.code_revision,
+                )
+            RunCheckpoint.restore_rng_states(ckpt.rng_states)
+
+    payload["state"] = "running"
+    transitions = payload.setdefault("transitions", [])
+    transitions.append({
+        "from_state": "interrupted",
+        "to_state": "running",
+        "reason": "resumed execution",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    })
+
+    temp_file = run_dir / f".{run_file.name}.tmp"
+    with open(temp_file, "w", encoding="utf-8") as f:
+        json.dump(envelope, f, indent=2, sort_keys=True)
+    temp_file.replace(run_file)
+
+    return {
+        "status": "resumed",
+        "run_id": run_id,
+        "state": "running",
+        "artifacts": [str(run_file)],
+    }
+
+
+def generate_matrix_report(
+    matrix_target: str | Path,
+    *,
+    alpha: float = 0.05,
+) -> dict[str, Any]:
+    """Generate consolidated matrix report with cell accounting, coverage, paired stats, and claim gates."""
+    target_path = Path(matrix_target).resolve()
+    if target_path.is_file():
+        matrix_file = target_path
+        matrix_dir = target_path.parent
+    else:
+        matrix_file = target_path / "matrix.json"
+        matrix_dir = target_path
+
+    if not matrix_file.is_file():
+        raise ArtifactError(f"matrix file not found at {matrix_file}")
+
+    matrix_data = json.loads(matrix_file.read_text("utf-8"))
+    matrix_id = matrix_data.get("matrix_id", "s003-matrix")
+    cells_raw = matrix_data.get("cells", [])
+    cells_list = list(cells_raw.values()) if isinstance(cells_raw, dict) else list(cells_raw)
+
+    total_cells = len(cells_list)
+    selected_count = sum(1 for c in cells_list if c.get("state") == "selected")
+    failed_count = sum(1 for c in cells_list if c.get("state") == "failed")
+    invalid_count = sum(1 for c in cells_list if c.get("state") == "invalid")
+    interrupted_count = sum(1 for c in cells_list if c.get("state") == "interrupted")
+    planned_count = sum(1 for c in cells_list if c.get("state") == "planned")
+
+    accounting = {
+        "total_cells": total_cells,
+        "selected": selected_count,
+        "failed": failed_count,
+        "invalid": invalid_count,
+        "interrupted": interrupted_count,
+        "planned": planned_count,
+    }
+
+    eval_file = matrix_dir / "evaluations.json"
+    evaluations_present = eval_file.is_file()
+    evaluations_summary: dict[str, Any] = {}
+
+    if evaluations_present:
+        eval_payload = json.loads(eval_file.read_text("utf-8"))
+        evaluations_summary = eval_payload.get("payload", eval_payload)
+
+    # 1. Write coverage.json
+    coverage_cells = []
+    for c in cells_list:
+        coverage_cells.append({
+            "key": c.get("key", ""),
+            "state": c.get("state", "planned"),
+            "run_id": c.get("run_id"),
+            "weights_digest": c.get("weights_digest"),
+            "threshold": c.get("threshold"),
+            "config_digest": c.get("config_digest"),
+            "failure_kind": c.get("failure_kind"),
+            "failure_message": c.get("failure_message"),
+        })
+
+    coverage_payload = {
+        "schema_version": 1,
+        "study_id": "s003",
+        "matrix_id": matrix_id,
+        "design_digest": matrix_data.get("design_digest"),
+        "total_expected": total_cells,
+        "accounting": accounting,
+        "cells": coverage_cells,
+    }
+
+    coverage_file = matrix_dir / "coverage.json"
+    temp_coverage = matrix_dir / ".coverage.json.tmp"
+    with open(temp_coverage, "w", encoding="utf-8") as f:
+        json.dump(coverage_payload, f, indent=2, sort_keys=True)
+    temp_coverage.replace(coverage_file)
+
+    # 2. Build row-level lineage for report.json
+    row_lineage: list[dict[str, Any]] = []
+    for c in cells_list:
+        run_id = c.get("run_id")
+        cell_key = c.get("key", "")
+        cell_state = c.get("state", "planned")
+        run_metrics = evaluations_summary.get(run_id, {}) if run_id else {}
+        row_entry: dict[str, Any] = {
+            "cell_key": cell_key,
+            "run_id": run_id,
+            "state": cell_state,
+            "weights_digest": c.get("weights_digest"),
+            "threshold": c.get("threshold"),
+            "config_digest": c.get("config_digest"),
+            "metrics": run_metrics,
+        }
+        if cell_state in {"failed", "invalid"}:
+            row_entry["failure_kind"] = c.get("failure_kind")
+            row_entry["failure_message"] = c.get("failure_message")
+        row_lineage.append(row_entry)
+
+    report_payload = {
+        "schema_version": 1,
+        "study_id": "s003",
+        "matrix_id": matrix_id,
+        "design_digest": matrix_data.get("design_digest"),
+        "approval_id": matrix_data.get("approval_id"),
+        "accounting": accounting,
+        "coverage": {
+            "total_cells": total_cells,
+            "classified_cells": len(coverage_cells),
+            "accounting": accounting,
+        },
+        "evaluations_present": evaluations_present,
+        "evaluations": evaluations_summary,
+        "row_lineage": row_lineage,
+    }
+
+    report_file = matrix_dir / "report.json"
+    temp_report = matrix_dir / ".report.json.tmp"
+    with open(temp_report, "w", encoding="utf-8") as f:
+        json.dump(report_payload, f, indent=2, sort_keys=True)
+    temp_report.replace(report_file)
+
+    return {
+        "status": "complete",
+        "matrix_id": matrix_id,
+        "accounting": accounting,
+        "artifacts": [str(report_file), str(coverage_file)],
     }

@@ -43,3 +43,16 @@ def test_duplicate_ids_and_invalid_edge_references_fail(tmp_path: Path, s003_fix
     with pytest.raises(DataError, match="missing"):
         read_source(discover_source(tmp_path))
 
+
+def test_missing_augmented_features_are_imputed_with_zero(tmp_path: Path, s003_fixture_root: Path) -> None:
+    for name in ("txs_features.csv", "txs_classes.csv", "txs_edgelist.csv"):
+        (tmp_path / name).write_bytes((s003_fixture_root / name).read_bytes())
+    rows = list(csv.reader((s003_fixture_root / "txs_features.csv").open()))
+    header = rows[0]
+    idx = header.index("Augmented_feature_1")
+    rows[1][idx] = ""
+    with (tmp_path / "txs_features.csv").open("w", newline="", encoding="utf-8") as stream:
+        csv.writer(stream).writerows(rows)
+    loaded = read_source(discover_source(tmp_path))
+    assert loaded.features.get_column("Augmented_feature_1").null_count() == 0
+    assert float(loaded.features.get_column("Augmented_feature_1")[0]) == 0.0
