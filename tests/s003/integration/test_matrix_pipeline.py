@@ -206,3 +206,19 @@ def test_matrix_and_report_with_tiny_non_scientific_fixture(tmp_path: Path) -> N
     payload = json.loads(report_json.read_text(encoding="utf-8"))
     assert payload["matrix_id"] == "s003-matrix-tiny"
     assert payload["accounting"]["selected"] == 2
+
+
+def test_approve_dry_run_auto_without_approval_file(tmp_path: Path) -> None:
+    run_dir, run_payload, evidence_digest = _setup_dry_run_fixture(tmp_path)
+    res = approve_dry_run(
+        run_dir,
+        approval_file=None,
+        approved_by="stan",
+        lab_config_path=Path(__file__).parents[3] / "configs" / "s003" / "lab.yaml",
+    )
+    assert res["status"] == "complete"
+    assert res["approved"] is True
+    assert (run_dir / "approval.json").is_file()
+    approval_doc = json.loads((run_dir / "approval.json").read_text(encoding="utf-8"))
+    assert approval_doc["payload"]["approved_by"] == "stan"
+    assert approval_doc["payload"]["data_digest"] == run_payload["data_digest"]

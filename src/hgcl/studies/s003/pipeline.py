@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 from typing import Any, Mapping
 
-from .config import S003Config
+from .config import S003Config, load_config
 from .data import (
     FeatureAudit,
     PreparedSnapshot,
