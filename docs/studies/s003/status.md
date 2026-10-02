@@ -173,11 +173,25 @@ Atualizado em: 2026-09-28
   (`0a76f84623ae452aeac389e4e0633bb86901c311394b71eb1929650f2cba25c8`), e revalidou 100% dos checks de
   release (218 testes aprovados, zero acessos a 35–49 e caminhos do S02 intocados).
 
-**Checkpoint Final Atingido**: O software, a metodologia e o protocolo do Estudo 003 (`S003-TxGCL`) estão 100%
-implementados, validados e aprovados. Todas as tarefas T001–T065 foram concluídas. Nenhuma célula científica da matriz
-foi executada automaticamente; a matriz de laboratório permanece congelada e pronta para execução no ambiente com GPU.
+- D003-018 e T066 (2026-10-02): Durante a execução da matriz no laboratório (`s003-matrix-002`),
+  as células contrastivas de GCPAL e S003-TxGCL falharam devido a tentativa de alocação de 74,3 GB de RAM
+  (`RuntimeError: DefaultCPUAllocator: can't allocate memory: you tried to allocate 74272600900 bytes`)
+  em `positives.py:22` (`cosine_knn`) decorrente da concatenação de 136 mil nós em um único grafo plano.
+  Após consulta ao NotebookLM autorizado (`66fb9e95-d225-4eaf-b45b-f8d232053677`) e registro de D003-018,
+  T066 foi implementada com sucesso no SDD:
+  1. `GraphData` foi enriquecido com o campo opcional `snapshots: tuple[Any, ...] | None`.
+  2. `S003TxGCLAdapter` e `GCPALAdapter` foram refatorados para pré-treinar iterando snapshot-por-snapshot
+     sobre os passos de treino (1–34), com KNN e positivos calculados localmente em cada snapshot (< 100 MB de RAM),
+     extraindo embeddings congelados snapshot-por-snapshot e concatenando-os para otimização tabular downstream.
+  3. `InspectionLDGIAdapter` também foi ajustado para iterar snapshot-por-snapshot sobre `snapshots` preservando as arestas temporais.
+  4. `execute_matrix_cell` passou a priorizar `fitted.embeddings`, extrair por snapshot na ausência de cache e
+     logar tracebacks completos em `sys.stderr` em caso de exceção.
+  5. `pipeline.py` passou a propagar `snapshots=training_snaps` para `exec_dataset` e salvar `last_cell_kind` e
+     `last_cell_error` no `progress.json`.
+  6. `tests/s003/integration/test_snapshot_ssl_execution.py` foi adicionado com 12 testes de integração/regressão,
+     elevando a suíte S003 para 166 testes aprovados (232 na global).
 
 ## Próximo passo autorizado
 
-Implementação e validação concluídas integralmente. A execução da matriz científica completa no ambiente de laboratório
-com GPU CUDA (`hgcl-s003 matrix --config configs/s003/lab.yaml ...`) cabe à operação deliberada do pesquisador.
+Comit e push das alterações de T066 na branch `003-transaction-gcl`, orientação ao pesquisador para efetuar o
+`git pull` no cluster `palmito` e execução da célula ou retrip da matriz com o novo pré-treino temporal por snapshot.

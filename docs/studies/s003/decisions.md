@@ -116,3 +116,15 @@ do artigo, a ausência de registro representa inexistência da atividade (zero e
 e deve ser imputada como constante `0.0` antes da normalização causal fit-only (1–34).
 A imputação por média ou mediana é expressamente rejeitada por inflacionar
 artificialmente volumes e graus e distorcer a geometria das representações.
+
+## D003-018 — Execução estritamente temporal por snapshot no pré-treino contrastivo (FR-008, FR-012, FR-040)
+
+Decisão aceita pelo pesquisador em 2026-10-02 após constatação de estouro de memória no cluster (tentativa de alocação contínua de 74,3 GB de RAM ao processar grafo achatado de 136.265 nós) e consulta formal ao notebook NotebookLM autorizado (`66fb9e95-d225-4eaf-b45b-f8d232053677`).
+
+A literatura seminal presente no acervo (*Inspection-L - Loa et al., 2022; GCPAL - Lu & Wang, 2024; Elliptic++ - Elmougy & Liu, 2023; Weber et al., 2019; HeteroGCL - Chen et al., 2026*) estabelece que os datasets Elliptic e Elliptic++ são grafos temporais discretos compostos por subgrafos/snapshots independentes. Conectar ou fundir todos os snapshots em um único grafo plano monolítico cria atalhos temporais espúrios, viola a causalidade do fluxo UTXO e gera custo de memória $O(N_{\text{total}}^2)$ inviável.
+
+Fica deliberado:
+1. **Pré-treino contrastivo por snapshot**: Os encoders de métodos baseados em grafos contrastivos (`S003-TxGCL` e `GCPAL`) MUST executar o treinamento auto-supervisionado iterando snapshot por snapshot sobre os time steps de desenvolvimento (1–34), compartilhando os parâmetros do encoder GIN entre os passos temporais, conforme especificado em FR-008.
+2. **Escopo local do KNN e negativos**: Conforme FR-012 e FR-040, o grafo de similaridade KNN ($k=10$) e os conjuntos de negativos na perda contrastiva multi-positivo MUST ser construídos exclusivamente no interior de cada snapshot temporal ($N_t \approx 1.000$ a $7.000$ nós), garantindo isolamento temporal sem conexões entre passos diferentes e pico de memória inferior a 200 MB.
+3. **Representação downstream tabular**: Após o pré-treino SSL de cada semente, os embeddings congelados $H$ de todos os snapshots de treino (1–34) são extraídos e concatenados ordenadamente para compor o espaço de representação tabular ($H$, $H \parallel X$ ou $X$) sobre o qual o classificador downstream MLP é ajustado e avaliado estritamente nos subconjuntos de fit, validação e refit do orçamento de rótulos.
+4. **Observabilidade da matriz**: Falhas em células da matriz não podem ser silenciadas; `execute_matrix_cell` deve logar tracebacks completos e `progress.json` deve incluir `failure_kind` e `failure_message`.

@@ -159,6 +159,14 @@
 
 ---
 
+## Phase 8: Post-Execution Defect Remediation — Snapshot-by-Snapshot SSL Alignment (D003-018)
+
+**Purpose**: Corrigir o estouro de memória (74,3 GB) identificado na execução do cluster pela adesão estrita ao pré-treino temporal snapshot por snapshot (FR-008, FR-012, FR-040) em `S003TxGCLAdapter` e `GCPALAdapter`, e enriquecer a observabilidade de erros na matriz.
+
+- [x] T066 [Story 1 & 2] Remediate contrastive SSL pre-training in `S003TxGCLAdapter` and `GCPALAdapter` to strictly iterate snapshot-by-snapshot over training snapshots (1–34), computing KNN ($k=10$) and in-batch negatives locally per snapshot ($< 100\text{ MB}$ peak RAM); extract and concatenate frozen embeddings for downstream tabular optimization; enrich `execute_matrix_cell` and `pipeline.py` with full traceback logging and `failure_message` recording in `progress.json`; and validate via regression tests in `tests/s003/integration/test_snapshot_ssl_execution.py` — FR-008, FR-012, FR-040, SC-006
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

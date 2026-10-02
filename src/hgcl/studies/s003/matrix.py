@@ -743,14 +743,21 @@ def execute_matrix_cell(
             and cached_embeddings is None
             and cache_key is not None
         ):
-            extracted = None
+            extracted = getattr(fitted, "embeddings", None)
             model_obj = getattr(fitted, "model", getattr(fitted, "encoder", None))
-            if model_obj is not None:
-                edges = getattr(dataset, "edge_index", torch.empty((2, 0), dtype=torch.long))
-                if hasattr(model_obj, "frozen_embeddings"):
-                    extracted = model_obj.frozen_embeddings(dataset.features, edges)
-                elif callable(model_obj):
-                    extracted = model_obj(dataset.features, edges)
+            if extracted is None and model_obj is not None:
+                snapshots = getattr(dataset, "snapshots", None)
+                if snapshots:
+                    extracted = torch.cat([
+                        (model_obj.frozen_embeddings(s.x, s.edge_index) if hasattr(model_obj, "frozen_embeddings") else model_obj(s.x, s.edge_index))
+                        for s in snapshots
+                    ], dim=0)
+                else:
+                    edges = getattr(dataset, "edge_index", torch.empty((2, 0), dtype=torch.long))
+                    if hasattr(model_obj, "frozen_embeddings"):
+                        extracted = model_obj.frozen_embeddings(dataset.features, edges)
+                    elif callable(model_obj):
+                        extracted = model_obj(dataset.features, edges)
             if extracted is not None:
                 embedding_cache.put(cache_key, {"embeddings": extracted.detach(), "model": model_obj})
 
@@ -767,6 +774,8 @@ def execute_matrix_cell(
         )
 
     except (ValueError, KeyError) as exc:
+        import sys, traceback
+        traceback.print_exc(file=sys.stderr)
         return scheduler.terminate(
             cell_key,
             state="invalid",
@@ -774,6 +783,8 @@ def execute_matrix_cell(
             message=str(exc),
         )
     except Exception as exc:
+        import sys, traceback
+        traceback.print_exc(file=sys.stderr)
         return scheduler.terminate(
             cell_key,
             state="failed",

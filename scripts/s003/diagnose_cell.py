@@ -189,7 +189,7 @@ def main() -> int:
     combined_labels = torch.cat([s.labels for s in training_snaps])
     combined_ids = [tx for s in training_snaps for tx in s.tx_ids]
     combined_edges = training_snaps[0].edge_index if len(training_snaps) == 1 else torch.empty((2, 0), dtype=torch.long)
-    exec_dataset = GraphData(combined_ids, combined_x, combined_labels, combined_edges)
+    exec_dataset = GraphData(combined_ids, combined_x, combined_labels, combined_edges, snapshots=training_snaps)
     known_labels = {tx: int(label) for tx, label in zip(combined_ids, combined_labels.tolist()) if label in {0, 1}}
 
     budget = build_label_budgets(known_labels, seeds=(parsed.seed,), fractions=(parsed.fraction,))[(parsed.seed, parsed.fraction)]

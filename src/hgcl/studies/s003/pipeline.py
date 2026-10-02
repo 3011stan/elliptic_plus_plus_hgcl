@@ -602,7 +602,7 @@ def run_matrix_pipeline(
         combined_ids = [tx for s in training_snaps for tx in s.tx_ids]
         combined_edges = training_snaps[0].edge_index if len(training_snaps) == 1 else torch.empty((2, 0), dtype=torch.long)
         from .baselines import GraphData
-        exec_dataset = GraphData(combined_ids, combined_x, combined_labels, combined_edges)
+        exec_dataset = GraphData(combined_ids, combined_x, combined_labels, combined_edges, snapshots=training_snaps)
 
         known_labels = {tx: int(label) for tx, label in zip(combined_ids, combined_labels.tolist()) if label in {0, 1}}
 
@@ -634,6 +634,8 @@ def run_matrix_pipeline(
                 "percent": round(100.0 * index / total_cells, 1),
                 "last_cell": key,
                 "last_cell_state": cell_state.state,
+                "last_cell_kind": cell_state.failure_kind,
+                "last_cell_error": cell_state.failure_message,
             }
             with open(temp_progress, "w", encoding="utf-8") as f:
                 json.dump(progress_payload, f, indent=2)
