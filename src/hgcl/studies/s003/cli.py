@@ -335,3 +335,8 @@ def run(
 
 def main(argv: Sequence[str] | None = None) -> int:
     return run(argv)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
